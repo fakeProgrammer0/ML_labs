@@ -67,7 +67,7 @@ def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learn
         temp_sum = np.zeros(w.shape)
         for i in sample_indice:
             if 1 - y_train[i][0] * np.dot(X_train[i], w)[0] > 0:
-                temp_sum += -y_train[i][0] * X_train[0]
+                temp_sum += -y_train[i][0] * X_train[i].reshape(-1, 1)
 
         w = (1 - reg_param) * w - penalty_factor / batch_size * temp_sum
 
@@ -89,6 +89,14 @@ def run_svm():
     X_val, y_val = preprocess(val_dataset_url, n_features)
     w, losses_train, losses_val = svm_SGD(X_train, y_train, X_val, y_val)
 
+    plt.figure(figsize=(16, 9))
+    plt.plot(losses_train, '-', color='r', label='losses_train')
+    plt.plot(losses_val, '-', color='b', label='losses_val')
+    plt.xlabel('epoch')
+    plt.ylabel('hinge_loss')
+    plt.legend()
+    plt.title('loss graph of svm')
+    plt.show()
 
 if __name__ == "__main__":
     run_svm()
