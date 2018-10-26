@@ -25,8 +25,7 @@ def preprocess(dataset_url, n_features):
 
     return X, y
 
-
-def log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001):
+def log_reg_MLE_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001):
     '''logistic regression using mini-batch stochastic gradient descent with maximum likelihood method
 
     :param y_train: train_labels in the column shape, where y_train[i] is either 0 or 1
@@ -58,10 +57,10 @@ def log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=2
 
     global n_features
     # init weight vectors
-    # w = np.zeros((n_features + 1, 1))
-
     # for calculation convenience, w is represented as a row vector
-    w = np.zeros(n_features + 1)
+    # w = np.zeros(n_features + 1)
+    # w = np.random.random(n_features + 1)
+    w = np.random.normal(1, 1, size=n_features + 1)
 
     n_train_samples = X_train.shape[0]
     if n_train_samples < batch_size:
@@ -80,8 +79,6 @@ def log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=2
 
         # update w using gradient
         w += learning_rate * n_train_samples / batch_size * d
-
-        # print('w = ', np.floor(w.reshape(1, -1)))
 
         loss_train = neg_log_likelihood(X_train, y_train, w)
         neg_log_LE_train.append(loss_train)
@@ -197,7 +194,7 @@ def run_SGD():
     global n_features
     X_train, y_train = preprocess(dataset_url=train_dataset_url, n_features=n_features)
     X_val, y_val = preprocess(dataset_url=val_dataset_url, n_features=n_features)
-    w, neg_MLEs_train, neg_MLEs_val = log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=512, max_epoch=200)
+    w, neg_MLEs_train, neg_MLEs_val = log_reg_MLE_MSGD(X_train, y_train, X_val, y_val, batch_size=512, max_epoch=200)
 
     plt.figure(figsize=(16,9))
     plt.plot(neg_MLEs_train, "-", color="r", label="neg_MLE_train")
