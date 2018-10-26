@@ -26,7 +26,7 @@ def preprocess(dataset_url, n_features):
     return X, y
 
 
-def log_reg_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.3):
+def log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.3):
     '''logistic regression using the mini-batch stochastic gradient descent method with maximum likelihood loss function
 
     :param y_train: train_labels in the column shape, where y_train[i] is either 0 or 1
@@ -34,7 +34,7 @@ def log_reg_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, 
     w: the weighted vector
     '''
 
-    def loss_maximum_likelihood(X, y, w):
+    def neg_log_likelihood(X, y, w):
         '''calculate the loss of logistic regression using the maximum likelihood method
         :param X:
         :param y: labels, where y[i] is either 0 or 1
@@ -48,7 +48,7 @@ def log_reg_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, 
         loss_sum = 0
         for i in range(0, n_samples):
             loss_sum += y[i][0] * np.dot(X[i], w)[0] - math.log(1 + math.exp(np.dot(X[i], w)[0]))
-        return loss_sum
+        return -loss_sum
 
     # map y[i] from {-1.0, +1.0} into {0.0, 1.0}
     if y_train.min() == np.float64(-1.0) or y_val.min() == np.float64(-1.0):
@@ -57,38 +57,40 @@ def log_reg_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, 
 
     global n_features
     # init weight vectors
-    w = np.zeros((n_features + 1, 1))
+    # w = np.zeros((n_features + 1, 1))
+
+    # for calculation convenience, w is represented as a column vector
+    w = np.zeros(n_features + 1)
 
     n_train_samples = X_train.shape[0]
     if n_train_samples < batch_size:
         batch_size = n_train_samples
 
-    losses_train = []
-    losses_val = []
+    neg_log_LE_train = []
+    neg_log_LE_val = []
 
     for epoch in range(0, max_epoch):
 
-        temp_sum = np.zeros((n_features + 1, 1))
+        temp_sum = np.zeros(n_features + 1)
         batch_indice = random.sample(range(0, n_train_samples), batch_size)
 
         for idx in batch_indice:
-            temp_sum += X_train[idx] * (y_train[idx][0] - logistic_g(np.dot(X_train[idx], w)[0]))
+            temp_sum += X_train[idx] * (y_train[idx][0] - logistic_g(np.dot(X_train[idx], w)))
 
         # update w using gradient
-        w = learning_rate * n_train_samples / batch_size * temp_sum
+        w -= learning_rate * n_train_samples / batch_size * temp_sum
 
         # print('w = ', np.floor(w.reshape(1, -1)))
 
-        loss_train = threshold_Ein(X_train, y_train, w)
-        losses_train.append(loss_train)
+        loss_train = neg_log_likelihood(X_train, y_train, w)
+        neg_log_LE_train.append(loss_train)
 
-        loss_val = threshold_Ein(X_val, y_val, w)
-        losses_val.append(loss_val)
+        loss_val = neg_log_likelihood(X_val, y_val, w)
+        neg_log_LE_val.append(loss_val)
 
-        # print(f"epoch {epoch}: loss_train = {loss_train}; loss_val = {loss_val}")
-        print("epoch {}: loss_train = [{:.2f}]; loss_val = [{:.2f}]".format(epoch, loss_train, loss_val))
+        # print("epoch {}: loss_train = [{:.2f}]; loss_val = [{:.2f}]".format(epoch, loss_train, loss_val))
 
-    return w, losses_train, losses_val
+    return w, neg_log_LE_train, neg_log_LE_val
 
 def log_reg_SGD2(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.3):
     global n_features
@@ -193,7 +195,7 @@ def run_SGD():
     global n_features
     X_train, y_train = preprocess(dataset_url=train_dataset_url, n_features=n_features)
     X_val, y_val = preprocess(dataset_url=val_dataset_url, n_features=n_features)
-    w, losses_train, losses_val = log_reg_MSGD(X_train, y_train, X_val, y_val, batch_size=512, max_epoch=200)
+    w, losses_train, losses_val = log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=512, max_epoch=200)
 
     plt.figure(figsize=(16,9))
     plt.plot(losses_train, "-", color="r", label="train loss")
