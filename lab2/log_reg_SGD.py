@@ -26,8 +26,8 @@ def preprocess(dataset_url, n_features):
     return X, y
 
 
-def log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.3):
-    '''logistic regression using the mini-batch stochastic gradient descent method with maximum likelihood loss function
+def log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001):
+    '''logistic regression using mini-batch stochastic gradient descent with maximum likelihood method
 
     :param y_train: train_labels in the column shape, where y_train[i] is either 0 or 1
     :return w: the weighted vector
@@ -46,7 +46,8 @@ def log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=2
         n_samples = X.shape[0]
         loss_sum = 0
         for i in range(0, n_samples):
-            # loss_sum += y[i][0] * np.dot(X[i], w) - math.log(1 + math.exp(np.dot(X[i], w))) # overflowerror
+            # math.exp(val) can cause overflowError when val is large
+            # loss_sum += y[i][0] * np.dot(X[i], w) - math.log(1 + math.exp(np.dot(X[i], w)))
             loss_sum += (y[i][0] - 1) * np.dot(X[i], w) - math.log(1 + math.exp(-np.dot(X[i], w)))
         return -loss_sum
 
@@ -71,14 +72,14 @@ def log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=2
 
     for epoch in range(0, max_epoch):
 
-        temp_sum = np.zeros(n_features + 1)
+        d = np.zeros(n_features + 1)
         batch_indice = random.sample(range(0, n_train_samples), batch_size)
 
         for idx in batch_indice:
-            temp_sum += X_train[idx] * (y_train[idx][0] - logistic_g(np.dot(X_train[idx], w)))
+            d += X_train[idx] * (y_train[idx][0] - logistic_g(np.dot(X_train[idx], w)))
 
         # update w using gradient
-        w -= learning_rate * n_train_samples / batch_size * temp_sum
+        w += learning_rate * n_train_samples / batch_size * d
 
         # print('w = ', np.floor(w.reshape(1, -1)))
 
@@ -196,15 +197,15 @@ def run_SGD():
     global n_features
     X_train, y_train = preprocess(dataset_url=train_dataset_url, n_features=n_features)
     X_val, y_val = preprocess(dataset_url=val_dataset_url, n_features=n_features)
-    w, MLEs_train, MLEs_val = log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=512, max_epoch=200)
+    w, neg_MLEs_train, neg_MLEs_val = log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=512, max_epoch=200)
 
     plt.figure(figsize=(16,9))
-    plt.plot(MLEs_train, "-", color="r", label="train MLE")
-    plt.plot(MLEs_val, "-", color='b', label='val MLE')
+    plt.plot(neg_MLEs_train, "-", color="r", label="neg_MLE_train")
+    plt.plot(neg_MLEs_val, "-", color='b', label='neg_MLE_train')
     plt.xlabel('epoch')
-    plt.ylabel('MLE')
+    plt.ylabel('neg_MLE')
     plt.legend()
-    plt.title('MLE graph')
+    plt.title('neg_MLE_graph')
     plt.show()
 
 if __name__ == "__main__":
