@@ -30,15 +30,14 @@ def log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=2
     '''logistic regression using the mini-batch stochastic gradient descent method with maximum likelihood loss function
 
     :param y_train: train_labels in the column shape, where y_train[i] is either 0 or 1
-    :return:
-    w: the weighted vector
+    :return w: the weighted vector
     '''
 
     def neg_log_likelihood(X, y, w):
         '''calculate the loss of logistic regression using the maximum likelihood method
         :param X:
         :param y: labels, where y[i] is either 0 or 1
-        :param w:
+        :param w: the weighted vector, in a row shape
         :return:
         '''
 
@@ -47,7 +46,8 @@ def log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=2
         n_samples = X.shape[0]
         loss_sum = 0
         for i in range(0, n_samples):
-            loss_sum += y[i][0] * np.dot(X[i], w)[0] - math.log(1 + math.exp(np.dot(X[i], w)[0]))
+            # loss_sum += y[i][0] * np.dot(X[i], w) - math.log(1 + math.exp(np.dot(X[i], w))) # overflowerror
+            loss_sum += (y[i][0] - 1) * np.dot(X[i], w) - math.log(1 + math.exp(-np.dot(X[i], w)))
         return -loss_sum
 
     # map y[i] from {-1.0, +1.0} into {0.0, 1.0}
@@ -59,7 +59,7 @@ def log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=2
     # init weight vectors
     # w = np.zeros((n_features + 1, 1))
 
-    # for calculation convenience, w is represented as a column vector
+    # for calculation convenience, w is represented as a row vector
     w = np.zeros(n_features + 1)
 
     n_train_samples = X_train.shape[0]
@@ -90,6 +90,7 @@ def log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=2
 
         # print("epoch {}: loss_train = [{:.2f}]; loss_val = [{:.2f}]".format(epoch, loss_train, loss_val))
 
+    w = w.reshape(-1, 1)
     return w, neg_log_LE_train, neg_log_LE_val
 
 def log_reg_SGD2(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.3):
@@ -195,15 +196,15 @@ def run_SGD():
     global n_features
     X_train, y_train = preprocess(dataset_url=train_dataset_url, n_features=n_features)
     X_val, y_val = preprocess(dataset_url=val_dataset_url, n_features=n_features)
-    w, losses_train, losses_val = log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=512, max_epoch=200)
+    w, MLEs_train, MLEs_val = log_reg_MSGD_MLE(X_train, y_train, X_val, y_val, batch_size=512, max_epoch=200)
 
     plt.figure(figsize=(16,9))
-    plt.plot(losses_train, "-", color="r", label="train loss")
-    plt.plot(losses_val, "-", color='b', label='val loss')
+    plt.plot(MLEs_train, "-", color="r", label="train MLE")
+    plt.plot(MLEs_val, "-", color='b', label='val MLE')
     plt.xlabel('epoch')
-    plt.ylabel('loss')
+    plt.ylabel('MLE')
     plt.legend()
-    plt.title('loss graph')
+    plt.title('MLE graph')
     plt.show()
 
 if __name__ == "__main__":
