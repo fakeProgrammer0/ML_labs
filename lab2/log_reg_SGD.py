@@ -1,5 +1,7 @@
-train_dataset_url = '../dataset/a9a.txt'
-val_dataset_url = '../dataset/a9a_t.txt'
+# train_dataset_url = '../dataset/a9a.txt'
+# val_dataset_url = '../dataset/a9a_t.txt'
+train_dataset_url = r'D:\MyData\Temp Codes\Github\ML_labs\dataset\a9a.txt'
+val_dataset_url = r'D:\MyData\Temp Codes\Github\ML_labs\dataset\a9a_t.txt'
 
 n_features = 123
 
@@ -19,13 +21,41 @@ def preprocess(dataset_url, n_features):
     X = np.hstack((np.ones((X.shape[0], 1)), X))
 
     y = y.reshape(-1, 1)
+    # y = y.reshape(-1, 1)[:, 0] # change y into a 1D ndarray
 
     return X, y
 
 
-def log_reg_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.3):
-    global n_features
+def log_reg_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.3):
+    '''logistic regression using the mini-batch stochastic gradient descent method with maximum likelihood loss function
 
+    :param y_train: train_labels in the column shape, where y_train[i] is either 0 or 1
+    :return:
+    w: the weighted vector
+    '''
+
+    def loss_maximum_likelihood(X, y, w):
+        '''calculate the loss of logistic regression using the maximum likelihood method
+        :param X:
+        :param y: labels, where y[i] is either 0 or 1
+        :param w:
+        :return:
+        '''
+
+        # TODO: check dimension equality constraints
+
+        n_samples = X.shape[0]
+        loss_sum = 0
+        for i in range(0, n_samples):
+            loss_sum += y[i][0] * np.dot(X[i], w)[0] - math.log(1 + math.exp(np.dot(X[i], w)[0]))
+        return loss_sum
+
+    # map y[i] from {-1.0, +1.0} into {0.0, 1.0}
+    if y_train.min() == np.float64(-1.0) or y_val.min() == np.float64(-1.0):
+        y_train = (y_train + np.ones(y_train.shape)) / 2
+        y_val = (y_val + np.ones(y_val.shape)) / 2
+
+    global n_features
     # init weight vectors
     w = np.zeros((n_features + 1, 1))
 
@@ -44,10 +74,7 @@ def log_reg_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, l
         for idx in batch_indice:
             temp_sum += X_train[idx] * (y_train[idx][0] - logistic_g(np.dot(X_train[idx], w)[0]))
 
-        # objective function
-        # w = (1 - learning_rate * reg_param) * w + learning_rate / batch_size * temp_sum
-
-        # loss function
+        # update w using gradient
         w = learning_rate * n_train_samples / batch_size * temp_sum
 
         # print('w = ', np.floor(w.reshape(1, -1)))
@@ -62,7 +89,6 @@ def log_reg_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, l
         print("epoch {}: loss_train = [{:.2f}]; loss_val = [{:.2f}]".format(epoch, loss_train, loss_val))
 
     return w, losses_train, losses_val
-
 
 def log_reg_SGD2(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.3):
     global n_features
@@ -167,7 +193,7 @@ def run_SGD():
     global n_features
     X_train, y_train = preprocess(dataset_url=train_dataset_url, n_features=n_features)
     X_val, y_val = preprocess(dataset_url=val_dataset_url, n_features=n_features)
-    w, losses_train, losses_val = log_reg_SGD(X_train, y_train, X_val, y_val, batch_size=512, max_epoch=200)
+    w, losses_train, losses_val = log_reg_MSGD(X_train, y_train, X_val, y_val, batch_size=512, max_epoch=200)
 
     plt.figure(figsize=(16,9))
     plt.plot(losses_train, "-", color="r", label="train loss")

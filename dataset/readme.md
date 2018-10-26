@@ -1,6 +1,6 @@
 # dataset
 These Datasets are all from the [LIBSVM](https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/).
-For convenience, they are downloaded and grouped into a directory.
+For convenience, they are downloaded and grouped into a local directory.
 
 * [housing](https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/regression.html#housing)
 * housing_scale
