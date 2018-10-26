@@ -39,6 +39,47 @@ def log_reg_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, l
     for epoch in range(0, max_epoch):
 
         temp_sum = np.zeros((n_features + 1, 1))
+        batch_indice = random.sample(range(0, n_train_samples), batch_size)
+
+        for idx in batch_indice:
+            temp_sum += X_train[idx] * (y_train[idx][0] - logistic_g(np.dot(X_train[idx], w)[0]))
+
+        # objective function
+        # w = (1 - learning_rate * reg_param) * w + learning_rate / batch_size * temp_sum
+
+        # loss function
+        w = learning_rate * n_train_samples / batch_size * temp_sum
+
+        # print('w = ', np.floor(w.reshape(1, -1)))
+
+        loss_train = threshold_Ein(X_train, y_train, w)
+        losses_train.append(loss_train)
+
+        loss_val = threshold_Ein(X_val, y_val, w)
+        losses_val.append(loss_val)
+
+        # print(f"epoch {epoch}: loss_train = {loss_train}; loss_val = {loss_val}")
+        print("epoch {}: loss_train = [{:.2f}]; loss_val = [{:.2f}]".format(epoch, loss_train, loss_val))
+
+    return w, losses_train, losses_val
+
+
+def log_reg_SGD2(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.3):
+    global n_features
+
+    # init weight vectors
+    w = np.zeros((n_features + 1, 1))
+
+    n_train_samples = X_train.shape[0]
+    if n_train_samples < batch_size:
+        batch_size = n_train_samples
+
+    losses_train = []
+    losses_val = []
+
+    for epoch in range(0, max_epoch):
+
+        temp_sum = np.zeros((n_features + 1, 1))
         # batch_indice = rnd_sample_indice(0, n_train_samples, batch_size)
         batch_indice = random.sample(range(0, n_train_samples), batch_size)
 
@@ -48,6 +89,7 @@ def log_reg_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, l
             # temp_sum += t.reshape(-1,1)
 
             # temp_sum += y_train[idx][0] * (X_train[idx]).reshape(-1, 1) / (1 + math.exp(y_train[idx] * np.dot(X_train[idx], w)[0]))
+
             temp_sum += X_train[idx] * (y_train[idx][0] - logistic_g(np.dot(X_train[idx], w)[0]))
 
         # objective function
