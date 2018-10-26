@@ -1,4 +1,3 @@
-# labs for the course [Machine Learing]
 ## specifications
 1. [Linear Regression and Stochastic Gradient Descent](https://www.zybuluo.com/liushiya/note/1301605?tdsourcetag=s_pctim_aiomsg)
 2. [Logistic Regression and Support Vector Machine](https://www.zybuluo.com/liushiya/note/1303225)
