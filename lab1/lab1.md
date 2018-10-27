@@ -72,11 +72,13 @@ In this experiment, to perform linear regression we uses [housing_scale](https:/
 ### B.Experiment Step
 
 #### closed-form solution of Linear Regression
-1. Load the housing_scale dataset and devide it into training set and validation set.
+1. Load the housing_scale dataset and divide it into training set and validation set.
 2. Initialize linear model parameters. Set all parameter into zero, initialize it randomly or with normal distribution.
 3. Select the least square loss as the loss function and calculate least square loss of the training set with the weight vector, denoted as **Loss**.
 4. Use the formula of the closed-form solution (5) to get the best weighted vector.
 5. Get the **Loss**, **Loss_train** under the training set and **Loss_val**  by validating under validation set and output them.
+
+#### Core Code of closed-form solution
 
 ```python
 import numpy as np
@@ -108,6 +110,19 @@ def linear_reg_closed_form(X_train, y_train, X_val, y_val):
 
     return w, loss0, loss1, loss_train, loss_val
 ```
+
+#### Gradient Descent
+1. Load and divide dataset.
+2. Initialize linear model parameters. Set all parameter into zero, initialize it randomly or with normal distribution.
+3. Choose mean square loss as the loss function. 
+4. Calculate the gradient with respect to weight in the objective funtion from each example using equation (8). Denote the opposite direction of gradient as D.
+5. Update model: <img src="http://latex.codecogs.com/gif.latex?W_t = W_{t-1} + \eta D"/>.
+6. Get the loss **loss_train** under the training set and **loss_val** by validating under validation set.
+7. Repeate step 4 to 6 for several times, and use the values of **loss_train** and **loss_val** to plot the loss graph. 
+
+### C.Experiment Result
+
+
 
 
 >
