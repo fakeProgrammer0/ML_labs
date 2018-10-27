@@ -22,73 +22,7 @@ def preprocess(dataset_url, n_features):
     return X, y
 
 # TODO: use matrix operations to substitute loops
-def log_reg_MLE_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001):
-    '''logistic regression using mini-batch stochastic gradient descent with maximum likelihood method
-
-    :param y_train: train_labels in the column shape, where y_train[i] is either 0 or 1
-    :return w: the weighted vector
-    '''
-
-    # a helper function
-    def opposite_log_likelihood(X, y, w):
-        '''calculate the opposite number of the log likelihood estimate of logistic regression
-        :param X:
-        :param y: labels, where y[i] is either 0 or 1
-        :param w: the weighted vector, in a row shape
-        :return:
-        '''
-
-        # TODO: check dimension equality constraints
-
-        n_samples = X.shape[0]
-        loss_sum = 0
-        for i in range(0, n_samples):
-            # math.exp(val) can cause overflowError when val is large
-            # loss_sum += y[i][0] * np.dot(X[i], w) - math.log(1 + math.exp(np.dot(X[i], w)))
-            loss_sum += (y[i][0] - 1) * np.dot(X[i], w) - math.log(1 + math.exp(-np.dot(X[i], w)))
-        return -loss_sum
-
-    # map y[i] from {-1.0, +1.0} into {0.0, 1.0}
-    if y_train.min() == np.float64(-1.0) or y_val.min() == np.float64(-1.0):
-        y_train = (y_train + np.ones(y_train.shape)) / 2
-        y_val = (y_val + np.ones(y_val.shape)) / 2
-
-    n_train_samples = X_train.shape, n_features
-    if n_train_samples < batch_size:
-        batch_size = n_train_samples
-
-    # init weight vectors
-    # for calculation convenience, w is represented as a row vector
-    # w = np.zeros(n_features + 1)
-    # w = np.random.random(n_features + 1)
-    w = np.random.normal(1, 1, size=n_features + 1)
-
-    neg_log_LE_train = []
-    neg_log_LE_val = []
-
-    for epoch in range(0, max_epoch):
-
-        d = np.zeros(n_features + 1)
-        batch_indice = random.sample(range(0, n_train_samples), batch_size)
-
-        for idx in batch_indice:
-            d += X_train[idx] * (y_train[idx][0] - logistic_g(np.dot(X_train[idx], w)))
-
-        # update w using gradient
-        w += learning_rate * n_train_samples / batch_size * d
-
-        loss_train = opposite_log_likelihood(X_train, y_train, w)
-        neg_log_LE_train.append(loss_train)
-
-        loss_val = opposite_log_likelihood(X_val, y_val, w)
-        neg_log_LE_val.append(loss_val)
-
-        # print("epoch {}: loss_train = [{:.2f}]; loss_val = [{:.2f}]".format(epoch, loss_train, loss_val))
-
-    w = w.reshape(-1, 1)
-    return w, neg_log_LE_train, neg_log_LE_val
-
-def log_reg_MLE_MSGD2(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.3):
+def log_reg_MLE_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.3):
     '''logistic regression using mini-batch stochastic gradient descent with maximum likelihood method
     :param X_train:
     :param y_train:
@@ -109,13 +43,8 @@ def log_reg_MLE_MSGD2(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=
     y_val = y_val.reshape(1, -1)[0, :]
 
     # init weight vectors
-    # w = np.zeros((n_features, 1))
     # for calculation convenience, w is represented as a row vector
     w = np.zeros(n_features)
-
-    n_train_samples = X_train.shape[0]
-    if n_train_samples < batch_size:
-        batch_size = n_train_samples
 
     losses_train = []
     losses_val = []
@@ -132,8 +61,6 @@ def log_reg_MLE_MSGD2(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=
         # update w using gradient of the objective function
         w = (1 - learning_rate * reg_param) * w + learning_rate / batch_size * temp_sum
 
-        # print('w = ', np.floor(w.reshape(1, -1)))
-
         # loss_train = threshold_Ein(X_train, y_train, w)
         # losses_train.append(loss_train)
         #
@@ -149,6 +76,21 @@ def log_reg_MLE_MSGD2(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=
         print("epoch {:3d}: loss_train = [{:.6f}]; loss_val = [{:.6f}]".format(epoch, loss_train, loss_val))
 
     return w, losses_train, losses_val
+
+def loss_Ein(X, y, w):
+    '''
+    :param X:
+    :param y: the groundtruth labels, required in a row shape
+    :param w: the weight vector, required in a row shape
+    :return:
+    '''
+    n_samples = X.shape[0]
+    loss_sum = 0
+    for i in range(0, n_samples):
+        loss_sum += np.log(1 + np.exp(-y[i] * (np.dot(X[i], w))))
+
+    return loss_sum / n_samples
+
 
 def logistic_g(Z):
     return 1 / (1 + math.exp(-Z))
@@ -181,21 +123,6 @@ def threshold_Ein(X, y, w, threshold=0.5):
 
     return loss_sum / n_samples
 
-
-def loss_Ein(X, y, w):
-    '''
-    :param X:
-    :param y: the groundtruth labels, required in a row shape
-    :param w: the weight vector, required in a row shape
-    :return:
-    '''
-    n_samples = X.shape[0]
-    loss_sum = 0
-    for i in range(0, n_samples):
-        loss_sum += np.log(1 + np.exp(-y[i] * (np.dot(X[i], w))))
-
-    return loss_sum / n_samples
-
 def loss_Ein2(X, y, w):
     '''
     :param X: the data, a m*d ndarray
@@ -205,26 +132,11 @@ def loss_Ein2(X, y, w):
     '''
     return np.average(np.log(np.ones(y.shape) + np.exp(y * np.dot(X, w))))
 
-def run_SGD():
-    global n_features
-    X_train, y_train = preprocess(dataset_url=train_dataset_url, n_features=n_features)
-    X_val, y_val = preprocess(dataset_url=val_dataset_url, n_features=n_features)
-    w, neg_MLEs_train, neg_MLEs_val = log_reg_MLE_MSGD(X_train, y_train, X_val, y_val, batch_size=512, max_epoch=200)
-
-    plt.figure(figsize=(16,9))
-    plt.plot(neg_MLEs_train, "-", color="r", label="neg_MLE_train")
-    plt.plot(neg_MLEs_val, "-", color='b', label='neg_MLE_train')
-    plt.xlabel('epoch')
-    plt.ylabel('neg_MLE')
-    plt.legend()
-    plt.title('neg_MLE_graph')
-    plt.show()
-
 def run_log_reg2():
     global n_features
     X_train, y_train = preprocess(dataset_url=train_dataset_url, n_features=n_features)
     X_val, y_val = preprocess(dataset_url=val_dataset_url, n_features=n_features)
-    w, losses_train, losses_val = log_reg_MLE_MSGD2(X_train, y_train, X_val, y_val, batch_size=512, max_epoch=200, learning_rate=0.1)
+    w, losses_train, losses_val = log_reg_MLE_MSGD(X_train, y_train, X_val, y_val, batch_size=512, max_epoch=200, learning_rate=0.1)
 
     plt.figure(figsize=(16,9))
     plt.plot(losses_train, "-", color="r", label="train loss")
