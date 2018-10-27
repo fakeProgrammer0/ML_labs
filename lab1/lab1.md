@@ -13,7 +13,9 @@ Motivations of the report are listed below:
 * Realize the process of optimization and adjusting parameters.
 
 ## II.Methods and Theory
+The equation of simple linear regression can be described as:<br/>
 
+$$ y = w^{T}X + b $$
 
 The least square loss of the 
 
