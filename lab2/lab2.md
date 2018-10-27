@@ -194,27 +194,7 @@ def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learn
     :return losses_train, losses_val: the hinge training / validation loss during each epoch
     :return f1_scores_train, f1_scores_val: the f1_score during each epoch
     '''
-    def sign(a, threshold=0, sign_thershold=0):
-        # the number of positive labels is much smaller than that of the negative labels
-        # it's an imbalance classification problem
-        if a > threshold:
-            return 1
-        elif a == threshold:
-            return sign_thershold
-        else:
-            return -1
-
-    import copy
-    def sign_col_vector(a, threshold=0, sign_thershold=0):
-        a = copy.deepcopy(a)
-        n = a.shape[0]
-        for i in range(0, n):
-            a[i][0] = sign(a[i][0], threshold, sign_thershold)
-        return a
-
-    def hinge_loss(X, y, w):
-        return np.average(np.maximum(np.ones(y.shape) - y * np.dot(X, w), np.zeros(y.shape)), axis=0)[0]
-
+    
     n_train_samples, n_features = X_train.shape
 
     if batch_size > n_train_samples:
@@ -263,6 +243,27 @@ def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learn
         print('confusion matrix of val\n', confusion_matrix(y_true=y_val, y_pred=y_val_predict), '\n')
 
     return w, losses_train, losses_val, f1_scores_train, f1_scores_val
+
+def sign(a, threshold=0, sign_thershold=0):
+    # the number of positive labels is much smaller than that of the negative labels
+    # it's an imbalance classification problem
+    if a > threshold:
+        return 1
+    elif a == threshold:
+        return sign_thershold
+    else:
+        return -1
+
+import copy
+def sign_col_vector(a, threshold=0, sign_thershold=0):
+    a = copy.deepcopy(a)
+    n = a.shape[0]
+    for i in range(0, n):
+        a[i][0] = sign(a[i][0], threshold, sign_thershold)
+    return a
+
+def hinge_loss(X, y, w):
+    return np.average(np.maximum(np.ones(y.shape) - y * np.dot(X, w), np.zeros(y.shape)), axis=0)[0]
 ```
 
 ### 3.3. Experiment Results
