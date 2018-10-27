@@ -1,4 +1,4 @@
-# Linear Regression and Stochastic Gradient Descent
+# Linear Regression and Gradient Descent
 
 ## Abstract
 In this report, we will solve linear regression using both the closed-form solution and gradient descent method based on a small dataset.
@@ -184,16 +184,23 @@ to a low level.
 
 ##### Tuning the learning rate
 In the gradient descent method, the learning rate is a important parameter to control the velocity of the gradient descent process, 
-which affects the performance a lot. The following two graphes show the details.
+which has a large impact on convergence. The following two graphes show that:
+* Too large η causes oscillatory and may even diverge
+* Too small η makes it too slow to converge
 
 <img src="img/bad learning rate.png"/>
-
 <img src="img/learning_rates.png"/>
 
+Adaptive learning rate:
+Set larger learning rate at the begining
+Use relatively smaller learning rate in the later epochs
+Decrease the learning rate: ![](http://latex.codecogs.com/gif.latex?\eta_{t+1} = \frac{\eta}{t+1})
 
+![]("http://latex.codecogs.com/gif.latex?W_t = W_{t-1} + \eta D")
 
 ## IV.Conclusion
 
 ## Reference
-1.[linear_regression Wikipidea](https://en.wikipedia.org/wiki/Linear_regression)
+1. Basic Concepts about Machine Learning: Regression and Optimization, Prof. Mingkui Tan
+2. [linear_regression, Wikipidea](https://en.wikipedia.org/wiki/Linear_regression)
 
