@@ -4,7 +4,7 @@
 In this report, we will solve linear regression using both the closed-form solution and gradient descent method based on a small dataset.
 After that, we will further learn to tune some parameters such as the learing rate to optimizate our gradient descent model.  
 
-## I.Introduction
+## 1.Introduction
 In statistics, linear regression is a linear approach to modelling the relationship between a scalar response (or dependent variable) and one or more explanatory variables (or independent variables). The case of one explanatory variable is called simple linear regression.[2]
 Closed-form solution and gradient descent are two methods for solving simple linear regression.
 Motivations of the report are listed below:
@@ -12,7 +12,7 @@ Motivations of the report are listed below:
 * Conduct some experiments under small scale dataset.
 * Realize the process of optimization and adjusting parameters.
 
-## II.Methods and Theory
+## 2.Methods and Theory
 The equation of simple linear regression can be described as:<br/>
 <img src = "http://latex.codecogs.com/gif.latex?y%20=%20w^{T}X%20+%20b%20\quad%20\eqno{(1)}"/><br/>
 
@@ -29,7 +29,7 @@ The corresponding gradient with respect to <img src = "http://latex.codecogs.com
 
 To minimize the mean square loss Lreg, we can use closed-formed solution or the gradient descent method.
 
-### Closed-formed Solution
+### 2.1. Closed-formed Solution
 let <img src = "http://latex.codecogs.com/gif.latex?\frac%20{%20\partial%20L_{%20reg%20}%20}{%20\partial%20W%20}%20=%200" />, we can get
 
 <img src = "http://latex.codecogs.com/gif.latex?W%20^{%20*%20}=\left(%20X^{%20T%20}X%20\right)%20^{%20-1%20}X^{%20T%20}y%20\quad%20\left(5%20\right)" />
@@ -37,7 +37,7 @@ let <img src = "http://latex.codecogs.com/gif.latex?\frac%20{%20\partial%20L_{%2
 if the matrix <img src = "http://latex.codecogs.com/gif.latex?X^{T}X" /> is a full-rank matrix or a positive definite matrix, then its **inverse matrix** exists.
 Thus we can use the equation (5) to calculate the best weight vector <img src = "http://latex.codecogs.com/gif.latex?W^*" />.
 
-### Gradient Descent Method
+### 2.2. Gradient Descent Method
 However, in most cases the inverse matrix of a given matrix may not exist.
 So the closed-form solution can't always work. Gracefully, gradient descent can help.
 
@@ -54,21 +54,21 @@ With regularization, the loss function (3) can be changed into the objective fun
 Then equation (7) becomes
 <br/><img src = "http://latex.codecogs.com/gif.latex?W%20=%20\left(1-\lambda\eta%20\right)%20W%20+%20\eta%20X^{%20T%20}\left(%20y-XW%20\right)%20\quad%20\left(9\right)" /><br/>
 
-### Comparison with Closed-form Solution and Gradient Descent Method 
+### 2.3. Comparison with Closed-form Solution and Gradient Descent Method 
 
 ||Closed-form Solution|Gradient Descent Method|
 |:-:|:-:|:-:|
 |Advantages|Mathematic simplication|Easy to perform|
 |Disadvantages|Cannot always work<br>Calculating the inverse matrix is low efficent and consums a lot of time|
 
-## III.Experiment
+## 3.Experiment
 
-### A.Dataset
+### 3.1. Dataset
 In this experiment, to perform linear regression we uses [housing_scale](https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/regression.html#housing) in [LIBSVM Data](https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/), including 506 samples and each sample has 13 features. The dataset is then divided into train set and validation set.
 
-### B.Experiment Step
+### 3.2. Experiment Step
 
-#### closed-form solution of Linear Regression
+#### 3.2.1. closed-form solution of Linear Regression
 1. Load the housing_scale dataset and divide it into training set and validation set.
 2. Initialize linear model parameters. Set all parameter into zero, initialize it randomly or with normal distribution.
 3. Select the mean square loss as the loss function and calculate mean square loss of the training set with the weight vector, denoted as **Loss**.
@@ -108,12 +108,12 @@ def linear_reg_closed_form(X_train, y_train, X_val, y_val):
     return w, loss0, loss1, loss_train, loss_val
 ```
 
-#### Gradient Descent
+#### 3.2.2. Gradient Descent
 1. Load and divide dataset.
 2. Initialize linear model parameters. Set all parameter into zero, initialize it randomly or with normal distribution.
 3. Choose mean square loss as the loss function. 
 4. Calculate the gradient with respect to weight in the objective funtion from each example using equation (8). Denote the opposite direction of gradient as D.
-5. Update model: <img src="http://latex.codecogs.com/gif.latex?W_t = W_{t-1} + \eta D"/>.
+5. Update model: <img src="http://latex.codecogs.com/gif.latex?W_t=W_{t-1}+\eta%20D"/>.
 6. Get the loss **loss_train** under the training set and **loss_val** by validating under validation set.
 7. Repeate step 4 to 6 for several times, and use the values of **loss_train** and **loss_val** to plot the loss graph. 
 
@@ -160,9 +160,9 @@ def linear_reg_GD(X_train, y_train, X_val, y_val, max_epoch=200, learning_rate=0
     return w, losses_train, losses_val
 ```
 
-### C.Experiment Result
+### 3.3. Experiment Result
 
-#### Ouput Results of the closed-form solution 
+#### 3.3.1. Ouput Results of the closed-form solution 
 For this small dataset with 13 features and 506 samples, the closed-form solution can easily and quickly calculate the desired weight vector and generate output results.
 
 >
@@ -172,7 +172,7 @@ For this small dataset with 13 features and 506 samples, the closed-form solutio
 	loss_train = 23.476533
 	  loss_val = 18.176029
 
-#### Result of the gradient descent
+#### 3.3.2. Result of the gradient descent
 With carefully selecting suitable hyper parameters learning_rate and penalty_factor,
 the gradient descent method can minimize the mean square loss in a certain number of epoches
 to a low level.
@@ -193,7 +193,7 @@ We can use the adaptive learning rate:
 2. Use relatively smaller learning rate in the later epochs
 3. Decrease the learning rate: <img src="http://latex.codecogs.com/gif.latex?\eta%20_{t+1}%20=%20\frac{\eta}{t+1}"/>
 
-## IV.Conclusion
+## 4.Conclusion
 In this report, we manage to perform a simple linear regression simulation based on a small dataset, 
 using both the closed-form solution and the gradient descent method. Then we do serveral simple experiments to estimate
 their performance and in addition to learn to tune the hyper parameter learning rate.  
