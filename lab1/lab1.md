@@ -78,7 +78,36 @@ In this experiment, to perform linear regression we uses [housing_scale](https:/
 4. Use the formula of the closed-form solution (5) to get the best weighted vector.
 5. Get the **Loss**, **Loss_train** under the training set and **Loss_val**  by validating under validation set and output them.
 
+```python
+import numpy as np
+from sklearn.metrics import mean_squared_error
+def linear_reg_closed_form(X_train, y_train, X_val, y_val):
+    '''Use the closed-form solution to solve simple linear regression.
+    Attention: This function may not work because the inverse of a given matrix may not exist.
+    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones, ie.numpy.ones(n_samples) 
+    :param y_train: labels, a (n_samples, 1) ndarray
+    :param X_val: validation data
+    :param y_val: validation labels
+    :return w: the weight vector, a (n_features + 1, 1) ndarray
+    '''
 
+    n_features = X_train.shape[1]
+
+    # init weight vector
+    w = np.zeros((n_features, 1))
+    # w = np.random.random((n_features, 1))
+    # w = np.random.normal(1, 1, size=(n_features, 1))
+
+    loss0 = mean_squared_error(y_true=y_train, y_pred=np.dot(X_train, w))
+
+    w = np.dot(np.dot((np.mat(np.dot(X_train.T, X_train)).I).getA(), X_train.T), y_train)
+
+    loss1 = mean_squared_error(y_true=y_train, y_pred=np.dot(X_train, w))
+    loss_train = mean_squared_error(y_train, np.dot(X_train, w))
+    loss_val = mean_squared_error(y_val, np.dot(X_val, w))
+
+    return w, loss0, loss1, loss_train, loss_val
+```
 
 
 >

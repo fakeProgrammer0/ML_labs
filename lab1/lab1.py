@@ -27,12 +27,11 @@ from sklearn.metrics import mean_squared_error
 def linear_reg_closed_form(X_train, y_train, X_val, y_val):
     '''Use the closed-form solution to solve simple linear regression.
     Attention: This function may not work because the inverse of a given matrix may not exist.
-
-    :param X_train:
-    :param y_train:
-    :param X_val:
-    :param y_val:
-    :return:
+    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones, ie.numpy.ones(n_samples)
+    :param y_train: labels, a (n_samples, 1) ndarray
+    :param X_val: validation data
+    :param y_val: validation labels
+    :return w: the weight vector, a (n_features + 1, 1) ndarray
     '''
 
     n_features = X_train.shape[1]
