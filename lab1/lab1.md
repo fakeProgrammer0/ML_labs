@@ -194,9 +194,10 @@ which has a large impact on convergence. The following two graphes show that:
 Adaptive learning rate:
 Set larger learning rate at the begining
 Use relatively smaller learning rate in the later epochs
-Decrease the learning rate: ![](http://latex.codecogs.com/gif.latex?\eta_{t+1} = \frac{\eta}{t+1})
+Decrease the learning rate: <img src="http://latex.codecogs.com/gif.latex?\eta _{t+1} = \frac{\eta}{t+1}"/>
 
-![]("http://latex.codecogs.com/gif.latex?W_t = W_{t-1} + \eta D")
+![](http://latex.codecogs.com/gif.latex?\\eta _{t+1} = \\frac{\\eta}{t+1})
+![]("http://latex.codecogs.com/gif.latex?W_t = W_{t-1} + \\eta D")
 
 ## IV.Conclusion
 
