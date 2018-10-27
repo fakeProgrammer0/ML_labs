@@ -57,7 +57,9 @@ Using the Maximum Log Likelihood Estimate, we can have the objective function
 <img src="img/lab2_LR_MLE.png"/>
 
 After the above induction and regularization, we update our objective funtion to
-<img src="http://latex.codecogs.com/gif.latex?J\left(W\right)=\frac{1}{n}\sum_{i=1}^{n}{\log\left(1+e^{−y_iw^Tx_i}\right)}+\frac{\lambda}{2}{\left\|W\right\|_2^2}\quad\left(11\right)"/>
+<div align="center">
+<img src="http://latex.codecogs.com/gif.latex?J\left(W\right)=\frac{1}{n}\sum_{i=1}^{n}{\log\left(1+e^{−y_iw^Tx_i}\right)}+\frac{\lambda}{2}{\left\|W\right\|_2^2}\quad\left(11\right)" align="center"/>
+<div/>
 
 and we can update weight vector using mini-batch gradient descent:<br/>
 <img src="http://latex.codecogs.com/gif.latex?W=W-\eta\frac{\partial%20J\left(W\right)}{\partial%20W}=\left(1-\eta\lambda\right)W+\eta\frac{1}{\left|S_k\right|}\sum_{i\in\left|S_k\right|}{\frac{y_iX_i}{1+e^{y_iW^TX_i}}}\quad\left(12\right)"/>
