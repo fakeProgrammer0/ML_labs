@@ -14,15 +14,55 @@ Motivations of the report are listed below:
 
 ## II.Methods and Theory
 The equation of simple linear regression can be described as:<br/>
-<div align="center">
-    <img src = "http://latex.codecogs.com/gif.latex?y = w^{T}X + b"/>
-<div/>
+<img src = "http://latex.codecogs.com/gif.latex?y = w^{T}X + b \quad \eqno{(1)}"/><br/>
+
+Let <img src = "http://latex.codecogs.com/gif.latex?\beta = \left(b;\omega \right) " />
+and then equation (1) can be changed into <br/>
+<img src = "http://latex.codecogs.com/gif.latex?y = \beta ^T X \quad \eqno{(2)}" /><br/>
+
+The least square loss of simple linear regression is <br/>
+<img src = "http://latex.codecogs.com/gif.latex?L_{reg} \left( \beta  \right) = \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ \left( y_{ i } - \beta ^{ T }X_{ i } \right) ^{ 2 } } \quad \left(3 \right) "/>
+
+The corresponding gradient with respect to <img src = "http://latex.codecogs.com/gif.latex?\beta" /> in simple linear regression is
+ 
+<img src = "http://latex.codecogs.com/gif.latex?\frac { \partial L_{ reg } }{ \partial \beta  } =-X^{ T }\left( y-X\beta \right)  \quad \left( 4 \right)" /> 
+
+To minimize the least square loss Lreg, we can use closed-formed solution or the gradient descent method.
+
+### Closed-formed Solution
+let <img src = "http://latex.codecogs.com/gif.latex?\frac { \partial L_{ reg } }{ \partial \beta  } = 0" />, we can get
+
+<img src = "http://latex.codecogs.com/gif.latex?\beta ^{ * }=\left( X^{ T }X \right) ^{ -1 }X^{ T }y \quad \left(5 \right)" />
+
+if the matrix <img src = "http://latex.codecogs.com/gif.latex?X^{T}X" /> is a full-rank matrix or a positive definite matrix, then its **inverse matrix** exists.
+Thus we can use the equation (5) to calculate the best weight vector <img src = "http://latex.codecogs.com/gif.latex?\beta^*" />.
+
+### Gradient Descent Method
+However, in most cases the inverse matrix of a given matrix may not exist.
+So the closed-form solution can't always work. Gracefully, gradient descent can help.
+
+**Gradient Descent (GD)** tries to minimize the loss function by updating weight vector to minimize the learning rate <img src="http://latex.codecogs.com/gif.latex?\eta" /> muplitying the correspondent gradient with respect to weighted vector in the loss function.
+
+<img src = "http://latex.codecogs.com/gif.latex?\beta = \beta - \eta\frac{\partial L_{reg}}{\partial \beta} \quad \left(6\right)" />
+
+In our linear regression model, it looks like this:
+
+<img src = "http://latex.codecogs.com/gif.latex?\beta = \beta + \eta X^{ T }\left( y-X\beta \right) \quad \left(7\right)" />
+
+With regularization, the loss function (3) can be changed into the objective function
+<br/><img src = "http://latex.codecogs.com/gif.latex?L_{reg} \left( \beta  \right) = \frac{\lambda}{2}\left\| \beta \right\|_{2}^{2} + \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ \left( y_{ i } - \beta ^{ T }X_{ i } \right) ^{ 2 } } \quad \left(8 \right) "/><br/>
+Then equation (7) becomes
+<br/><img src = "http://latex.codecogs.com/gif.latex?\beta = \left(1-\lambda\eta \right) \beta + \eta X^{ T }\left( y-X\beta \right) \quad \left(9\right)" /><br/>
+
+### Comparison with Closed-form Solution and Gradient Descent Method 
+
+| |Closed-form Solution|Gradient Descent Method|
+|:-:|:-:|:-:|
+||||
 
 
 
-<br/>
-
-The least square loss of the 
+<img src = "http://latex.codecogs.com/gif.latex?11" />
 
 
 ## III.Experiment
