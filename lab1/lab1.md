@@ -15,7 +15,8 @@ Motivations of the report are listed below:
 ## II.Methods and Theory
 The equation of simple linear regression can be described as:<br/>
 
-$$ y = w^{T}X + b $$
+<img src = "http://latex.codecogs.com/gif.latex?y = w^{T}X + b"/>
+![s](http://latex.codecogs.com/gif.latex?y = w^{T}X + b)
 
 The least square loss of the 
 
