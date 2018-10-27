@@ -2,8 +2,8 @@
 dataset: housing_scale from LIBSVM
 '''
 
-# data_file = '../dataset/housing.txt'
-data_file = '../dataset/housing_scale.txt'
+# data_file_url = '../dataset/housing.txt'
+data_file_url = '../dataset/housing_scale.txt'
 n_features = 13
 
 # --------------------------
@@ -13,39 +13,29 @@ import numpy as np
 from sklearn.datasets import load_svmlight_file
 from sklearn.model_selection import train_test_split
 
-def preprocess():
-    global n_features
+def preprocess(data_file_url, n_features, test_size=0.25):
+    X, y = load_svmlight_file(data_file_url, n_features = n_features)
 
-    X, y = load_svmlight_file(data_file, n_features = n_features)
-
+    y = y.reshape(-1, 1)
     X = X.toarray()
-    # X = np.column_stack((np.ones((X.shape[0],1)), X))
-    X = np.hstack((np.ones((X.shape[0], 1)), X))
-    n_features += 1
+    X = np.hstack((np.ones(y.shape), X))
 
-    y = y.reshape(X.shape[0], 1)
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
     return X_train, y_train, X_test, y_test
 
-def closed_form(X_train, y_train, X_test, y_test):
-    global n_features
+def linear_reg_closed_form(X_train, y_train, X_test, y_test):
+
+    n_features = X_train.shape[1]
 
     # init weight vector
+    # for calculation convenience, w is represented as a row vector
     w = np.zeros(n_features)
     # w = np.random.random(n_features)
-    # w = np.random.normal(size=(n_features))
+    # w = np.random.normal(1, 1, size=(n_features))
 
     loss = least_square_loss(X_train, y_train, w)
 
-    # X_train_T = np.transpose(X_train)
-    X_train_T = X_train.T
-
-    # t = np.dot(X_train_T, X_train)
-    # t = np.mat(t).I
-    # t = t.getA()
-
-    w = np.dot(np.dot((np.mat(np.dot(X_train_T, X_train)).I).getA(), X_train_T), y_train)
+    w = np.dot(np.dot((np.mat(np.dot(X_train.T, X_train)).I).getA(), X_train.T), y_train)[:, 0]
 
     loss_train = least_square_loss(X_train, y_train, w)
     loss_val = least_square_loss(X_test, y_test, w)
@@ -89,20 +79,27 @@ def GD(X_train, y_train, X_test, y_test, epoches=200, learning_rate=0.01, penalt
     return w, loss_train, loss_val
 
 def least_square_loss(X, y, w):
+    '''a helper method calculating the least square loss
+    :param X: the data ndarray, in shape (n_samples * n_features)
+    :param y: the labels, a column vector
+    :param w: a column weight vector, a (n_features, 1) ndarray
+    :return: the least square loss
+    '''
     loss_sum = 0
     n_samples = X.shape[0]
     for i in range(0, n_samples):
-        interval = (np.dot(X[i], w) - y[i])[0]
+        interval = np.dot(X[i], w) - y[i][0]
         loss_sum += interval * interval
     return loss_sum / n_samples
 
-
 def run_closed_form():
-    w, loss, loss_train, loss_val = closed_form(*preprocess())
-    print("w = ", w)
-    print('loss = {:.2f}'.format(loss))
-    print('loss = {:.2f}'.format(loss_train))
-    print('loss = {:.2f}'.format(loss_val))
+    global data_file_url, n_features
+    w, loss, loss_train, loss_val = linear_reg_closed_form(*preprocess(data_file_url, n_features))
+    print('closed-form solution for linear regression')
+    print('%10s = %.6f' % ('loss', loss))
+    print('%10s = %.6f' % ('loss_train',loss_train))
+    print('%10s = %.6f' % ('loss_val', loss_val))
+    # print("the weight vector w : \n", w)
 
 def run_GD():
     X_train, y_train, X_test, y_test = preprocess()
@@ -117,6 +114,6 @@ def run_GD():
 
 
 if __name__ == "__main__":
-    # run_closed_form()
-    run_GD()
+    run_closed_form()
+    # run_GD()
 
