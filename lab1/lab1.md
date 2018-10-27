@@ -20,14 +20,14 @@ Let <img src = "http://latex.codecogs.com/gif.latex?W = \left(b;\omega \right) "
 and then equation (1) can be changed into <br/>
 <img src = "http://latex.codecogs.com/gif.latex?y = W ^T X \quad \eqno{(2)}" /><br/>
 
-The least square loss of simple linear regression is <br/>
+The mean square loss of simple linear regression is <br/>
 <img src = "http://latex.codecogs.com/gif.latex?L_{reg} \left( W  \right) = \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ \left( y_{ i } - W ^{ T }X_{ i } \right) ^{ 2 } } \quad \left(3 \right) "/>
 
 The corresponding gradient with respect to <img src = "http://latex.codecogs.com/gif.latex?W" /> in simple linear regression is
  
 <img src = "http://latex.codecogs.com/gif.latex?\frac { \partial L_{ reg } }{ \partial W  } =-X^{ T }\left( y-XW \right)  \quad \left( 4 \right)" /> 
 
-To minimize the least square loss Lreg, we can use closed-formed solution or the gradient descent method.
+To minimize the mean square loss Lreg, we can use closed-formed solution or the gradient descent method.
 
 ### Closed-formed Solution
 let <img src = "http://latex.codecogs.com/gif.latex?\frac { \partial L_{ reg } }{ \partial W  } = 0" />, we can get
@@ -74,7 +74,7 @@ In this experiment, to perform linear regression we uses [housing_scale](https:/
 #### closed-form solution of Linear Regression
 1. Load the housing_scale dataset and divide it into training set and validation set.
 2. Initialize linear model parameters. Set all parameter into zero, initialize it randomly or with normal distribution.
-3. Select the least square loss as the loss function and calculate least square loss of the training set with the weight vector, denoted as **Loss**.
+3. Select the mean square loss as the loss function and calculate mean square loss of the training set with the weight vector, denoted as **Loss**.
 4. Use the formula of the closed-form solution (5) to get the best weighted vector.
 5. Get the **Loss**, **Loss_train** under the training set and **Loss_val**  by validating under validation set and output them.
 
@@ -176,8 +176,20 @@ For this small dataset with 13 features and 506 samples, the closed-form solutio
 	  loss_val = 18.176029
 
 #### Result of the gradient descent
+With carefully selecting suitable hyper parameters learning_rate and penalty_factor,
+the gradient descent method can minimize the mean square loss in a certain number of epoches
+to a low level.
 
-<img src="./img/lab1_GD.png"/>
+<img src="img/lab1_GD.png"/>
+
+##### Tuning the learning rate
+In the gradient descent method, the learning rate is a important parameter to control the velocity of the gradient descent process, 
+which affects the performance a lot. The following two graphes show the details.
+
+<img src="img/bad learning rate.png"/>
+
+<img src="img/learing_rates.png"/>
+
 
 
 ## IV.Conclusion
@@ -185,11 +197,3 @@ For this small dataset with 13 features and 506 samples, the closed-form solutio
 ## Reference
 1.[linear_regression Wikipidea](https://en.wikipedia.org/wiki/Linear_regression)
 
-
-<img src="http://latex.codecogs.com/gif.latex?\frac{\partial J}{\partial \theta_k^{(j)}}=\sum_{i:r(i,j)=1}{\big((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\big)x_k^{(i)}}+\lambda \theta_k^{(j)}" />
-
-![ss](http://latex.codecogs.com/gif.latex?\\frac{1}{1+sin(x)})
-
-33 <br/>
-
-![s](http://latex.codecogs.com/gif.latex? y = w^{T}X + b)
