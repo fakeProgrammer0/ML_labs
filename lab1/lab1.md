@@ -14,9 +14,13 @@ Motivations of the report are listed below:
 
 ## II.Methods and Theory
 The equation of simple linear regression can be described as:<br/>
+<div align="center">
+    <img src = "http://latex.codecogs.com/gif.latex?y = w^{T}X + b"/>
+<div/>
 
-<img src = "http://latex.codecogs.com/gif.latex?y = w^{T}X + b"/>
-![s](http://latex.codecogs.com/gif.latex?y = w^{T}X + b)
+
+
+<br/>
 
 The least square loss of the 
 
@@ -35,3 +39,11 @@ The least square loss of the
 ## Reference
 1.[linear_regression Wikipidea](https://en.wikipedia.org/wiki/Linear_regression)
 
+
+<img src="http://latex.codecogs.com/gif.latex?\frac{\partial J}{\partial \theta_k^{(j)}}=\sum_{i:r(i,j)=1}{\big((\theta^{(j)})^Tx^{(i)}-y^{(i,j)}\big)x_k^{(i)}}+\lambda \theta_k^{(j)}" />
+
+![ss](http://latex.codecogs.com/gif.latex?\\frac{1}{1+sin(x)})
+
+33 <br/>
+
+![s](http://latex.codecogs.com/gif.latex? y = w^{T}X + b)
