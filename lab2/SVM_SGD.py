@@ -93,6 +93,7 @@ def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learn
 
         # update learning_rate
         learning_rate /= 1 + learning_rate * learning_rate_lambda * (epoch + 1)
+        # learning_rate /= (epoch + 1)
 
         loss_train = hinge_loss(X_train, y_train, w)
         loss_val = hinge_loss(X_val, y_val, w)
@@ -230,9 +231,14 @@ def check_svm():
 
     X_train, y_train = preprocess_svm(train_dataset_url, n_features)
     X_val, y_val = preprocess_svm(val_dataset_url, n_features)
+
     # clf = SVC(gamma='auto')
-    C_pos = np.int(np.sum(y_train==-1) / np.sum(y_train==1))
-    clf = SVC(kernel='linear', class_weight={1:C_pos})
+
+    # C_pos = np.int(np.sum(y_train==-1) / np.sum(y_train==1))
+    # clf = SVC(kernel='linear', class_weight={1:C_pos})
+
+    clf = SVC(kernel='linear', class_weight='balanced')
+
     clf.fit(X_train, y_train)
 
     y_train_predict = clf.predict(X_train)
@@ -245,5 +251,5 @@ def check_svm():
     print('confusion matrix of val\n', confusion_matrix(y_true=y_val, y_pred=y_val_predict), '\n')
 
 if __name__ == "__main__":
-    run_svm()
-    # check_svm()
+    # run_svm()
+    check_svm()
