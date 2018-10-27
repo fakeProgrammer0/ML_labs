@@ -24,7 +24,6 @@ def preprocess(dataset_url, n_features):
 
     # change y from a 1D ndarray into a column vector
     y = y.reshape(-1, 1)
-
     X = X.toarray()
     X = np.hstack((np.ones(y.shape), X))
 
@@ -49,29 +48,30 @@ def sign_col_vector(a, threshold=0, sign_thershold=0):
     return a
 
 def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, learning_rate_lambda=0, penalty_factor_C=0.3):
+    ''''set up a SVM model with soft margin method using mini-batch stochastic gradient descent
+    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones, ie.numpy.ones(n_samples)
+    :param y_train: labels, a (n_samples, 1) ndarray
+    :param X_val: validation data
+    :param y_val: validation labels
+    :param max_epoch: the max epoch for training
+    :param learning_rate: the hyper parameter to control the velocity of gradient descent process, also called step_size
+    :param learning_rate_lambda: the regualar term for adaptively changing learning_rate
+    :param penalty_factor_C: the penalty factor, which emphases the importance of the loss caused by samples in the soft margin
+    :return w: the SVM weight vector
+    :return losses_train, losses_val: the hinge training / validation loss during each epoch
+    :return f1_scores_train, f1_scores_val: the f1_score during each epoch
     '''
 
-    :param X_train:
-    :param y_train:
-    :param X_val:
-    :param y_val:
-    :param batch_size:
-    :param max_epoch:
-    :param learning_rate:
-    :param reg_param:
-    :param penalty_factor_C:
-    :return:
-    '''
     n_train_samples, n_features = X_train.shape
 
     if batch_size > n_train_samples:
         batch_size = n_train_samples
 
     # init weight vector
-    # w = np.ones((n_features, 1))
+    w = np.zeros((n_features, 1))
     # w = np.random.random((n_features, 1))
     # w = np.random.normal(1, 1, (n_features, 1))
-    w = np.random.randint(-1, 2, size=(n_features, 1))
+    # w = np.random.randint(-1, 2, size=(n_features, 1))
 
     losses_train = []
     losses_val = []
@@ -222,7 +222,6 @@ def run_svm():
     plt.show()
 
 from sklearn.svm import SVC
-
 def check_svm():
     def preprocess_svm(dataset_url, n_features):
         X, y = load_svmlight_file(dataset_url, n_features=n_features)

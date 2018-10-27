@@ -25,7 +25,6 @@ Mini-batch Stochastic Gradient Descent updates weight vector using the gradient 
 but each time it select a mini batch of samples to perform updating instead of using all the samples as gradient descent.
 
 <img src="http://latex.codecogs.com/gif.latex?W_t=W_{t-1}-\frac{\eta}{\left|S_k\right|}%20\sum_{i\in\left\|S_k\right\|}\nabla_WL_i\left(W\right)\quad\left(1\right)"/><br/>
-  
 
 ### 2.2. Logistic Regression
 The equation of logistic regression can be described as:<br/>
@@ -62,14 +61,21 @@ After the above induction and regularization, we update our objective funtion to
 </div>
 
 and we can update weight vector using mini-batch gradient descent:<br/>
+
 <img src="http://latex.codecogs.com/gif.latex?W=W-\eta\frac{\partial%20J\left(W\right)}{\partial%20W}=\left(1-\eta\lambda\right)W+\eta\frac{1}{\left|S_k\right|}\sum_{i\in\left|S_k\right|}{\frac{y_iX_i}{1+e^{y_iW^TX_i}}}\quad\left(12\right)"/>
 
 ### 2.3. Support Vector Machine
+Using **hinge loss** and **soft margin** method, the objective function of SVM is
 
+<img src="http://latex.codecogs.com/gif.latex?L(W)=\frac{\left\|W\right\|_2^2}{2}+\frac{C}{N}\sum_{i=1}^{N}{\max\left(0, 1-y_iW^TX_i\right)}\quad\left(13\right)"/> 
 
+where the gradient with respect to W in the objective function is
 
+<img src="http://latex.codecogs.com/gif.latex?g_W\left(X_i\right)=\begin{cases}-y_iX_i\quad1-y_iW^TX_i>0\\0\quad\quad\quad1-y_iW^TX_i\le0\end{cases}\quad\left(14\right)"/>
 
+Using **MSGD** method, the weight vector can be updated in this way:
 
+<img src="http://latex.codecogs.com/gif.latex?W=W-\eta\frac{\partial%20L\left(W\right)}{\partial%20W}=\left(1-\eta\lambda\right)W+\eta\frac{C}{\left|S_k\right|}\sum_{i\in\left|S_k\right|}{g_W\left(X_i\right)}\quad\left(15\right)"/>
 
 ## 3.Experiment
 
@@ -88,6 +94,87 @@ a9a_t is a9a's validation dataset.
 6. Repeat step 3 to 5 for several times, and drawing graph of **L_val**  with the number of iterations.
 
 <!-- 5. Select the appropriate threshold, mark the sample whose predict scores greater than the threshold as positive, on the contrary as negative. Predict under validation set and get the loss **L_val**. -->
+
+#### Core Code of LR
+
+```python
+import numpy as np
+import random
+import math
+def log_reg_MLE_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.3):
+    '''logistic regression using mini-batch stochastic gradient descent with maximum likelihood method
+    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones, ie.numpy.ones(n_samples)
+    :param y_train: labels, a (n_samples, 1) ndarray
+    :param X_val: validation data
+    :param y_val: validation labels
+    :param max_epoch: the max epoch for training
+    :param learning_rate: the hyper parameter to control the velocity of gradient descent process, also called step_size
+    :param reg_param: the L2 regular term factor for the objective function
+
+    :return w: the weight vector, a (n_features + 1, 1) ndarray
+    :return log_LEs_train: the min log likelihood estimate of the training set during each epoch
+    :return log_LEs_val: the min log likelihood estimate of the validation set during each epoch
+    '''
+    n_train_samples, n_features = X_train.shape
+    if n_train_samples < batch_size:
+        batch_size = n_train_samples
+
+    # for calculation convenience, y is represented as a row vector
+    y_train = y_train.reshape(1, -1)[0, :]
+    y_val = y_val.reshape(1, -1)[0, :]
+
+    # init weight vectors
+    # for calculation convenience, w is represented as a row vector
+    w = np.zeros(n_features)
+
+    log_LEs_train = []
+    log_LEs_val = []
+
+    for epoch in range(0, max_epoch):
+
+        temp_sum = np.zeros(w.shape)
+        batch_indice = random.sample(range(0, n_train_samples), batch_size)
+
+        for idx in batch_indice:
+            exp_term = math.exp(-y_train[idx] * np.dot(X_train[idx], w))
+            temp_sum += y_train[idx] * X_train[idx] * exp_term / (1 + exp_term)
+
+        # update w using gradient of the objective function
+        w = (1 - learning_rate * reg_param) * w + learning_rate / batch_size * temp_sum
+
+        log_LE_train = min_log_LE(X_train, y_train, w)
+        log_LEs_train.append(log_LE_train)
+        log_LE_val = min_log_LE(X_val, y_val, w)
+        log_LEs_val.append(log_LE_val)
+        print("epoch {:3d}: loss_train = [{:.6f}]; loss_val = [{:.6f}]".format(epoch, log_LE_train, log_LE_val))
+
+    return w, log_LEs_train, log_LEs_val
+
+def min_log_LE(X, y, w):
+    '''The min log likelihood estimate
+    :param X: the data, a (n_samples, n_features) ndarray
+    :param y: the groundtruth labels, required in a row shape
+    :param w: the weight vector, required in a row shape
+    '''
+    n_samples = X.shape[0]
+    loss_sum = 0
+    for i in range(0, n_samples):
+        loss_sum += np.log(1 + np.exp(-y[i] * (np.dot(X[i], w))))
+
+    return loss_sum / n_samples
+```
+
+### 3.2.2. Support Vector Machine
+1. Load the training set and validation set.
+2. Initialize SVM model parameter with zeros, random numbers or normal distribution.
+3. Determine the size of the batch_size and randomly take some samples,calculate gradient G toward loss function from partial samples using **equation(14)**.
+4. Use the **MSGD** optimization method described in **equation (15)** to update the parametric model.
+5. Predict under validation set and get the loss **L_val** using **hinge loss**.
+6. Repeat step 3 to 5 for several times, and drawing graph of **L_val**  with the number of iterations.
+
+#### Core Code of SVM
+
+
 
 ## 4.Conclusion
 
