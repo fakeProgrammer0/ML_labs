@@ -23,7 +23,36 @@ def preprocess(data_file_url, n_features, test_size=0.25):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
     return X_train, y_train, X_test, y_test
 
-def linear_reg_closed_form(X_train, y_train, X_test, y_test):
+from sklearn.metrics import mean_squared_error
+def linear_reg_closed_form(X_train, y_train, X_val, y_val):
+    '''Use the closed-form solution to solve simple linear regression.
+    Attention: This function may not work because the inverse of a given matrix may not exist.
+
+    :param X_train:
+    :param y_train:
+    :param X_val:
+    :param y_val:
+    :return:
+    '''
+
+    n_features = X_train.shape[1]
+
+    # init weight vector
+    w = np.zeros((n_features, 1))
+    # w = np.random.random((n_features, 1))
+    # w = np.random.normal(1, 1, size=(n_features, 1))
+
+    loss0 = mean_squared_error(y_true=y_train, y_pred=np.dot(X_train, w))
+
+    w = np.dot(np.dot((np.mat(np.dot(X_train.T, X_train)).I).getA(), X_train.T), y_train)
+
+    loss1 = mean_squared_error(y_true=y_train, y_pred=np.dot(X_train, w))
+    loss_train = mean_squared_error(y_train, np.dot(X_train, w))
+    loss_val = mean_squared_error(y_val, np.dot(X_val, w))
+
+    return w, loss0, loss1, loss_train, loss_val
+
+def linear_reg_closed_form2(X_train, y_train, X_test, y_test):
 
     n_features = X_train.shape[1]
 
@@ -94,9 +123,10 @@ def least_square_loss(X, y, w):
 
 def run_closed_form():
     global data_file_url, n_features
-    w, loss, loss_train, loss_val = linear_reg_closed_form(*preprocess(data_file_url, n_features))
+    w, loss0, loss1, loss_train, loss_val = linear_reg_closed_form(*preprocess(data_file_url, n_features))
     print('closed-form solution for linear regression')
-    print('%10s = %.6f' % ('loss', loss))
+    print('%10s = %.6f' % ('loss0', loss0))
+    print('%10s = %.6f' % ('loss1', loss1))
     print('%10s = %.6f' % ('loss_train',loss_train))
     print('%10s = %.6f' % ('loss_val', loss_val))
     # print("the weight vector w : \n", w)

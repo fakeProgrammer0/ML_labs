@@ -56,23 +56,38 @@ Then equation (7) becomes
 
 ### Comparison with Closed-form Solution and Gradient Descent Method 
 
-| |Closed-form Solution|Gradient Descent Method|
+||Closed-form Solution|Gradient Descent Method|
 |:-:|:-:|:-:|
-||||
+|Advantages|Mathematic simplication|Easy to perform|
+|Disadvantages|Cannot always work<br>Calculating the inverse matrix is low efficent and consums a lot of time|
 
-
-
+latex equation
 <img src = "http://latex.codecogs.com/gif.latex?11" />
-
 
 ## III.Experiment
 
+### A.Dataset
+In this experiment, to perform linear regression we uses [housing_scale](https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/regression.html#housing) in [LIBSVM Data](https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/), including 506 samples and each sample has 13 features. The dataset is then divided into train set and validation set.
+
+### B.Experiment Step
+
+#### closed-form solution of Linear Regression
+1. Load the housing_scale dataset and devide it into training set and validation set.
+2. Initialize linear model parameters. Set all parameter into zero, initialize it randomly or with normal distribution.
+3. Select the least square loss as the loss function and calculate least square loss of the training set with the weight vector, denoted as **Loss**.
+4. Use the formula of the closed-form solution (5) to get the best weighted vector.
+5. Get the **Loss**, **Loss_train** under the training set and **Loss_val**  by validating under validation set and output them.
 
 
-    least square loss of closed-form solution for linear regression
-          loss = 598.108654
-    loss_train = 23.689659
-      loss_val = 17.434669
+
+
+>
+    closed-form solution for linear regression
+	     loss0 = 605.933852
+	     loss1 = 23.476533
+	loss_train = 23.476533
+	  loss_val = 18.176029
+
 
 ## IV.Conclusion
 
