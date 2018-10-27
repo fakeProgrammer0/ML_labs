@@ -20,6 +20,7 @@ import random
 
 from sklearn.datasets import load_svmlight_file
 from sklearn.metrics import f1_score
+from sklearn.metrics import confusion_matrix
 
 def preprocess(dataset_url, n_features):
     X, y = load_svmlight_file(dataset_url, n_features=n_features)
@@ -32,7 +33,7 @@ def preprocess(dataset_url, n_features):
 
     return X, y
 
-def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.5, penalty_factor=0.3):
+def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.5, penalty_factor_C=0.3):
     '''
 
     :param X_train:
@@ -42,11 +43,15 @@ def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learn
     :param batch_size:
     :param max_epoch:
     :param learning_rate:
+    :param reg_param:
+    :param penalty_factor_C:
     :return:
     '''
 
     def sign(a, threshold=0):
-        if a > threshold:
+        # the number of positive labels is much smaller than that of the negative labels
+        # it's an imbalance classification problem
+        if a >= threshold:
             return 1
         else:
             return -1
@@ -78,7 +83,10 @@ def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learn
             if 1 - y_train[i][0] * np.dot(X_train[i], w)[0] > 0:
                 temp_sum += -y_train[i][0] * X_train[i].reshape(-1, 1)
 
-        w = (1 - reg_param * learning_rate) * w - learning_rate * penalty_factor / batch_size * temp_sum
+        # w = (1 - reg_param * learning_rate) * w - learning_rate * penalty_factor / batch_size * temp_sum
+
+        # no regularization
+        w = (1 - learning_rate) * w - learning_rate * penalty_factor_C / batch_size * temp_sum
 
         loss_train = hinge_loss(X_train, y_train, w)
         loss_val = hinge_loss(X_val, y_val, w)
@@ -86,8 +94,16 @@ def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learn
         losses_val.append(loss_val)
         print("epoch [%3d]: loss_train = [%.6f]; loss_val = [%.6f]" % (epoch, loss_train, loss_val))
 
-        y_train_predict = sign_col_vector(np.dot(X_train, w)).reshape(n_train_samples)
-        y_val_predict = sign_col_vector(np.dot(X_val, w)).reshape(X_val.shape[0])
+        y_train_predict = np.sign(np.dot(X_train, w))
+        y_train_predict = np.maximum(y_train_predict, np.abs(y_train_predict) * -2 + np.ones(y_train_predict))
+        y_val_predict = np.sign(np.dot(X_val, w))
+        y_val_predict = np.maximum(y_val_predict, np.abs(y_val_predict) * -2 + np.ones(y_val_predict))
+
+        print('confusion matrix of train', confusion_matrix(y_true=y_train, y_pred=y_train_predict))
+        print('confusion matrix of val', confusion_matrix(y_true=y_val, y_pred=y_val_predict))
+
+        # y_train_predict = sign_col_vector(np.dot(X_train, w)).reshape(n_train_samples)
+        # y_val_predict = sign_col_vector(np.dot(X_val, w)).reshape(X_val.shape[0])
         f1_train = f1_score(y_true=y_train, y_pred=y_train_predict)
         f1_val = f1_score(y_true=y_val, y_pred=y_val_predict)
         f1_scores_train.append(f1_train)
@@ -103,7 +119,7 @@ def hinge_loss(X, y, w):
 def run_svm():
     X_train, y_train = preprocess(train_dataset_url, n_features)
     X_val, y_val = preprocess(val_dataset_url, n_features)
-    w, losses_train, losses_val, f1_scores_train, f1_scores_val = svm_SGD(X_train, y_train, X_val, y_val, max_epoch=200, batch_size=100, learning_rate=0.1)
+    w, losses_train, losses_val, f1_scores_train, f1_scores_val = svm_SGD(X_train, y_train, X_val, y_val, max_epoch=200, batch_size=100, learning_rate=0.05, penalty_factor_C=0.5)
 
     plt.figure(figsize=(16, 9))
     plt.plot(losses_train, '-', color='r', label='losses_train')
