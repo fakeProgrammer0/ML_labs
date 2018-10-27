@@ -86,14 +86,11 @@ def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learn
             if 1 - y_train[i][0] * np.dot(X_train[i], w)[0] > 0:
                 temp_sum += -y_train[i][0] * X_train[i].reshape(-1, 1)
 
-        # w = (1 - reg_param * learning_rate) * w - learning_rate * penalty_factor / batch_size * temp_sum
-
         # no regularization
         w = (1 - learning_rate) * w - learning_rate * penalty_factor_C / batch_size * temp_sum
 
-        # update learning_rate
+        # update learning_rate if needed
         learning_rate /= 1 + learning_rate * learning_rate_lambda * (epoch + 1)
-        # learning_rate /= (epoch + 1)
 
         loss_train = hinge_loss(X_train, y_train, w)
         loss_val = hinge_loss(X_val, y_val, w)
@@ -101,13 +98,8 @@ def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learn
         losses_val.append(loss_val)
         print("epoch [%3d]: loss_train = [%.6f]; loss_val = [%.6f]" % (epoch, loss_train, loss_val))
 
-        y_train_predict = np.sign(np.dot(X_train, w))
-        y_train_predict = np.maximum(y_train_predict, np.abs(y_train_predict) * -2 + 1) # change 0 to 1
-        y_val_predict = np.sign(np.dot(X_val, w))
-        y_val_predict = np.maximum(y_val_predict, np.abs(y_val_predict) * -2 + np.ones(y_val_predict.shape))
-
-        # y_train_predict = sign_col_vector(np.dot(X_train, w)).reshape(n_train_samples)
-        # y_val_predict = sign_col_vector(np.dot(X_val, w)).reshape(X_val.shape[0])
+        y_train_predict = sign_col_vector(np.dot(X_train, w), threshold=0, sign_thershold=1).reshape(n_train_samples)
+        y_val_predict = sign_col_vector(np.dot(X_val, w), threshold=0, sign_thershold=1).reshape(X_val.shape[0])
         f1_train = f1_score(y_true=y_train, y_pred=y_train_predict)
         f1_val = f1_score(y_true=y_val, y_pred=y_val_predict)
         f1_scores_train.append(f1_train)
@@ -200,8 +192,8 @@ def hinge_loss(X, y, w):
 def run_svm():
     X_train, y_train = preprocess(train_dataset_url, n_features)
     X_val, y_val = preprocess(val_dataset_url, n_features)
-    # w, losses_train, losses_val, f1_scores_train, f1_scores_val = svm_SGD(X_train, y_train, X_val, y_val, max_epoch=200, batch_size=20, learning_rate=0.05, penalty_factor_C=5)
-    w, losses_train, losses_val, f1_scores_train, f1_scores_val = svm_SGD2(X_train, y_train, X_val, y_val, max_epoch=200, batch_size=512, learning_rate=0.001, pos_C=2.4, neg_C=0.8)
+    w, losses_train, losses_val, f1_scores_train, f1_scores_val = svm_SGD(X_train, y_train, X_val, y_val, max_epoch=200, batch_size=512, learning_rate=0.001, penalty_factor_C=1)
+    # w, losses_train, losses_val, f1_scores_train, f1_scores_val = svm_SGD2(X_train, y_train, X_val, y_val, max_epoch=200, batch_size=512, learning_rate=0.001, pos_C=2.4, neg_C=0.8)
 
     plt.figure(figsize=(16, 9))
     plt.plot(losses_train, '-', color='r', label='losses_train')
@@ -250,5 +242,5 @@ def check_svm():
     print('confusion matrix of val\n', confusion_matrix(y_true=y_val, y_pred=y_val_predict), '\n')
 
 if __name__ == "__main__":
-    # run_svm()
-    check_svm()
+    run_svm()
+    # check_svm()

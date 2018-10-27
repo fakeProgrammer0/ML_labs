@@ -174,6 +174,94 @@ def min_log_LE(X, y, w):
 
 #### Core Code of SVM
 
+```python
+import numpy as np
+import random
+from sklearn.metrics import f1_score
+from sklearn.metrics import confusion_matrix
+
+def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, learning_rate_lambda=0, penalty_factor_C=0.3):
+    ''''set up a SVM model with soft margin method using mini-batch stochastic gradient descent
+    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones, ie.numpy.ones(n_samples)
+    :param y_train: labels, a (n_samples, 1) ndarray
+    :param X_val: validation data
+    :param y_val: validation labels
+    :param max_epoch: the max epoch for training
+    :param learning_rate: the hyper parameter to control the velocity of gradient descent process, also called step_size
+    :param learning_rate_lambda: the regualar term for adaptively changing learning_rate
+    :param penalty_factor_C: the penalty factor, which emphases the importance of the loss caused by samples in the soft margin
+    :return w: the SVM weight vector
+    :return losses_train, losses_val: the hinge training / validation loss during each epoch
+    :return f1_scores_train, f1_scores_val: the f1_score during each epoch
+    '''
+    def sign(a, threshold=0, sign_thershold=0):
+        # the number of positive labels is much smaller than that of the negative labels
+        # it's an imbalance classification problem
+        if a > threshold:
+            return 1
+        elif a == threshold:
+            return sign_thershold
+        else:
+            return -1
+
+    import copy
+    def sign_col_vector(a, threshold=0, sign_thershold=0):
+        a = copy.deepcopy(a)
+        n = a.shape[0]
+        for i in range(0, n):
+            a[i][0] = sign(a[i][0], threshold, sign_thershold)
+        return a
+
+
+    n_train_samples, n_features = X_train.shape
+
+    if batch_size > n_train_samples:
+        batch_size = n_train_samples
+
+    # init weight vector
+    w = np.zeros((n_features, 1))
+    # w = np.random.random((n_features, 1))
+    # w = np.random.normal(1, 1, (n_features, 1))
+    # w = np.random.randint(-1, 2, size=(n_features, 1))
+
+    losses_train = []
+    losses_val = []
+
+    f1_scores_train = []
+    f1_scores_val = []
+
+    for epoch in range(0, max_epoch):
+        sample_indice = random.sample(range(0, n_train_samples), batch_size)
+        temp_sum = np.zeros(w.shape)
+        for i in sample_indice:
+            if 1 - y_train[i][0] * np.dot(X_train[i], w)[0] > 0:
+                temp_sum += -y_train[i][0] * X_train[i].reshape(-1, 1)
+
+        # no regularization
+        w = (1 - learning_rate) * w - learning_rate * penalty_factor_C / batch_size * temp_sum
+
+        # update learning_rate if needed
+        learning_rate /= 1 + learning_rate * learning_rate_lambda * (epoch + 1)
+
+        loss_train = hinge_loss(X_train, y_train, w)
+        loss_val = hinge_loss(X_val, y_val, w)
+        losses_train.append(loss_train)
+        losses_val.append(loss_val)
+        print("epoch [%3d]: loss_train = [%.6f]; loss_val = [%.6f]" % (epoch, loss_train, loss_val))
+
+        y_train_predict = sign_col_vector(np.dot(X_train, w), threshold=0, sign_thershold=1).reshape(n_train_samples)
+        y_val_predict = sign_col_vector(np.dot(X_val, w), threshold=0, sign_thershold=1).reshape(X_val.shape[0])
+        f1_train = f1_score(y_true=y_train, y_pred=y_train_predict)
+        f1_val = f1_score(y_true=y_val, y_pred=y_val_predict)
+        f1_scores_train.append(f1_train)
+        f1_scores_val.append(f1_val)
+
+        print("epoch [%3d]: f1_train = [%.6f]; f1_val = [%.6f]" % (epoch, f1_train, f1_val))
+        print('confusion matrix of train\n', confusion_matrix(y_true=y_train, y_pred=y_train_predict))
+        print('confusion matrix of val\n', confusion_matrix(y_true=y_val, y_pred=y_val_predict), '\n')
+
+    return w, losses_train, losses_val, f1_scores_train, f1_scores_val
+```
 
 
 ## 4.Conclusion
