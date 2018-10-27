@@ -100,7 +100,7 @@ def log_reg_MLE_MSGD2(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=
     :param reg_param:
     :return:
     '''
-    n_train_samples = X_train.shape, n_features
+    n_train_samples, n_features = X_train.shape
     if n_train_samples < batch_size:
         batch_size = n_train_samples
 
@@ -109,9 +109,9 @@ def log_reg_MLE_MSGD2(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=
     y_val = y_val.reshape(1, -1)[0, :]
 
     # init weight vectors
-    # w = np.zeros((n_features + 1, 1))
+    # w = np.zeros((n_features, 1))
     # for calculation convenience, w is represented as a row vector
-    w = np.zeros(n_features + 1)
+    w = np.zeros(n_features)
 
     n_train_samples = X_train.shape[0]
     if n_train_samples < batch_size:
@@ -122,11 +122,12 @@ def log_reg_MLE_MSGD2(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=
 
     for epoch in range(0, max_epoch):
 
-        temp_sum = np.zeros(n_features + 1)
+        temp_sum = np.zeros(w.shape)
         batch_indice = random.sample(range(0, n_train_samples), batch_size)
 
         for idx in batch_indice:
-            temp_sum += y_train[idx] * X_train[idx] / (1 + math.exp(y_train[idx] * np.dot(X_train[idx], w)))
+            exp_term = math.exp(-y_train[idx] * np.dot(X_train[idx], w))
+            temp_sum += y_train[idx] * X_train[idx] * exp_term / (1 + exp_term)
 
         # update w using gradient of the objective function
         w = (1 - learning_rate * reg_param) * w + learning_rate / batch_size * temp_sum
@@ -145,7 +146,6 @@ def log_reg_MLE_MSGD2(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=
         loss_val = loss_Ein(X_val, y_val, w)
         losses_val.append(loss_val)
 
-        # print(f"epoch {epoch}: loss_train = {loss_train}; loss_val = {loss_val}")
         print("epoch {:3d}: loss_train = [{:.6f}]; loss_val = [{:.6f}]".format(epoch, loss_train, loss_val))
 
     return w, losses_train, losses_val

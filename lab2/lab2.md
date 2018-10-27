@@ -85,7 +85,7 @@ a9a_t is a9a's validation dataset.
 3. Determine the size of the batch_size and randomly take some samples,calculate gradient G toward loss function from partial samples.
 4. Use the **MSGD** optimization method described in **equation (12)** to update the parametric model.
 5. Predict under validation set and get the loss **L_val** using **equation (11)**.
-6. Repeat step 3 to 5 for several times, and drawing graph of  with the number of iterations.
+6. Repeat step 3 to 5 for several times, and drawing graph of **L_val**  with the number of iterations.
 
 <!-- 5. Select the appropriate threshold, mark the sample whose predict scores greater than the threshold as positive, on the contrary as negative. Predict under validation set and get the loss **L_val**. -->
 
