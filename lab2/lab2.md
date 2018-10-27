@@ -212,6 +212,8 @@ def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learn
             a[i][0] = sign(a[i][0], threshold, sign_thershold)
         return a
 
+    def hinge_loss(X, y, w):
+        return np.average(np.maximum(np.ones(y.shape) - y * np.dot(X, w), np.zeros(y.shape)), axis=0)[0]
 
     n_train_samples, n_features = X_train.shape
 
@@ -262,6 +264,9 @@ def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learn
 
     return w, losses_train, losses_val, f1_scores_train, f1_scores_val
 ```
+
+### 3.3. Experiment Results
+
 
 
 ## 4.Conclusion
