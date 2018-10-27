@@ -109,7 +109,7 @@ import matplotlib.pyplot as plt
 
 def run_GD():
     max_epoch = 500
-    learning_rate = 0.001098
+    learning_rate = 0.0005
     penalty_factor = 0.5
 
     X_train, y_train, X_val, y_val = preprocess(dataset_file_url, n_features)
@@ -129,11 +129,8 @@ def estimate_learning_rate_GD():
     max_epoch = 50
     penalty_factor = 10
 
-    # learning_rates = [0.00001, 0.00005, 0.0001, 0.0005, 0.001]
-    # colors = ['c', 'g', 'm', 'k', 'r']
-
-    learning_rates = [0.0005, 0.0011]
-    colors = ['k', 'r']
+    learning_rates = [0.00001, 0.00005, 0.0001, 0.0005, 0.001]
+    colors = ['c', 'g', 'm', 'k', 'r']
 
     plt.figure(figsize=(16, 9))
     for learning_rate, color in zip(learning_rates, colors):
@@ -144,7 +141,7 @@ def estimate_learning_rate_GD():
 
     plt.xlabel('epoch')
     plt.ylabel('mean square loss')
-    plt.title(f'bad learning rate\npenlaty_factor: {penalty_factor}')
+    plt.title(f'estimate learning rates\npenlaty_factor: {penalty_factor}')
     plt.legend()
     plt.show()
 

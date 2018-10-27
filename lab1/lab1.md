@@ -188,7 +188,7 @@ which affects the performance a lot. The following two graphes show the details.
 
 <img src="img/bad learning rate.png"/>
 
-<img src="img/learing_rates.png"/>
+<img src="img/learning_rates.png"/>
 
 
 
