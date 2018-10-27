@@ -16,26 +16,26 @@ Motivations of the report are listed below:
 The equation of simple linear regression can be described as:<br/>
 <img src = "http://latex.codecogs.com/gif.latex?y = w^{T}X + b \quad \eqno{(1)}"/><br/>
 
-Let <img src = "http://latex.codecogs.com/gif.latex?\beta = \left(b;\omega \right) " />
+Let <img src = "http://latex.codecogs.com/gif.latex?W = \left(b;\omega \right) " />
 and then equation (1) can be changed into <br/>
-<img src = "http://latex.codecogs.com/gif.latex?y = \beta ^T X \quad \eqno{(2)}" /><br/>
+<img src = "http://latex.codecogs.com/gif.latex?y = W ^T X \quad \eqno{(2)}" /><br/>
 
 The least square loss of simple linear regression is <br/>
-<img src = "http://latex.codecogs.com/gif.latex?L_{reg} \left( \beta  \right) = \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ \left( y_{ i } - \beta ^{ T }X_{ i } \right) ^{ 2 } } \quad \left(3 \right) "/>
+<img src = "http://latex.codecogs.com/gif.latex?L_{reg} \left( W  \right) = \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ \left( y_{ i } - W ^{ T }X_{ i } \right) ^{ 2 } } \quad \left(3 \right) "/>
 
-The corresponding gradient with respect to <img src = "http://latex.codecogs.com/gif.latex?\beta" /> in simple linear regression is
+The corresponding gradient with respect to <img src = "http://latex.codecogs.com/gif.latex?W" /> in simple linear regression is
  
-<img src = "http://latex.codecogs.com/gif.latex?\frac { \partial L_{ reg } }{ \partial \beta  } =-X^{ T }\left( y-X\beta \right)  \quad \left( 4 \right)" /> 
+<img src = "http://latex.codecogs.com/gif.latex?\frac { \partial L_{ reg } }{ \partial W  } =-X^{ T }\left( y-XW \right)  \quad \left( 4 \right)" /> 
 
 To minimize the least square loss Lreg, we can use closed-formed solution or the gradient descent method.
 
 ### Closed-formed Solution
-let <img src = "http://latex.codecogs.com/gif.latex?\frac { \partial L_{ reg } }{ \partial \beta  } = 0" />, we can get
+let <img src = "http://latex.codecogs.com/gif.latex?\frac { \partial L_{ reg } }{ \partial W  } = 0" />, we can get
 
-<img src = "http://latex.codecogs.com/gif.latex?\beta ^{ * }=\left( X^{ T }X \right) ^{ -1 }X^{ T }y \quad \left(5 \right)" />
+<img src = "http://latex.codecogs.com/gif.latex?W ^{ * }=\left( X^{ T }X \right) ^{ -1 }X^{ T }y \quad \left(5 \right)" />
 
 if the matrix <img src = "http://latex.codecogs.com/gif.latex?X^{T}X" /> is a full-rank matrix or a positive definite matrix, then its **inverse matrix** exists.
-Thus we can use the equation (5) to calculate the best weight vector <img src = "http://latex.codecogs.com/gif.latex?\beta^*" />.
+Thus we can use the equation (5) to calculate the best weight vector <img src = "http://latex.codecogs.com/gif.latex?W^*" />.
 
 ### Gradient Descent Method
 However, in most cases the inverse matrix of a given matrix may not exist.
@@ -43,16 +43,16 @@ So the closed-form solution can't always work. Gracefully, gradient descent can 
 
 **Gradient Descent (GD)** tries to minimize the loss function by updating weight vector to minimize the learning rate <img src="http://latex.codecogs.com/gif.latex?\eta" /> muplitying the correspondent gradient with respect to weighted vector in the loss function.
 
-<img src = "http://latex.codecogs.com/gif.latex?\beta = \beta - \eta\frac{\partial L_{reg}}{\partial \beta} \quad \left(6\right)" />
+<img src = "http://latex.codecogs.com/gif.latex?W = W - \eta\frac{\partial L_{reg}}{\partial W} \quad \left(6\right)" />
 
 In our linear regression model, it looks like this:
 
-<img src = "http://latex.codecogs.com/gif.latex?\beta = \beta + \eta X^{ T }\left( y-X\beta \right) \quad \left(7\right)" />
+<img src = "http://latex.codecogs.com/gif.latex?W = W + \eta X^{ T }\left( y-XW \right) \quad \left(7\right)" />
 
 With regularization, the loss function (3) can be changed into the objective function
-<br/><img src = "http://latex.codecogs.com/gif.latex?L_{reg} \left( \beta  \right) = \frac{\lambda}{2}\left\| \beta \right\|_{2}^{2} + \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ \left( y_{ i } - \beta ^{ T }X_{ i } \right) ^{ 2 } } \quad \left(8 \right) "/><br/>
+<br/><img src = "http://latex.codecogs.com/gif.latex?L_{reg} \left( W  \right) = \frac{\lambda}{2}\left\| W \right\|_{2}^{2} + \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ \left( y_{ i } - W ^{ T }X_{ i } \right) ^{ 2 } } \quad \left(8 \right) "/><br/>
 Then equation (7) becomes
-<br/><img src = "http://latex.codecogs.com/gif.latex?\beta = \left(1-\lambda\eta \right) \beta + \eta X^{ T }\left( y-X\beta \right) \quad \left(9\right)" /><br/>
+<br/><img src = "http://latex.codecogs.com/gif.latex?W = \left(1-\lambda\eta \right) W + \eta X^{ T }\left( y-XW \right) \quad \left(9\right)" /><br/>
 
 ### Comparison with Closed-form Solution and Gradient Descent Method 
 
@@ -78,7 +78,7 @@ In this experiment, to perform linear regression we uses [housing_scale](https:/
 4. Use the formula of the closed-form solution (5) to get the best weighted vector.
 5. Get the **Loss**, **Loss_train** under the training set and **Loss_val**  by validating under validation set and output them.
 
-#### Core Code of closed-form solution
+##### Core Code of closed-form solution
 
 ```python
 import numpy as np
@@ -120,10 +120,53 @@ def linear_reg_closed_form(X_train, y_train, X_val, y_val):
 6. Get the loss **loss_train** under the training set and **loss_val** by validating under validation set.
 7. Repeate step 4 to 6 for several times, and use the values of **loss_train** and **loss_val** to plot the loss graph. 
 
+##### Core Code of Gradient Descent
+
+```python
+import numpy as np
+from sklearn.metrics import mean_squared_error
+def linear_reg_GD(X_train, y_train, X_val, y_val, max_epoch=200, learning_rate=0.01, penalty_factor = 0.5):
+    '''Use the gradient descent method to solve simple linear regression.
+    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones, ie.numpy.ones(n_samples)
+    :param y_train: labels, a (n_samples, 1) ndarray
+    :param X_val: validation data
+    :param y_val: validation labels
+    :param max_epoch: the max epoch for training
+    :param learning_rate: the hyper parameter to control the velocity of gradient descent process, also called step_size
+    :param penalty_factor: the L2 regular term factor for the objective function
+
+    :return w: the weight vector, a (n_features + 1, 1) ndarray
+    :return losses_train: the mean square loss of the training set during each epoch
+    :return losses_val: the mean square loss of the validation set during each epoch
+    '''
+
+    n_features = X_train.shape[1]
+    # init weight vector
+    w = np.zeros((n_features, 1))
+    # w = np.random.random(n_features)
+    # w = np.random.normal(1, 1, size=(n_features, 1))
+
+    losses_train = []
+    losses_val = []
+
+    for epoch in range(0, max_epoch):
+        d = -penalty_factor * w + np.dot(X_train.T, (y_train - np.dot(X_train, w)))
+        w += learning_rate * d
+
+        loss_train = mean_squared_error(y_true=y_train, y_pred=np.dot(X_train, w))
+        loss_val = mean_squared_error(y_true=y_val, y_pred=np.dot(X_val, w))
+        losses_train.append(loss_train)
+        losses_val.append(loss_val)
+
+        print("at epoch [{:4d}]: loss_train = [{:.6f}; loss_val = [{:.6f}]".format(epoch, loss_train, loss_val))
+
+    return w, losses_train, losses_val
+```
+
 ### C.Experiment Result
 
-
-
+#### Ouput Results of the closed-form solution 
+For this small dataset with 13 features and 506 samples, the closed-form solution can easily and quickly calculate the desired weight vector and generate output results.
 
 >
     closed-form solution for linear regression
@@ -131,6 +174,10 @@ def linear_reg_closed_form(X_train, y_train, X_val, y_val):
 	     loss1 = 23.476533
 	loss_train = 23.476533
 	  loss_val = 18.176029
+
+#### Result of the gradient descent
+
+<img src="./img/lab1_GD.png"/>
 
 
 ## IV.Conclusion
