@@ -84,6 +84,10 @@ def linear_reg_GD(X_train, y_train, X_val, y_val, max_epoch=200, learning_rate=0
         d = -penalty_factor * w + np.dot(X_train.T, (y_train - np.dot(X_train, w)))
         w += learning_rate * d
 
+        # update learning rate if necessary
+        # learning_rate /= (epoch + 1) # emmm...no so good
+        # learning_rate /= 1 + learning_rate * penalty_factor * (epoch + 1)
+
         loss_train = mean_squared_error(y_true=y_train, y_pred=np.dot(X_train, w))
         loss_val = mean_squared_error(y_true=y_val, y_pred=np.dot(X_val, w))
         losses_train.append(loss_train)
@@ -108,7 +112,7 @@ def run_closed_form():
 import matplotlib.pyplot as plt
 
 def run_GD():
-    max_epoch = 500
+    max_epoch = 200
     learning_rate = 0.0005
     penalty_factor = 0.5
 
@@ -147,5 +151,5 @@ def estimate_learning_rate_GD():
 
 if __name__ == "__main__":
     # run_closed_form()
-    # run_GD()
-    estimate_learning_rate_GD()
+    run_GD()
+    # estimate_learning_rate_GD()

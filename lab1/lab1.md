@@ -5,8 +5,8 @@ In this report, we will solve linear regression using both the closed-form solut
 After that, we will further learn to tune some parameters such as the learing rate to optimizate our gradient descent model.  
 
 ## I.Introduction
-In statistics, linear regression is a linear approach to modelling the relationship between a scalar response (or dependent variable) and one or more explanatory variables (or independent variables). The case of one explanatory variable is called simple linear regression.\[[1](linear_regression Wikipidea)\]
-
+In statistics, linear regression is a linear approach to modelling the relationship between a scalar response (or dependent variable) and one or more explanatory variables (or independent variables). The case of one explanatory variable is called simple linear regression.[2]
+Closed-form solution and gradient descent are two methods for solving simple linear regression.
 Motivations of the report are listed below:
 * Further understand of linear regression ，closed-form solution and Stochastic gradient descent.
 * Conduct some experiments under small scale dataset.
@@ -14,25 +14,25 @@ Motivations of the report are listed below:
 
 ## II.Methods and Theory
 The equation of simple linear regression can be described as:<br/>
-<img src = "http://latex.codecogs.com/gif.latex?y = w^{T}X + b \quad \eqno{(1)}"/><br/>
+<img src = "http://latex.codecogs.com/gif.latex?y%20=%20w^{T}X%20+%20b%20\quad%20\eqno{(1)}"/><br/>
 
-Let <img src = "http://latex.codecogs.com/gif.latex?W = \left(b;\omega \right) " />
+Let <img src = "http://latex.codecogs.com/gif.latex?W%20=%20\left(b;\omega%20\right)" />
 and then equation (1) can be changed into <br/>
-<img src = "http://latex.codecogs.com/gif.latex?y = W ^T X \quad \eqno{(2)}" /><br/>
+<img src = "http://latex.codecogs.com/gif.latex?y%20=%20W%20^T%20X%20\quad%20\eqno{(2)}" /><br/>
 
 The mean square loss of simple linear regression is <br/>
-<img src = "http://latex.codecogs.com/gif.latex?L_{reg} \left( W  \right) = \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ \left( y_{ i } - W ^{ T }X_{ i } \right) ^{ 2 } } \quad \left(3 \right) "/>
+<img src = "http://latex.codecogs.com/gif.latex?L_{reg}%20\left(%20W%20\right)%20=%20\frac%20{%201%20}{%20n%20}%20\sum%20_{%20i=1%20}^{%20n%20}{%20\left(%20y_{%20i%20}%20-%20W%20^{%20T%20}X_{%20i%20}%20\right)%20^{%202%20}%20}%20\quad%20\left(3%20\right)"/>
 
 The corresponding gradient with respect to <img src = "http://latex.codecogs.com/gif.latex?W" /> in simple linear regression is
  
-<img src = "http://latex.codecogs.com/gif.latex?\frac { \partial L_{ reg } }{ \partial W  } =-X^{ T }\left( y-XW \right)  \quad \left( 4 \right)" /> 
+<img src = "http://latex.codecogs.com/gif.latex?\frac%20{%20\partial%20L_{%20reg%20}%20}{%20\partial%20W%20}%20=-X^{%20T%20}\left(%20y-XW%20\right)%20\quad%20\left(%204%20\right)" /> 
 
 To minimize the mean square loss Lreg, we can use closed-formed solution or the gradient descent method.
 
 ### Closed-formed Solution
-let <img src = "http://latex.codecogs.com/gif.latex?\frac { \partial L_{ reg } }{ \partial W  } = 0" />, we can get
+let <img src = "http://latex.codecogs.com/gif.latex?\frac%20{%20\partial%20L_{%20reg%20}%20}{%20\partial%20W%20}%20=%200" />, we can get
 
-<img src = "http://latex.codecogs.com/gif.latex?W ^{ * }=\left( X^{ T }X \right) ^{ -1 }X^{ T }y \quad \left(5 \right)" />
+<img src = "http://latex.codecogs.com/gif.latex?W%20^{%20*%20}=\left(%20X^{%20T%20}X%20\right)%20^{%20-1%20}X^{%20T%20}y%20\quad%20\left(5%20\right)" />
 
 if the matrix <img src = "http://latex.codecogs.com/gif.latex?X^{T}X" /> is a full-rank matrix or a positive definite matrix, then its **inverse matrix** exists.
 Thus we can use the equation (5) to calculate the best weight vector <img src = "http://latex.codecogs.com/gif.latex?W^*" />.
@@ -43,16 +43,16 @@ So the closed-form solution can't always work. Gracefully, gradient descent can 
 
 **Gradient Descent (GD)** tries to minimize the loss function by updating weight vector to minimize the learning rate <img src="http://latex.codecogs.com/gif.latex?\eta" /> muplitying the correspondent gradient with respect to weighted vector in the loss function.
 
-<img src = "http://latex.codecogs.com/gif.latex?W = W - \eta\frac{\partial L_{reg}}{\partial W} \quad \left(6\right)" />
+<img src = "http://latex.codecogs.com/gif.latex?W=W-\eta\frac{\partial%20L_{reg}}{\partial%20W}\quad\left(6\right)" />
 
 In our linear regression model, it looks like this:
 
-<img src = "http://latex.codecogs.com/gif.latex?W = W + \eta X^{ T }\left( y-XW \right) \quad \left(7\right)" />
+<img src = "http://latex.codecogs.com/gif.latex?W%20=%20W%20+%20\eta%20X^{%20T%20}\left(%20y-XW%20\right)%20\quad%20\left(7\right)" />
 
 With regularization, the loss function (3) can be changed into the objective function
-<br/><img src = "http://latex.codecogs.com/gif.latex?L_{reg} \left( W  \right) = \frac{\lambda}{2}\left\| W \right\|_{2}^{2} + \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ \left( y_{ i } - W ^{ T }X_{ i } \right) ^{ 2 } } \quad \left(8 \right) "/><br/>
+<br/><img src = "http://latex.codecogs.com/gif.latex?L_{reg}%20\left(%20W%20\right)%20=%20\frac{\lambda}{2}\left\|%20W%20\right\|_{2}^{2}%20+%20\frac%20{%201%20}{%20n%20}%20\sum%20_{%20i=1%20}^{%20n%20}{%20\left(%20y_{%20i%20}%20-%20W%20^{%20T%20}X_{%20i%20}%20\right)%20^{%202%20}%20}%20\quad%20\left(8%20\right)"/><br/>
 Then equation (7) becomes
-<br/><img src = "http://latex.codecogs.com/gif.latex?W = \left(1-\lambda\eta \right) W + \eta X^{ T }\left( y-XW \right) \quad \left(9\right)" /><br/>
+<br/><img src = "http://latex.codecogs.com/gif.latex?W%20=%20\left(1-\lambda\eta%20\right)%20W%20+%20\eta%20X^{%20T%20}\left(%20y-XW%20\right)%20\quad%20\left(9\right)" /><br/>
 
 ### Comparison with Closed-form Solution and Gradient Descent Method 
 
@@ -60,9 +60,6 @@ Then equation (7) becomes
 |:-:|:-:|:-:|
 |Advantages|Mathematic simplication|Easy to perform|
 |Disadvantages|Cannot always work<br>Calculating the inverse matrix is low efficent and consums a lot of time|
-
-latex equation
-<img src = "http://latex.codecogs.com/gif.latex?11" />
 
 ## III.Experiment
 
@@ -191,16 +188,15 @@ which has a large impact on convergence. The following two graphes show that:
 <img src="img/bad learning rate.png"/>
 <img src="img/learning_rates.png"/>
 
-Adaptive learning rate:
-Set larger learning rate at the begining
-Use relatively smaller learning rate in the later epochs
-Decrease the learning rate: <img src="http://latex.codecogs.com/gif.latex?\eta%20_{t+1}%20=%20\frac{\eta}{t+1}"/>
-
-![](http://latex.codecogs.com/gif.latex?\eta%20_{t+1}%20=%20\frac{\eta}{t+1})
-
-![]("http://latex.codecogs.com/gif.latex?W_t = W_{t-1} + \\eta D")
+We can use the adaptive learning rate:
+1. Set larger learning rate at the begining
+2. Use relatively smaller learning rate in the later epochs
+3. Decrease the learning rate: <img src="http://latex.codecogs.com/gif.latex?\eta%20_{t+1}%20=%20\frac{\eta}{t+1}"/>
 
 ## IV.Conclusion
+In this report, we manage to perform a simple linear regression simulation based on a small dataset, 
+using both the closed-form solution and the gradient descent method. Then we do serveral simple experiments to estimate
+their performance and in addition to learn to tune the hyper parameter learning rate.  
 
 ## Reference
 1. Basic Concepts about Machine Learning: Regression and Optimization, Prof. Mingkui Tan
