@@ -48,7 +48,7 @@ def sign_col_vector(a, threshold=0, sign_thershold=0):
         a[i][0] = sign(a[i][0], threshold, sign_thershold)
     return a
 
-def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.5, penalty_factor_C=0.3):
+def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, learning_rate_lambda=0, penalty_factor_C=0.3):
     '''
 
     :param X_train:
@@ -91,6 +91,9 @@ def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learn
         # no regularization
         w = (1 - learning_rate) * w - learning_rate * penalty_factor_C / batch_size * temp_sum
 
+        # update learning_rate
+        learning_rate /= 1 + learning_rate * learning_rate_lambda * (epoch + 1)
+
         loss_train = hinge_loss(X_train, y_train, w)
         loss_val = hinge_loss(X_val, y_val, w)
         losses_train.append(loss_train)
@@ -115,7 +118,7 @@ def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learn
 
     return w, losses_train, losses_val, f1_scores_train, f1_scores_val
 
-def svm_SGD2(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.5, pos_C=1, neg_C=1):
+def svm_SGD2(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, learning_rate_lambda=0, pos_C=1, neg_C=1):
 
     n_train_samples, n_features = X_train.shape
 
@@ -123,11 +126,12 @@ def svm_SGD2(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, lear
         batch_size = n_train_samples
 
     # init weight vector
-    w = np.zeros((n_features, 1))
+    # w = np.zeros((n_features, 1))
     # w = np.ones((n_features, 1))
     # w = np.random.random((n_features, 1))
     # w = np.random.normal(1, 1, (n_features, 1))
     # w = np.random.randint(-1, 2, size=(n_features, 1))
+    w = np.random.randint(-100, 101, size=(n_features, 1)) / 100
 
     losses_train = []
     losses_val = []
@@ -151,13 +155,18 @@ def svm_SGD2(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, lear
                     temp_neg_sum += -y_train[i][0] * X_train[i].reshape(-1, 1)
                     neg_sample_cnt += 1
 
-        if pos_sample_cnt != 0:
-            temp_pos_sum = pos_C / pos_sample_cnt * temp_pos_sum
-        if neg_sample_cnt != 0:
-            temp_neg_sum = neg_C / neg_sample_cnt * temp_neg_sum
+        # if pos_sample_cnt != 0:
+        #     temp_pos_sum = pos_C / pos_sample_cnt * temp_pos_sum
+        # if neg_sample_cnt != 0:
+        #     temp_neg_sum = neg_C / neg_sample_cnt * temp_neg_sum
 
         # no regularization
-        w = (1 - learning_rate) * w - learning_rate * (temp_pos_sum + temp_neg_sum)
+        # w = (1 - learning_rate) * w - learning_rate * (temp_pos_sum + temp_neg_sum)
+
+        w = (1 - learning_rate) * w - learning_rate * (pos_C * temp_pos_sum + neg_C * temp_neg_sum)
+
+        # update learning_rate
+        learning_rate /= 1 + learning_rate * learning_rate_lambda * (epoch + 1)
 
         loss_train = hinge_loss(X_train, y_train, w)
         loss_val = hinge_loss(X_val, y_val, w)
@@ -191,7 +200,7 @@ def run_svm():
     X_train, y_train = preprocess(train_dataset_url, n_features)
     X_val, y_val = preprocess(val_dataset_url, n_features)
     # w, losses_train, losses_val, f1_scores_train, f1_scores_val = svm_SGD(X_train, y_train, X_val, y_val, max_epoch=200, batch_size=20, learning_rate=0.05, penalty_factor_C=5)
-    w, losses_train, losses_val, f1_scores_train, f1_scores_val = svm_SGD2(X_train, y_train, X_val, y_val, max_epoch=200, batch_size=512, learning_rate=0.01, pos_C=1, neg_C=1)
+    w, losses_train, losses_val, f1_scores_train, f1_scores_val = svm_SGD2(X_train, y_train, X_val, y_val, max_epoch=200, batch_size=512, learning_rate=0.001, pos_C=2.4, neg_C=0.8)
 
     plt.figure(figsize=(16, 9))
     plt.plot(losses_train, '-', color='r', label='losses_train')
