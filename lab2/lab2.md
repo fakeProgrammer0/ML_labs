@@ -67,7 +67,7 @@ and we can update weight vector using mini-batch gradient descent:<br/>
 ### 2.3. Support Vector Machine
 Using **hinge loss** and **soft margin** method, the objective function of SVM is
 
-<img src="http://latex.codecogs.com/gif.latex?L(W)=\frac{\left\|W\right\|_2^2}{2}+\frac{C}{N}\sum_{i=1}^{N}{\max\left(0, 1-y_iW^TX_i\right)}\quad\left(13\right)"/> 
+<img src="http://latex.codecogs.com/gif.latex?L(W)=\frac{\left\|W\right\|_2^2}{2}+\frac{C}{N}\sum_{i=1}^{N}{\max\left(0,1-y_iW^TX_i\right)}\quad\left(13\right)"/> 
 
 where the gradient with respect to W in the objective function is
 
