@@ -269,20 +269,50 @@ def hinge_loss(X, y, w):
 ### 3.3. Experiment Results
 
 #### 3.3.1. Result of Logistic Regressoion
+From the following graph, we can see that as the number of epoches increases, the min log likelihood estimate descreases
+and then the curve becomes flat and smooth. Thus we can conclude that with the logistic regression method, the min log 
+likelihood in **equation (2)** estimate decreases.
 
 <img src="img/lab2_LR_log_likelihood_estimate.png"/>
 
-
 #### *3.3.2. class imbalance problem
+The dataset a9a is an imbalance dataset for the number of positive class is nearly one third of the number of the negative class. 
+If the methodology of SVM described in [3.2.2 support vector machine](#3.2.2.-support-vector-machine) is directly used, 
+finally we will get a imbalanced classifier which erroneously recognizes all samples to be negative. In this case, the f1_score of 
+the classification result is 0. Obviously, this is a good classifier we want.
 
+    epoch [199]: loss_train = [0.624254]; loss_val = [0.618534]
+    epoch [199]: f1_train = [0.000000]; f1_val = [0.000000]
+    confusion matrix of train
+     [[24720     0]
+     [ 7841     0]]
+    confusion matrix of val
+     [[12435     0]
+     [ 3846     0]] 
 
+Improvement: Decomposite the penalty factor C into C+ and C- respectly. C+ is the penalty factor of the loss casued by 
+the positive samples in the soft margin while C- is the the penalty factor of the loss casued by the nagative samples 
+in the soft margin. By increasing the weight of C+, we can emphase the loss caused by the positive samples in the soft margin.
+For more details, check the code submitted. 
+
+    epoch [199]: loss_train = [0.460696]; loss_val = [0.457864]
+    epoch [199]: f1_train = [0.663994]; f1_val = [0.661774]
+    confusion matrix of train
+     [[19064  5656]
+     [ 1133  6708]]
+    confusion matrix of val
+     [[9626 2809]
+     [ 555 3291]] 
+
+该数据集类别不平衡，+1 : -1 = 1 : 3, 如果直接使用以下方法训练，会使得最终分类结果都为负类，这时hingeloss最小，但是f1_score为0，这并不是一个好的分类器。
+
+改进：把惩罚系数C拆解成C+和C-，增加C+的权重，使得正类被分类错误的损失增大。
 
 #### 3.3.3. Result of Support Vector Machine
-
+After the improvement, the hinge loss decrease and the f1_score increase a lot as the number of epoches grows.  
 <img src="img/lab2_SVM_hingeloss.png"/>
 
-
-<img src="img/lab2_SVM_f1_scores"/>
+<img src="img/lab2_SVM_f1_scores.png"/>
 
 
 ## 4.Conclusion
