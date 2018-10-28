@@ -84,59 +84,25 @@ def min_log_LE(X, y, w):
 
     return loss_sum / n_samples
 
-def logistic_g(Z):
-    return 1 / (1 + math.exp(-Z))
-
-def threshold_loss(X, y, w, threshold=0.5):
-    n_samples = X.shape[0]
-    y_predict = np.dot(X, w)
-    for i in range(0, n_samples):
-        if logistic_g(y_predict[i]) > threshold:
-            y_predict[i] = +1
-        else:
-            y_predict[i] = -1
-
-    # 这样的损失函数怪怪的
-    return np.average(np.abs(y_predict - y))
-
-def threshold_Ein(X, y, w, threshold=0.5):
-    n_samples = X.shape[0]
-
-    y_predict = np.dot(X, w)
-    for i in range(0, n_samples):
-        if logistic_g(y_predict[i]) > threshold:
-            y_predict[i] = +1
-        else:
-            y_predict[i] = -1
-
-    loss_sum = 0
-    for i in range(0, n_samples):
-        loss_sum += math.log(1 + np.exp(-y[i] * y_predict[i]))
-
-    return loss_sum / n_samples
-
-def loss_Ein2(X, y, w):
-    '''
-    :param X: the data, a m*d ndarray
-    :param y: the groundtruth labels, a m*1 ndarray
-    :param w: the weight vector, a d*1 ndarray
-    :return:
-    '''
-    return np.average(np.log(np.ones(y.shape) + np.exp(y * np.dot(X, w))))
-
 def run_log_reg():
     global n_features
     X_train, y_train = preprocess(dataset_url=train_dataset_url, n_features=n_features)
     X_val, y_val = preprocess(dataset_url=val_dataset_url, n_features=n_features)
-    w, losses_train, losses_val = log_reg_MLE_MSGD(X_train, y_train, X_val, y_val, batch_size=512, max_epoch=200, learning_rate=0.1, reg_param=0.1)
+
+    batch_size = 512
+    max_epoch = 200
+    learning_rate = 0.1
+    reg_param = 0.1
+
+    w, losses_train, losses_val = log_reg_MLE_MSGD(X_train, y_train, X_val, y_val, batch_size=batch_size, max_epoch=max_epoch, learning_rate=learning_rate, reg_param=reg_param)
 
     plt.figure(figsize=(16,9))
     plt.plot(losses_train, "-", color="r", label="train loss")
     plt.plot(losses_val, "-", color='b', label='val loss')
     plt.xlabel('epoch')
-    plt.ylabel('loss')
+    plt.ylabel('min_log_likelihood_estimate')
     plt.legend()
-    plt.title('loss graph')
+    plt.title('log_likelihodd_estimate graph\nbatch_size = %d\nlearning_rate = %.6f\nreg_param = %.6f;' % (batch_size, learning_rate, reg_param))
     plt.show()
 
 if __name__ == "__main__":
