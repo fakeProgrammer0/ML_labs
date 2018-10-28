@@ -24,9 +24,12 @@ Motivations of Experiment are listed below:
 Mini-batch Stochastic Gradient Descent updates weight vector using the gradient with respect to weight in the objective function
 but each time it select a mini batch of samples to perform updating instead of using all the samples as gradient descent.
 
-<img src="http://latex.codecogs.com/gif.latex?W_t=W_{t-1}-\frac{\eta}{\left|S_k\right|}%20\sum_{i\in\left\|S_k\right\|}\nabla_WL_i\left(W\right)\quad\left(1\right)"/><br/>
+<img src="http://latex.codecogs.com/gif.latex?W_t=W_{t-1}-\frac{\eta}{\left|S_k\right|}%20\sum_{i\in\left\|S_k\right\|}\nabla_WL_i\left(W\right)\quad\left(1\right)" align="center"/><br/>
 
 ### 2.2. Logistic Regression
+
+<!-- comment some equations -->
+<!--
 The equation of logistic regression can be described as:<br/>
 <img src = "http://latex.codecogs.com/gif.latex?y=g\left(w^{T}X+b\right)\quad\eqno{(2)}"/><br/>
 
@@ -63,19 +66,29 @@ After the above induction and regularization, we update our objective funtion to
 and we can update weight vector using mini-batch gradient descent:<br/>
 
 <img src="http://latex.codecogs.com/gif.latex?W=W-\eta\frac{\partial%20J\left(W\right)}{\partial%20W}=\left(1-\eta\lambda\right)W+\eta\frac{1}{\left|S_k\right|}\sum_{i\in\left|S_k\right|}{\frac{y_iX_i}{1+e^{y_iW^TX_i}}}\quad\left(12\right)"/>
+-->
+
+Using the maximum likelihood estimate and regularization method, the objective funtion of logistic regression is
+<div align="center">
+<img src="http://latex.codecogs.com/gif.latex?J\left(W\right)=\frac{1}{n}\sum_{i=1}^{n}{\log\left(1+e^{-y_iw^Tx_i}\right)}+\frac{\lambda}{2}{\left\|W\right\|_2^2}\quad\left(2\right)" align="center"/>
+</div>
+
+and we can update weight vector using mini-batch gradient descent:<br/>
+
+<img align="center" src="http://latex.codecogs.com/gif.latex?W=W-\eta\frac{\partial%20J\left(W\right)}{\partial%20W}=\left(1-\eta\lambda\right)W+\eta\frac{1}{\left|S_k\right|}\sum_{i\in\left|S_k\right|}{\frac{y_iX_i}{1+e^{y_iW^TX_i}}}\quad\left(3\right)"/>
 
 ### 2.3. Support Vector Machine
 Using **hinge loss** and **soft margin** method, the objective function of SVM is
 
-<img src="http://latex.codecogs.com/gif.latex?L(W)=\frac{\left\|W\right\|_2^2}{2}+\frac{C}{N}\sum_{i=1}^{N}{\max\left(0,1-y_iW^TX_i\right)}\quad\left(13\right)"/> 
+<img src="http://latex.codecogs.com/gif.latex?L(W)=\frac{\left\|W\right\|_2^2}{2}+\frac{C}{N}\sum_{i=1}^{N}{\max\left(0,1-y_iW^TX_i\right)}\quad\left(4\right)"/> 
 
 where the gradient with respect to W in the objective function is
 
-<img src="http://latex.codecogs.com/gif.latex?g_W\left(X_i\right)=\begin{cases}-y_iX_i\quad1-y_iW^TX_i>0\\0\quad\quad\quad1-y_iW^TX_i\le0\end{cases}\quad\left(14\right)"/>
+<img src="http://latex.codecogs.com/gif.latex?g_W\left(X_i\right)=\begin{cases}-y_iX_i\quad1-y_iW^TX_i>0\\0\quad\quad\quad1-y_iW^TX_i\le0\end{cases}\quad\left(5\right)"/>
 
 Using **MSGD** method, the weight vector can be updated in this way:
 
-<img src="http://latex.codecogs.com/gif.latex?W=W-\eta\frac{\partial%20L\left(W\right)}{\partial%20W}=\left(1-\eta\lambda\right)W+\eta\frac{C}{\left|S_k\right|}\sum_{i\in\left|S_k\right|}{g_W\left(X_i\right)}\quad\left(15\right)"/>
+<img src="http://latex.codecogs.com/gif.latex?W=W-\eta\frac{\partial%20L\left(W\right)}{\partial%20W}=\left(1-\eta\lambda\right)W+\eta\frac{C}{\left|S_k\right|}\sum_{i\in\left|S_k\right|}{g_W\left(X_i\right)}\quad\left(6\right)"/>
 
 ## 3.Experiment
 
@@ -89,8 +102,8 @@ a9a_t is a9a's validation dataset.
 1. Load the training set and validation set.
 2. Initialize logistic regression model parameter with zeros, random numbers or normal distribution.
 3. Determine the size of the batch_size and randomly take some samples,calculate gradient G toward loss function from partial samples.
-4. Use the **MSGD** optimization method described in **equation (12)** to update the parametric model.
-5. Predict under validation set and get the loss **L_val** using **equation (11)**.
+4. Use the **MSGD** optimization method described in **equation (3)** to update the parametric model.
+5. Predict under validation set and get the loss **L_val** using **equation (2)**.
 6. Repeat step 3 to 5 for several times, and drawing graph of **L_val**  with the number of iterations.
 
 <!-- 5. Select the appropriate threshold, mark the sample whose predict scores greater than the threshold as positive, on the contrary as negative. Predict under validation set and get the loss **L_val**. -->
@@ -167,8 +180,8 @@ def min_log_LE(X, y, w):
 ### 3.2.2. Support Vector Machine
 1. Load the training set and validation set.
 2. Initialize SVM model parameter with zeros, random numbers or normal distribution.
-3. Determine the size of the batch_size and randomly take some samples,calculate gradient G toward loss function from partial samples using **equation(14)**.
-4. Use the **MSGD** optimization method described in **equation (15)** to update the parametric model.
+3. Determine the size of the batch_size and randomly take some samples,calculate gradient G toward loss function from partial samples using **equation(5)**.
+4. Use the **MSGD** optimization method described in **equation (6)** to update the parametric model.
 5. Predict under validation set and get the loss **L_val** using **hinge loss**.
 6. Repeat step 3 to 5 for several times, and drawing graph of **L_val**  with the number of iterations.
 
