@@ -2,8 +2,18 @@
 dataset: a9a from LIBSVM Data
 '''
 
-train_dataset_url = '../dataset/a9a.txt'
-val_dataset_url = '../dataset/a9a_t.txt'
+# 1.load dataset online
+import requests
+from io import BytesIO
+r = requests.get('''https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/a9a''')
+train_dataset_url = BytesIO(r.content)
+
+r = requests.get('''https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/a9a.t''')
+val_dataset_url = BytesIO(r.content)
+
+# 2.load local dataset
+# train_dataset_url = '../dataset/a9a.txt'
+# val_dataset_url = '../dataset/a9a_t.txt'
 
 n_features = 123
 
@@ -12,12 +22,14 @@ n_features = 123
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import copy
 
 from sklearn.datasets import load_svmlight_file
 from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix
 
 def preprocess(dataset_url, n_features):
+    dataset_url = copy.deepcopy(dataset_url)
     X, y = load_svmlight_file(dataset_url, n_features=n_features)
 
     # change y from a 1D ndarray into a column vector
@@ -106,7 +118,6 @@ def sign(a, threshold=0, sign_thershold=0):
     else:
         return -1
 
-import copy
 def sign_col_vector(a, threshold=0, sign_thershold=0):
     a = copy.deepcopy(a)
     n = a.shape[0]

@@ -2,8 +2,18 @@
 dataset: a9a from LIBSVM Data
 '''
 
-train_dataset_url = '../dataset/a9a.txt'
-val_dataset_url = '../dataset/a9a_t.txt'
+# 1.load dataset online
+import requests
+from io import BytesIO
+r = requests.get('''https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/a9a''')
+train_dataset_url = BytesIO(r.content)
+
+r = requests.get('''https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/a9a.t''')
+val_dataset_url = BytesIO(r.content)
+
+# 2.load local dataset
+# train_dataset_url = '../dataset/a9a.txt'
+# val_dataset_url = '../dataset/a9a_t.txt'
 
 n_features = 123
 
@@ -13,10 +23,12 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import random
+import copy
 
 from sklearn.datasets import load_svmlight_file
 
 def preprocess(dataset_url, n_features):
+    dataset_url = copy.deepcopy(dataset_url)
     X, y = load_svmlight_file(dataset_url, n_features=n_features)
     y = y.reshape(-1, 1)
     X = X.toarray()

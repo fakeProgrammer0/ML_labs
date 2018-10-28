@@ -2,19 +2,28 @@
 dataset: housing_scale from LIBSVM Data
 '''
 
-# data_file_url = '../dataset/housing.txt'
-dataset_file_url = '../dataset/housing_scale.txt'
+# 1.load dataset online
+import requests
+from io import BytesIO
+r = requests.get('''https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/regression/housing_scale''')
+dataset_file_url = BytesIO(r.content)
+
+# 2.load local dataset
+# dataset_file_url = '../dataset/housing.txt'
+# dataset_file_url = '../dataset/housing_scale.txt'
+
 n_features = 13
 
 # --------------------------
 
 import numpy as np
-
+import copy
 from sklearn.datasets import load_svmlight_file
 from sklearn.model_selection import train_test_split
 
 
 def preprocess(dataset_file_url, n_features, test_size=0.25):
+    dataset_file_url = copy.deepcopy(dataset_file_url)
     X, y = load_svmlight_file(dataset_file_url, n_features=n_features)
 
     y = y.reshape(-1, 1)
@@ -93,7 +102,7 @@ def linear_reg_GD(X_train, y_train, X_val, y_val, max_epoch=200, learning_rate=0
         losses_train.append(loss_train)
         losses_val.append(loss_val)
 
-        print("at epoch [{:4d}]: loss_train = [{:.6f}; loss_val = [{:.6f}]".format(epoch, loss_train, loss_val))
+        print("at epoch [{:4d}]: loss_train = [{:.6f}]; loss_val = [{:.6f}]".format(epoch, loss_train, loss_val))
 
     return w, losses_train, losses_val
 
@@ -151,5 +160,5 @@ def estimate_learning_rate_GD():
 
 if __name__ == "__main__":
     # run_closed_form()
-    run_GD()
-    # estimate_learning_rate_GD()
+    # run_GD()
+    estimate_learning_rate_GD()
