@@ -83,7 +83,8 @@ from sklearn.metrics import mean_squared_error
 def linear_reg_closed_form(X_train, y_train, X_val, y_val):
     '''Use the closed-form solution to solve simple linear regression.
     Attention: This function may not work because the inverse of a given matrix may not exist.
-    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones, ie.numpy.ones(n_samples) 
+    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones, 
+    ie.numpy.ones(n_samples) 
     :param y_train: labels, a (n_samples, 1) ndarray
     :param X_val: validation data
     :param y_val: validation labels
@@ -124,12 +125,14 @@ import numpy as np
 from sklearn.metrics import mean_squared_error
 def linear_reg_GD(X_train, y_train, X_val, y_val, max_epoch=200, learning_rate=0.01, penalty_factor = 0.5):
     '''Use the gradient descent method to solve simple linear regression.
-    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones, ie.numpy.ones(n_samples)
+    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones, 
+    ie.numpy.ones(n_samples)
     :param y_train: labels, a (n_samples, 1) ndarray
     :param X_val: validation data
     :param y_val: validation labels
     :param max_epoch: the max epoch for training
-    :param learning_rate: the hyper parameter to control the velocity of gradient descent process, also called step_size
+    :param learning_rate: the hyper parameter to control the velocity of gradient descent process,
+    also called step_size
     :param penalty_factor: the L2 regular term factor for the objective function
 
     :return w: the weight vector, a (n_features + 1, 1) ndarray
