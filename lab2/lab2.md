@@ -24,7 +24,9 @@ Motivations of Experiment are listed below:
 Mini-batch Stochastic Gradient Descent updates weight vector using the gradient with respect to weight in the objective function
 but each time it select a mini batch of samples to perform updating instead of using all the samples as gradient descent.
 
-<img src="http://latex.codecogs.com/gif.latex?W_t=W_{t-1}-\frac{\eta}{\left|S_k\right|}%20\sum_{i\in\left\|S_k\right\|}\nabla_WL_i\left(W\right)\quad\left(1\right)" align="center"/><br/>
+<div align="center">
+    <img src="http://latex.codecogs.com/gif.latex?W_t=W_{t-1}-\frac{\eta}{\left|S_k\right|}%20\sum_{i\in\left\|S_k\right\|}\nabla_WL_i\left(W\right)\quad\left(1\right)" align="center"/>
+</div>
 
 ### 2.2. Logistic Regression
 
@@ -75,7 +77,9 @@ Using the maximum likelihood estimate and regularization method, the objective f
 
 and we can update weight vector using mini-batch gradient descent:<br/>
 
-<img align="center" src="http://latex.codecogs.com/gif.latex?W=W-\eta\frac{\partial%20J\left(W\right)}{\partial%20W}=\left(1-\eta\lambda\right)W+\eta\frac{1}{\left|S_k\right|}\sum_{i\in\left|S_k\right|}{\frac{y_iX_i}{1+e^{y_iW^TX_i}}}\quad\left(3\right)"/>
+<div align="center">
+    <img align="center" src="http://latex.codecogs.com/gif.latex?W=W-\eta\frac{\partial%20J\left(W\right)}{\partial%20W}=\left(1-\eta\lambda\right)W+\eta\frac{1}{\left|S_k\right|}\sum_{i\in\left|S_k\right|}{\frac{y_iX_i}{1+e^{y_iW^TX_i}}}\quad\left(3\right)"/>
+</div>
 
 ### 2.3. Support Vector Machine
 Using **hinge loss** and **soft margin** method, the objective function of SVM is
