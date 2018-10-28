@@ -1,11 +1,9 @@
-'''
-using svm with SGD to solve linear classification
+'''using svm with SGD to solve linear classification
+dataset: a9a from LIBSVM Data
 '''
 
-# train_dataset_url = '../dataset/a9a.txt'
-# val_dataset_url = '../dataset/a9a_t.txt'
-train_dataset_url = r'D:\MyData\Temp Codes\Github\ML_labs\dataset\a9a.txt'
-val_dataset_url = r'D:\MyData\Temp Codes\Github\ML_labs\dataset\a9a_t.txt'
+train_dataset_url = '../dataset/a9a.txt'
+val_dataset_url = '../dataset/a9a_t.txt'
 
 n_features = 123
 

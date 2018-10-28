@@ -2,7 +2,7 @@
 
 ## Abstract
 In this report, we will solve **binary classification** using both **logistic regression** and **support vector machine (SVM)**.
-
+Theory and methodology of **LR** and **SVM** are exhibited, followed by several experiments.  
 
 ## 1.Introduction
 **Binary Classification** is one of the most fundamental problems in machine learning.
