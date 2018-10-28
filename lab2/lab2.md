@@ -270,8 +270,19 @@ def hinge_loss(X, y, w):
 
 #### 3.3.1. Result of Logistic Regressoion
 
+<img src="img/lab2_LR_log_likelihood_estimate.png"/>
 
-#### *3.3.3. class imbalance problem
+
+#### *3.3.2. class imbalance problem
+
+
+
+#### 3.3.3. Result of Support Vector Machine
+
+<img src="img/lab2_SVM_hingeloss.png"/>
+
+
+<img src="img/lab2_SVM_f1_scores"/>
 
 
 ## 4.Conclusion
@@ -284,3 +295,4 @@ of the soft margin SVM to solve the problem.
 1. Linear Classification and Support Vector Machine and Stochastic Gradient Descent, Prof.Mingkui Tan
 2. Multi-class Classification and Softmax Regression, Prof.Mingkui Tan
 3. [知乎\[ＳＶＭ　当正负样本比例不对称时，调节不同的惩罚参数Ｃ，对结果有什么影响。是不是Ｃ大点，会好点？\]](https://www.zhihu.com/question/56033163/answer/147392242)
+4. [SVM: Separating hyperplane for unbalanced classes](https://link.zhihu.com/?target=http%3A//scikit-learn.org/stable/auto_examples/svm/plot_separating_hyperplane_unbalanced.html%23example-svm-plot-separating-hyperplane-unbalanced-py)
