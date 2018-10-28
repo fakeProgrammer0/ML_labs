@@ -41,16 +41,20 @@ def preprocess(dataset_url, n_features):
 
 # 该数据集类别不平衡，+1 : -1 = 1 : 3
 # 如果直接使用以下方法训练，会使得最终分类结果都为负类，这时hingeloss最小，但是f1_score为0，并不是一个好的分类器
-def svm_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, learning_rate_lambda=0, penalty_factor_C=0.3):
+def svm_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001,
+             learning_rate_lambda=0, penalty_factor_C=0.3):
     ''''set up a SVM model with soft margin method using mini-batch stochastic gradient descent
-    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones, ie.numpy.ones(n_samples)
+    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones,
+    ie.numpy.ones(n_samples)
     :param y_train: labels, a (n_samples, 1) ndarray
     :param X_val: validation data
     :param y_val: validation labels
     :param max_epoch: the max epoch for training
-    :param learning_rate: the hyper parameter to control the velocity of gradient descent process, also called step_size
+    :param learning_rate: the hyper parameter to control the velocity of gradient descent process,
+    also called step_size
     :param learning_rate_lambda: the regualar term for adaptively changing learning_rate
-    :param penalty_factor_C: the penalty factor, which emphases the importance of the loss caused by samples in the soft margin
+    :param penalty_factor_C: the penalty factor, which emphases the importance of the loss caused
+    by samples in the soft margin
     :return w: the SVM weight vector
     :return losses_train, losses_val: the hinge training / validation loss during each epoch
     :return f1_scores_train, f1_scores_val: the f1_score during each epoch
@@ -92,8 +96,10 @@ def svm_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, lear
         losses_val.append(loss_val)
         print("epoch [%3d]: loss_train = [%.6f]; loss_val = [%.6f]" % (epoch, loss_train, loss_val))
 
-        y_train_predict = sign_col_vector(np.dot(X_train, w), threshold=0, sign_thershold=1).reshape(n_train_samples)
-        y_val_predict = sign_col_vector(np.dot(X_val, w), threshold=0, sign_thershold=1).reshape(X_val.shape[0])
+        y_train_predict = sign_col_vector(np.dot(X_train, w), threshold=0,
+                                          sign_thershold=1).reshape(n_train_samples)
+        y_val_predict = sign_col_vector(np.dot(X_val, w), threshold=0, sign_thershold=1).reshape(
+            X_val.shape[0])
         f1_train = f1_score(y_true=y_train, y_pred=y_train_predict)
         f1_val = f1_score(y_true=y_val, y_pred=y_val_predict)
         f1_scores_train.append(f1_train)

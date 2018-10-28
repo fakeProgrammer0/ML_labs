@@ -210,22 +210,27 @@ import numpy as np
 import random
 from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix
+import copy
 
-def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, learning_rate_lambda=0, penalty_factor_C=0.3):
+def svm_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, 
+             learning_rate_lambda=0, penalty_factor_C=0.3):
     ''''set up a SVM model with soft margin method using mini-batch stochastic gradient descent
-    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones, ie.numpy.ones(n_samples)
+    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones, 
+    ie.numpy.ones(n_samples)
     :param y_train: labels, a (n_samples, 1) ndarray
     :param X_val: validation data
     :param y_val: validation labels
     :param max_epoch: the max epoch for training
-    :param learning_rate: the hyper parameter to control the velocity of gradient descent process, also called step_size
+    :param learning_rate: the hyper parameter to control the velocity of gradient descent process, 
+    also called step_size
     :param learning_rate_lambda: the regualar term for adaptively changing learning_rate
-    :param penalty_factor_C: the penalty factor, which emphases the importance of the loss caused by samples in the soft margin
+    :param penalty_factor_C: the penalty factor, which emphases the importance of the loss caused 
+    by samples in the soft margin
     :return w: the SVM weight vector
     :return losses_train, losses_val: the hinge training / validation loss during each epoch
     :return f1_scores_train, f1_scores_val: the f1_score during each epoch
     '''
-    
+
     n_train_samples, n_features = X_train.shape
 
     if batch_size > n_train_samples:
@@ -262,8 +267,10 @@ def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learn
         losses_val.append(loss_val)
         print("epoch [%3d]: loss_train = [%.6f]; loss_val = [%.6f]" % (epoch, loss_train, loss_val))
 
-        y_train_predict = sign_col_vector(np.dot(X_train, w), threshold=0, sign_thershold=1).reshape(n_train_samples)
-        y_val_predict = sign_col_vector(np.dot(X_val, w), threshold=0, sign_thershold=1).reshape(X_val.shape[0])
+        y_train_predict = sign_col_vector(np.dot(X_train, w), threshold=0,
+                                          sign_thershold=1).reshape(n_train_samples)
+        y_val_predict = sign_col_vector(np.dot(X_val, w), threshold=0, sign_thershold=1).reshape(
+            X_val.shape[0])
         f1_train = f1_score(y_true=y_train, y_pred=y_train_predict)
         f1_val = f1_score(y_true=y_val, y_pred=y_val_predict)
         f1_scores_train.append(f1_train)
@@ -275,6 +282,9 @@ def svm_SGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learn
 
     return w, losses_train, losses_val, f1_scores_train, f1_scores_val
 
+def hinge_loss(X, y, w):
+    return np.average(np.maximum(np.ones(y.shape) - y * np.dot(X, w), np.zeros(y.shape)), axis=0)[0]
+
 def sign(a, threshold=0, sign_thershold=0):
     # the number of positive labels is much smaller than that of the negative labels
     # it's an imbalance classification problem
@@ -285,7 +295,6 @@ def sign(a, threshold=0, sign_thershold=0):
     else:
         return -1
 
-import copy
 def sign_col_vector(a, threshold=0, sign_thershold=0):
     a = copy.deepcopy(a)
     n = a.shape[0]
@@ -293,8 +302,6 @@ def sign_col_vector(a, threshold=0, sign_thershold=0):
         a[i][0] = sign(a[i][0], threshold, sign_thershold)
     return a
 
-def hinge_loss(X, y, w):
-    return np.average(np.maximum(np.ones(y.shape) - y * np.dot(X, w), np.zeros(y.shape)), axis=0)[0]
 ```
 
 ### 3.3. Experiment Results
