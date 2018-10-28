@@ -124,7 +124,7 @@ def loss_Ein2(X, y, w):
     '''
     return np.average(np.log(np.ones(y.shape) + np.exp(y * np.dot(X, w))))
 
-def run_log_reg2():
+def run_log_reg():
     global n_features
     X_train, y_train = preprocess(dataset_url=train_dataset_url, n_features=n_features)
     X_val, y_val = preprocess(dataset_url=val_dataset_url, n_features=n_features)
@@ -141,4 +141,4 @@ def run_log_reg2():
 
 if __name__ == "__main__":
     # run_SGD()
-    run_log_reg2()
+    run_log_reg()

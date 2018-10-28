@@ -195,8 +195,15 @@ def svm_MSGD_imbalance(X_train, y_train, X_val, y_val, batch_size=100, max_epoch
 def run_svm():
     X_train, y_train = preprocess(train_dataset_url, n_features)
     X_val, y_val = preprocess(val_dataset_url, n_features)
+
+    max_epoch = 200
+    batch_size = 512
+    learning_rate = 0.001
+    pos_C = 2.4
+    neg_C = 0.8
+
     # w, losses_train, losses_val, f1_scores_train, f1_scores_val = svm_MSGD(X_train, y_train, X_val, y_val, max_epoch=200, batch_size=512, learning_rate=0.001, penalty_factor_C=1)
-    w, losses_train, losses_val, f1_scores_train, f1_scores_val = svm_MSGD_imbalance(X_train, y_train, X_val, y_val, max_epoch=200, batch_size=512, learning_rate=0.001, pos_C=2.4, neg_C=0.8)
+    w, losses_train, losses_val, f1_scores_train, f1_scores_val = svm_MSGD_imbalance(X_train, y_train, X_val, y_val, max_epoch=200, batch_size=batch_size, learning_rate=learning_rate, pos_C=pos_C, neg_C=neg_C)
 
     plt.figure(figsize=(16, 9))
     plt.plot(losses_train, '-', color='r', label='losses_train')
@@ -204,7 +211,7 @@ def run_svm():
     plt.xlabel('epoch')
     plt.ylabel('hinge_loss')
     plt.legend()
-    plt.title('loss graph of svm')
+    plt.title('loss graph of svm\nbatch_size = %d\nlearning_rate = %.f\npos_C = %.2f;neg_C = %.2f' % (batch_size, learning_rate, pos_C, neg_C))
     plt.show()
 
     plt.figure(figsize=(16, 9))
@@ -213,7 +220,7 @@ def run_svm():
     plt.xlabel('epoch')
     plt.ylabel('f1_score')
     plt.legend()
-    plt.title('f1_scores graph of svm')
+    plt.title('f1_scores graph of svm\nbatch_size = %d\nlearning_rate = %.f\npos_C = %.2f;neg_C = %.2f' % (batch_size, learning_rate, pos_C, neg_C))
     plt.show()
 
 # check 看下sklearn中svm的实现里f1_score怎样？

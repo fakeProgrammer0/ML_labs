@@ -268,15 +268,19 @@ def hinge_loss(X, y, w):
 
 ### 3.3. Experiment Results
 
+#### 3.3.1. Result of Logistic Regressoion
+
+
+#### *3.3.3. class imbalance problem
 
 
 ## 4.Conclusion
-
+In this report, we learn about the methodology about the logistic regression and support vector machine.
+Then we carry out some experiment on a dataset to estimate the performance of both methods.
+This report further examines the class imbalance problem about the SVM model and successfully develop a variant 
+of the soft margin SVM to solve the problem.  
 
 ## References
-
-
-
-instead of <br/> 
-<img src="http://latex.codecogs.com/gif.latex?W=W-\eta\frac{\partial%20J\left(W\right)}{\partial%20W}=\left(1-\eta\lambda\right)W+\eta\frac{1}{n}\sum_{i=1}^{n}{\frac{y_iX_i}{1+e^{y_iW^TX_i}}}\quad\left(13\right)"/>
-
+1. Linear Classification and Support Vector Machine and Stochastic Gradient Descent, Prof.Mingkui Tan
+2. Multi-class Classification and Softmax Regression, Prof.Mingkui Tan
+3. [知乎\[ＳＶＭ　当正负样本比例不对称时，调节不同的惩罚参数Ｃ，对结果有什么影响。是不是Ｃ大点，会好点？\]](https://www.zhihu.com/question/56033163/answer/147392242)
