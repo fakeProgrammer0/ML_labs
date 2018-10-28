@@ -74,12 +74,14 @@ Then equation (7) becomes
     <img src = "http://latex.codecogs.com/gif.latex?W%20=%20\left(1-\lambda\eta%20\right)%20W%20+%20\eta%20X^{%20T%20}\left(%20y-XW%20\right)%20\quad%20\left(9\right)" />
 </div>
 
+<!--
 ### 2.3. Comparison with Closed-form Solution and Gradient Descent Method 
 
 ||Closed-form Solution|Gradient Descent Method|
 |:-:|:-:|:-:|
 |Advantages|Mathematic simplication|Easy to perform|
 |Disadvantages|Cannot always work<br>Calculating the inverse matrix is low efficent and consums a lot of time|
+-->
 
 ## 3.Experiment
 
