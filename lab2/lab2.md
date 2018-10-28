@@ -124,19 +124,25 @@ a9a_t is a9a's validation dataset.
 import numpy as np
 import random
 import math
-def log_reg_MLE_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, reg_param=0.3):
-    '''logistic regression using mini-batch stochastic gradient descent with maximum likelihood method
-    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones, ie.numpy.ones(n_samples)
+def log_reg_MLE_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200,
+                     learning_rate=0.001, reg_param=0.3):
+    '''logistic regression using mini-batch stochastic gradient descent 
+    with maximum likelihood method
+    :param X_train: train data, a (n_samples, n_features + 1) ndarray, 
+    where the 1st column are all ones, ie.numpy.ones(n_samples)
     :param y_train: labels, a (n_samples, 1) ndarray
     :param X_val: validation data
     :param y_val: validation labels
     :param max_epoch: the max epoch for training
-    :param learning_rate: the hyper parameter to control the velocity of gradient descent process, also called step_size
+    :param learning_rate: the hyper parameter to control the velocity 
+    of gradient descent process, also called step_size
     :param reg_param: the L2 regular term factor for the objective function
 
     :return w: the weight vector, a (n_features + 1, 1) ndarray
-    :return log_LEs_train: the min log likelihood estimate of the training set during each epoch
-    :return log_LEs_val: the min log likelihood estimate of the validation set during each epoch
+    :return log_LEs_train: the min log likelihood estimate of the training 
+    set during each epoch
+    :return log_LEs_val: the min log likelihood estimate of the validation 
+    set during each epoch
     '''
     n_train_samples, n_features = X_train.shape
     if n_train_samples < batch_size:
@@ -163,13 +169,17 @@ def log_reg_MLE_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=2
             temp_sum += y_train[idx] * X_train[idx] * exp_term / (1 + exp_term)
 
         # update w using gradient of the objective function
-        w = (1 - learning_rate * reg_param) * w + learning_rate / batch_size * temp_sum
+        w =(1-learning_rate*reg_param)*w + learning_rate / batch_size * temp_sum
 
         log_LE_train = min_log_LE(X_train, y_train, w)
         log_LEs_train.append(log_LE_train)
         log_LE_val = min_log_LE(X_val, y_val, w)
         log_LEs_val.append(log_LE_val)
-        print("epoch {:3d}: loss_train = [{:.6f}]; loss_val = [{:.6f}]".format(epoch, log_LE_train, log_LE_val))
+        print(
+            "epoch {:3d}: loss_train = [{:.6f}];"
+            " loss_val = [{:.6f}]".format(epoch,
+                                        log_LE_train,
+                                        log_LE_val))
 
     return w, log_LEs_train, log_LEs_val
 
