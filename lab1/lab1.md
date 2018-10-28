@@ -13,26 +13,37 @@ Motivations of the report are listed below:
 * Realize the process of optimization and adjusting parameters.
 
 ## 2.Methods and Theory
-The equation of simple linear regression can be described as:<br/>
-<img src = "http://latex.codecogs.com/gif.latex?y%20=%20w^{T}X%20+%20b%20\quad%20\eqno{(1)}"/><br/>
+The equation of simple linear regression can be described as:
+
+<div align="center">
+    <img src = "http://latex.codecogs.com/gif.latex?y%20=%20w^{T}X%20+%20b%20\quad%20\eqno{(1)}"/>
+</div>
 
 Let <img src = "http://latex.codecogs.com/gif.latex?W%20=%20\left(b;\omega%20\right)" />
-and then equation (1) can be changed into <br/>
-<img src = "http://latex.codecogs.com/gif.latex?y%20=%20W%20^T%20X%20\quad%20\eqno{(2)}" /><br/>
+and then equation (1) can be changed into 
+<div align="center">
+    <img src = "http://latex.codecogs.com/gif.latex?y%20=%20W%20^T%20X%20\quad%20\eqno{(2)}" />
+</div>
 
-The mean square loss of simple linear regression is <br/>
+The mean square loss of simple linear regression is
+<div align="center">
 <img src = "http://latex.codecogs.com/gif.latex?L_{reg}%20\left(%20W%20\right)%20=%20\frac%20{%201%20}{%20n%20}%20\sum%20_{%20i=1%20}^{%20n%20}{%20\left(%20y_{%20i%20}%20-%20W%20^{%20T%20}X_{%20i%20}%20\right)%20^{%202%20}%20}%20\quad%20\left(3%20\right)"/>
+</div>
 
 The corresponding gradient with respect to <img src = "http://latex.codecogs.com/gif.latex?W" /> in simple linear regression is
  
-<img src = "http://latex.codecogs.com/gif.latex?\frac%20{%20\partial%20L_{%20reg%20}%20}{%20\partial%20W%20}%20=-X^{%20T%20}\left(%20y-XW%20\right)%20\quad%20\left(%204%20\right)" /> 
+<div align="center">
+<img src = "http://latex.codecogs.com/gif.latex?\frac%20{%20\partial%20L_{%20reg%20}%20}{%20\partial%20W%20}%20=-X^{%20T%20}\left(%20y-XW%20\right)%20\quad%20\left(%204%20\right)" />
+</div> 
 
 To minimize the mean square loss Lreg, we can use closed-formed solution or the gradient descent method.
 
 ### 2.1. Closed-formed Solution
 let <img src = "http://latex.codecogs.com/gif.latex?\frac%20{%20\partial%20L_{%20reg%20}%20}{%20\partial%20W%20}%20=%200" />, we can get
 
+<div align="center">
 <img src = "http://latex.codecogs.com/gif.latex?W%20^{%20*%20}=\left(%20X^{%20T%20}X%20\right)%20^{%20-1%20}X^{%20T%20}y%20\quad%20\left(5%20\right)" />
+</div>
 
 if the matrix <img src = "http://latex.codecogs.com/gif.latex?X^{T}X" /> is a full-rank matrix or a positive definite matrix, then its **inverse matrix** exists.
 Thus we can use the equation (5) to calculate the best weight vector <img src = "http://latex.codecogs.com/gif.latex?W^*" />.
@@ -43,16 +54,25 @@ So the closed-form solution can't always work. Gracefully, gradient descent can 
 
 **Gradient Descent (GD)** tries to minimize the loss function by updating weight vector to minimize the learning rate <img src="http://latex.codecogs.com/gif.latex?\eta" /> muplitying the correspondent gradient with respect to weighted vector in the loss function.
 
+<div align="center">
 <img src = "http://latex.codecogs.com/gif.latex?W=W-\eta\frac{\partial%20L_{reg}}{\partial%20W}\quad\left(6\right)" />
+</div>
 
 In our linear regression model, it looks like this:
 
+<div align="center">
 <img src = "http://latex.codecogs.com/gif.latex?W%20=%20W%20+%20\eta%20X^{%20T%20}\left(%20y-XW%20\right)%20\quad%20\left(7\right)" />
+</div>
 
 With regularization, the loss function (3) can be changed into the objective function
-<br/><img src = "http://latex.codecogs.com/gif.latex?L_{reg}%20\left(%20W%20\right)%20=%20\frac{\lambda}{2}\left\|%20W%20\right\|_{2}^{2}%20+%20\frac%20{%201%20}{%20n%20}%20\sum%20_{%20i=1%20}^{%20n%20}{%20\left(%20y_{%20i%20}%20-%20W%20^{%20T%20}X_{%20i%20}%20\right)%20^{%202%20}%20}%20\quad%20\left(8%20\right)"/><br/>
+<div align="center">
+    <img src = "http://latex.codecogs.com/gif.latex?L_{reg}%20\left(%20W%20\right)%20=%20\frac{\lambda}{2}\left\|%20W%20\right\|_{2}^{2}%20+%20\frac%20{%201%20}{%20n%20}%20\sum%20_{%20i=1%20}^{%20n%20}{%20\left(%20y_{%20i%20}%20-%20W%20^{%20T%20}X_{%20i%20}%20\right)%20^{%202%20}%20}%20\quad%20\left(8%20\right)"/>
+</div>
+
 Then equation (7) becomes
-<br/><img src = "http://latex.codecogs.com/gif.latex?W%20=%20\left(1-\lambda\eta%20\right)%20W%20+%20\eta%20X^{%20T%20}\left(%20y-XW%20\right)%20\quad%20\left(9\right)" /><br/>
+<div align="center">
+    <img src = "http://latex.codecogs.com/gif.latex?W%20=%20\left(1-\lambda\eta%20\right)%20W%20+%20\eta%20X^{%20T%20}\left(%20y-XW%20\right)%20\quad%20\left(9\right)" />
+</div>
 
 ### 2.3. Comparison with Closed-form Solution and Gradient Descent Method 
 
