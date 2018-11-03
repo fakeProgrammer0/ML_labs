@@ -3,17 +3,17 @@ dataset: a9a from LIBSVM Data
 '''
 
 # 1.load dataset online
-import requests
-from io import BytesIO
-r = requests.get('''https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/a9a''')
-train_dataset_url = BytesIO(r.content)
-
-r = requests.get('''https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/a9a.t''')
-val_dataset_url = BytesIO(r.content)
+# import requests
+# from io import BytesIO
+# r = requests.get('''https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/a9a''')
+# train_dataset_url = BytesIO(r.content)
+#
+# r = requests.get('''https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/a9a.t''')
+# val_dataset_url = BytesIO(r.content)
 
 # 2.load local dataset
-# train_dataset_url = '../dataset/a9a.txt'
-# val_dataset_url = '../dataset/a9a_t.txt'
+train_dataset_url = '../dataset/a9a.txt'
+val_dataset_url = '../dataset/a9a_t.txt'
 
 n_features = 123
 
