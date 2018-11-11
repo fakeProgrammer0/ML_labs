@@ -12,4 +12,4 @@
 * report: [lab3.md](lab3/lab3.md)
 
 updating...<br/>
-To be finished at 2018-11-18 :)
+To be finished before 2018-11-18 :)
