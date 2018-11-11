@@ -15,7 +15,7 @@ class AdaBoostClassifier:
             n_weakers_limit: The maximum number of weak classifier the model can use.
         '''
         self.weak_clf = weak_classifier
-        self.n_weakers = n_weakers_limit
+        self.n_weakers_limit = n_weakers_limit
 
         pass
 
@@ -33,10 +33,10 @@ class AdaBoostClassifier:
         n_samples, n_features = X.shape
         w = np.ones(y.shape)
 
-        self.a = np.zeros(self.n_weakers)
+        weight_a = []
         self.clfs = []
 
-        for i in range(self.n_weakers):
+        for i in range(self.n_weakers_limit):
             base_clf = self.weak_clf()
             base_clf.fit(X, y, w)
             self.clfs.append(base_clf)
@@ -53,10 +53,16 @@ class AdaBoostClassifier:
 
             err_rate = w.dot(y_pred==y)[0] / w.sum()
 
-            self.a[i] = math.log((1 - err_rate) / err_rate) / 2
+            weight_param_a = math.log((1 - err_rate) / err_rate) / 2
+            weight_a.append(weight_param_a)
 
-            w = w * np.exp(-self.a[i] * y * y_pred)
+            w = w * np.exp(-weight_param_a * y * y_pred)
 
+            # prevent overfiting
+            # if self.is_good_enough():
+            #     break;
+
+        self.a = np.ndarray((len(weight_a), 1), weight_a)
 
     def predict_scores(self, X):
         '''Calculate the weighted sum score of the whole base classifiers for given samples.
@@ -68,8 +74,10 @@ class AdaBoostClassifier:
             An one-dimension ndarray indicating the scores of differnt samples, which shape should be (n_samples,1).
         '''
         y_score_pred = np.shape((X.shape[0], 1))
-        for i in range(self.n_weakers):
-            y_score_pred += self.a[i] * self.clfs[i].predict(X)
+        # for i in range(len(self.clfs)):
+        #     y_score_pred += self.a[i] * self.clfs[i].predict(X)
+        for i, clf in enumerate(self.clfs):
+            y_score_pred += self.a[i] * clf.predict(X)
 
         return y_score_pred
 
