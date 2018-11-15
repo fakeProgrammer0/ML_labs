@@ -62,7 +62,8 @@ class AdaBoostClassifier:
             # if self.is_good_enough():
             #     break;
 
-        self.a = np.ndarray((len(weight_a), 1), weight_a)
+        # self.a = np.ndarray((len(weight_a), 1), weight_a)
+        self.a = weight_a
 
     def predict_scores(self, X):
         '''Calculate the weighted sum score of the whole base classifiers for given samples.
@@ -74,8 +75,6 @@ class AdaBoostClassifier:
             An one-dimension ndarray indicating the scores of differnt samples, which shape should be (n_samples,1).
         '''
         y_score_pred = np.shape((X.shape[0], 1))
-        # for i in range(len(self.clfs)):
-        #     y_score_pred += self.a[i] * self.clfs[i].predict(X)
         for i, clf in enumerate(self.clfs):
             y_score_pred += self.a[i] * clf.predict(X)
 
