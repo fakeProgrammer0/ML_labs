@@ -105,206 +105,73 @@ return <img src="http://latex.codecogs.com/gif.latex?H\left(X_i\right)=\sum_{m=1
 ## 3.Experiment
 
 ### 3.1. Dataset
-In this experiment, to perform binary classification we uses [a9a](https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html#a9a) in [LIBSVM Data](https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/), including 32561/16281(testing) samples and each sample has 123 features.
-a9a_t is a9a's validation dataset.
+The dataset used in this experiment are from the [example repository](https://github.com/wujiaju/ML2018-lab-03). It provides 1000 pictures, of which 500 are human face RGB images and the other 500 are non-face RGB images. 
 
 ### 3.2. Experiment Step
 
-### 3.2.1. Logistic Regression
-1. Load the training set and validation set.
-2. Initialize logistic regression model parameter with zeros, random numbers or normal distribution.
-3. Determine the size of the batch_size and randomly take some samples,calculate gradient G toward loss function from partial samples.
-4. Use the **MSGD** optimization method described in **equation (3)** to update the parametric model.
-5. Predict under validation set and get the loss **L_val** using **equation (2)**.
-6. Repeat step 3 to 5 for several times, and drawing graph of **L_val**  with the number of iterations.
+#### 3.2.1. Training procedure of the AdaBoost Model
+1. Initialize training set weights <img src="http://latex.codecogs.com/gif.latex?\omega"/>, each training sample is given the same weight <img src="http://latex.codecogs.com/gif.latex?\frac{1}{N}"/>. 
+2. Training a base classifier(Here we use a decision tree, **DecisionTreeClassifier**, from **sklearn.tree** library) based on the current sample weights. 
+3. Calculate the classification error rate <img src="http://latex.codecogs.com/gif.latex?\varepsilon"/> of the base classifier on the training set. 
+4. Calculate the parameter <img src="http://latex.codecogs.com/gif.latex?\alpha"/> according to the classification error rate <img src="http://latex.codecogs.com/gif.latex?\varepsilon"/>. 
+5. Update training set weights <img src="http://latex.codecogs.com/gif.latex?\omega"/>. 
+6. Repeat steps 2-5 above for iteration. The number of iterations is based on the number of classifiers. 
 
-<!-- 5. Select the appropriate threshold, mark the sample whose predict scores greater than the threshold as positive, on the contrary as negative. Predict under validation set and get the loss **L_val**. -->
-
-#### Core Code of LR
+**Core Code of AdaBoost Training** (written in python)
 
 ```python
-import numpy as np
-import random
 import math
-
-def log_reg_MLE_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001,
-                     reg_param=0.3):
-    '''logistic regression using mini-batch stochastic gradient descent with maximum likelihood method
-    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones,
-     ie.numpy.ones(n_samples)
-    :param y_train: labels, a (n_samples, 1) ndarray
-    :param X_val: validation data
-    :param y_val: validation labels
-    :param max_epoch: the max epoch for training
-    :param learning_rate: the hyper parameter to control the velocity of gradient descent process,
-     also called step_size
-    :param reg_param: the L2 regular term factor for the objective function
-
-    :return w: the weight vector, a (n_features + 1, 1) ndarray
-    :return log_LEs_train: the min log likelihood estimate of the training set during each epoch
-    :return log_LEs_val: the min log likelihood estimate of the validation set during each epoch
-    '''
-    n_train_samples, n_features = X_train.shape
-    if n_train_samples < batch_size:
-        batch_size = n_train_samples
-
-    # for calculation convenience, y is represented as a row vector
-    y_train = y_train.reshape(1, -1)[0, :]
-    y_val = y_val.reshape(1, -1)[0, :]
-
-    # init weight vectors
-    # for calculation convenience, w is represented as a row vector
-    w = np.zeros(n_features)
-
-    log_LEs_train = []
-    log_LEs_val = []
-
-    for epoch in range(0, max_epoch):
-
-        temp_sum = np.zeros(w.shape)
-        batch_indice = random.sample(range(0, n_train_samples), batch_size)
-
-        for idx in batch_indice:
-            exp_term = math.exp(-y_train[idx] * np.dot(X_train[idx], w))
-            temp_sum += y_train[idx] * X_train[idx] * exp_term / (1 + exp_term)
-
-        # update w using gradient of the objective function
-        w = (1 - learning_rate * reg_param) * w + learning_rate / batch_size * temp_sum
-
-        log_LE_train = min_log_LE(X_train, y_train, w)
-        log_LEs_train.append(log_LE_train)
-        log_LE_val = min_log_LE(X_val, y_val, w)
-        log_LEs_val.append(log_LE_val)
-        print(
-            "epoch {:3d}: loss_train = [{:.6f}]; loss_val = [{:.6f}]".format(epoch,
-                                                                             log_LE_train,
-                                                                             log_LE_val))
-
-    return w, log_LEs_train, log_LEs_val
-
-
-def min_log_LE(X, y, w):
-    '''The min log likelihood estimate
-    :param X: the data, a (n_samples, n_features) ndarray
-    :param y: the groundtruth labels, required in a row shape
-    :param w: the weight vector, required in a row shape
-    '''
-    n_samples = X.shape[0]
-    loss_sum = 0
-    for i in range(0, n_samples):
-        loss_sum += np.log(1 + np.exp(-y[i] * (np.dot(X[i], w))))
-
-    return loss_sum / n_samples
-```
-
-### 3.2.2. Support Vector Machine
-1. Load the training set and validation set.
-2. Initialize SVM model parameter with zeros, random numbers or normal distribution.
-3. Determine the size of the batch_size and randomly take some samples,calculate gradient G toward loss function from partial samples using **equation(5)**.
-4. Use the **MSGD** optimization method described in **equation (6)** to update the parametric model.
-5. Predict under validation set and get the loss **L_val** using **hinge loss**.
-6. Repeat step 3 to 5 for several times, and drawing graph of **L_val**  with the number of iterations.
-
-#### Core Code of SVM
-
-```python
 import numpy as np
-import random
-from sklearn.metrics import f1_score
-from sklearn.metrics import confusion_matrix
-import copy
 
-def svm_MSGD(X_train, y_train, X_val, y_val, batch_size=100, max_epoch=200, learning_rate=0.001, 
-             learning_rate_lambda=0, penalty_factor_C=0.3):
-    ''''set up a SVM model with soft margin method using mini-batch stochastic gradient descent
-    :param X_train: train data, a (n_samples, n_features + 1) ndarray, where the 1st column are all ones, 
-    ie.numpy.ones(n_samples)
-    :param y_train: labels, a (n_samples, 1) ndarray
-    :param X_val: validation data
-    :param y_val: validation labels
-    :param max_epoch: the max epoch for training
-    :param learning_rate: the hyper parameter to control the velocity of gradient descent process, 
-    also called step_size
-    :param learning_rate_lambda: the regualar term for adaptively changing learning_rate
-    :param penalty_factor_C: the penalty factor, which emphases the importance of the loss caused 
-    by samples in the soft margin
-    :return w: the SVM weight vector
-    :return losses_train, losses_val: the hinge training / validation loss during each epoch
-    :return f1_scores_train, f1_scores_val: the f1_score during each epoch
+def fit(self,X,y):
+    '''Build a boosted classifier from the training set (X, y).
+
+    Args:
+        X: An ndarray indicating the samples to be trained, 
+           which shape should be (n_samples,n_features).
+        y: An ndarray indicating the ground-truth labels correspond to X, 
+           which shape should be (n_samples,1), 
+           where the class label y[i, 0] is from {-1, +1}.
     '''
+    w = np.ones(y.shape)
+    w = w / w.sum() # regularization
 
-    n_train_samples, n_features = X_train.shape
+    self.a = []
+    self.base_clfs = []
 
-    if batch_size > n_train_samples:
-        batch_size = n_train_samples
+    for i in range(self.n_weakers_limit):
+        base_clf = self.weak_clf(max_depth=2)
+        base_clf.fit(X, y.flatten(), w.flatten())
 
-    # init weight vector
-    w = np.zeros((n_features, 1))
-    # w = np.random.random((n_features, 1))
-    # w = np.random.normal(1, 1, (n_features, 1))
-    # w = np.random.randint(-1, 2, size=(n_features, 1))
+        y_pred = base_clf.predict(X).reshape((-1, 1))
 
-    losses_train = []
-    losses_val = []
+        err_rate = w.T.dot(y_pred != y)[0][0] / w.sum()
 
-    f1_scores_train = []
-    f1_scores_val = []
+        if err_rate > 1 / 2 or err_rate == 0.0:
+            break
 
-    for epoch in range(0, max_epoch):
-        sample_indice = random.sample(range(0, n_train_samples), batch_size)
-        temp_sum = np.zeros(w.shape)
-        for i in sample_indice:
-            if 1 - y_train[i][0] * np.dot(X_train[i], w)[0] > 0:
-                temp_sum += -y_train[i][0] * X_train[i].reshape(-1, 1)
+        weight_param_a = math.log((1 - err_rate) / err_rate) / 2
 
-        # no regularization
-        w = (1 - learning_rate) * w - learning_rate * penalty_factor_C / batch_size * temp_sum
+        self.base_clfs.append(base_clf)
+        self.a.append(weight_param_a)
 
-        # update learning_rate if needed
-        learning_rate /= 1 + learning_rate * learning_rate_lambda * (epoch + 1)
+        w = w * np.exp(-weight_param_a * y * y_pred)
+        w = w / w.sum() # regularization
 
-        loss_train = hinge_loss(X_train, y_train, w)
-        loss_val = hinge_loss(X_val, y_val, w)
-        losses_train.append(loss_train)
-        losses_val.append(loss_val)
-        print("epoch [%3d]: loss_train = [%.6f]; loss_val = [%.6f]" % (epoch, loss_train, loss_val))
-
-        y_train_predict = sign_col_vector(np.dot(X_train, w), threshold=0,
-                                          sign_thershold=1).reshape(n_train_samples)
-        y_val_predict = sign_col_vector(np.dot(X_val, w), threshold=0, sign_thershold=1).reshape(
-            X_val.shape[0])
-        f1_train = f1_score(y_true=y_train, y_pred=y_train_predict)
-        f1_val = f1_score(y_true=y_val, y_pred=y_val_predict)
-        f1_scores_train.append(f1_train)
-        f1_scores_val.append(f1_val)
-
-        print("epoch [%3d]: f1_train = [%.6f]; f1_val = [%.6f]" % (epoch, f1_train, f1_val))
-        print('confusion matrix of train\n', confusion_matrix(y_true=y_train, y_pred=y_train_predict))
-        print('confusion matrix of val\n', confusion_matrix(y_true=y_val, y_pred=y_val_predict), '\n')
-
-    return w, losses_train, losses_val, f1_scores_train, f1_scores_val
-
-def hinge_loss(X, y, w):
-    return np.average(np.maximum(np.ones(y.shape) - y * np.dot(X, w), np.zeros(y.shape)), axis=0)[0]
-
-def sign(a, threshold=0, sign_thershold=0):
-    # the number of positive labels is much smaller than that of the negative labels
-    # it's an imbalance classification problem
-    if a > threshold:
-        return 1
-    elif a == threshold:
-        return sign_thershold
-    else:
-        return -1
-
-def sign_col_vector(a, threshold=0, sign_thershold=0):
-    a = copy.deepcopy(a)
-    n = a.shape[0]
-    for i in range(0, n):
-        a[i][0] = sign(a[i][0], threshold, sign_thershold)
-    return a
+        # prevent overfiting
+        # if self.is_good_enough():
+        #     break;
 
 ```
+
+#### 3.2.2. Face Classification 
+1. Load data set data. The images are converted into grayscale images with size of 24 * 24. Face images are labelled +1 while non-face images are labelled -1.
+2. Processing image samples to extract NPD features.
+3. The data set is divided into training set and validation set. In this experiment samples of the validation set takes up 25% of the original data set. 
+4. Predict and verify the accuracy on the validation set using the method in AdaBoostClassifier and use **classification_report()** of the sklearn.metrics library function writes predicted result to classifier_report.txt.
+
+#### 3.2.3. Face Detection
+1. Run the face_detection.py file. Experience the OpenCV's built-in method of face detection using Haar Feature-based Cascade Classifiers. The result will be save as detect_result.jpg.
 
 ### 3.3. Experiment Results
 

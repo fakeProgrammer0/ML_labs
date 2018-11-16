@@ -27,9 +27,8 @@ class AdaBoostClassifier:
         Args:
             X: An ndarray indicating the samples to be trained, which shape should be (n_samples,n_features).
             y: An ndarray indicating the ground-truth labels correspond to X, which shape should be (n_samples,1),
-               where y[i, 0] is from {-1, +1}.
+               where the class label y[i, 0] is from {-1, +1}.
         '''
-        n_samples, n_features = X.shape
         w = np.ones(y.shape)
         w = w / w.sum() # regularization
 
