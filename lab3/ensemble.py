@@ -4,7 +4,7 @@ import math
 
 class AdaBoostClassifier:
     '''A simple AdaBoost Classifier.
-    Only support binary classification currently.
+    Only support binary classification in which the label y is from {-1, +1} currently.
     '''
 
     def __init__(self, weak_classifier, n_weakers_limit):
@@ -17,8 +17,6 @@ class AdaBoostClassifier:
         self.weak_clf = weak_classifier
         self.n_weakers_limit = n_weakers_limit
 
-        pass
-
     def is_good_enough(self):
         '''Optional'''
         pass
@@ -28,37 +26,31 @@ class AdaBoostClassifier:
 
         Args:
             X: An ndarray indicating the samples to be trained, which shape should be (n_samples,n_features).
-            y: An ndarray indicating the ground-truth labels correspond to X, which shape should be (n_samples,1).
+            y: An ndarray indicating the ground-truth labels correspond to X, which shape should be (n_samples,1),
+               where y[i, 0] is from {-1, +1}.
         '''
         n_samples, n_features = X.shape
         w = np.ones(y.shape)
         w = w / w.sum() # regularization
 
-        weight_a = []
-        self.clfs = []
+        self.a = []
+        self.base_clfs = []
 
         for i in range(self.n_weakers_limit):
             base_clf = self.weak_clf(max_depth=2)
             base_clf.fit(X, y.flatten(), w.flatten())
-            self.clfs.append(base_clf)
 
             y_pred = base_clf.predict(X).reshape((-1, 1))
 
-            # can be optimized into more clean and simple code
-            # temp = np.ones(y.shape)
-            # for j in range(n_samples):
-            #     if y_pred[j][0] == y[j][0]:
-            #         temp[j][0] = 0
-            #
-            # err_rate = w.dot(temp)[0] / w.sum()
-
             err_rate = w.T.dot(y_pred != y)[0][0] / w.sum()
 
-            if err_rate > 1 / 2 or err_rate == 0:
+            if err_rate > 1 / 2 or err_rate == 0.0:
                 break
 
             weight_param_a = math.log((1 - err_rate) / err_rate) / 2
-            weight_a.append(weight_param_a)
+
+            self.base_clfs.append(base_clf)
+            self.a.append(weight_param_a)
 
             w = w * np.exp(-weight_param_a * y * y_pred)
             w = w / w.sum() # regularization
@@ -67,8 +59,6 @@ class AdaBoostClassifier:
             # if self.is_good_enough():
             #     break;
 
-        # self.a = np.ndarray((len(weight_a), 1), weight_a)
-        self.a = weight_a
 
     def predict_scores(self, X):
         '''Calculate the weighted sum score of the whole base classifiers for given samples.
@@ -79,8 +69,8 @@ class AdaBoostClassifier:
         Returns:
             An one-dimension ndarray indicating the scores of differnt samples, which shape should be (n_samples,1).
         '''
-        y_score_pred = np.shape((X.shape[0], 1))
-        for i, clf in enumerate(self.clfs):
+        y_score_pred = np.zeros((X.shape[0], 1))
+        for i, clf in enumerate(self.base_clfs):
             y_score_pred += self.a[i] * clf.predict(X).reshape((-1, 1))
 
         return y_score_pred
@@ -95,19 +85,28 @@ class AdaBoostClassifier:
         Returns:
             An ndarray consists of predicted labels, which shape should be (n_samples,1).
         '''
-        def my_sign(a, threshold=0, sign_threshold=1):
-            if sign_threshold != 1 and sign_threshold != -1:
 
-                raise ValueError('sign_threshold must be -1 or 1')
-            if not (-1 < threshold < 1):
-                raise ValueError('threshold must be between -1 and 1')
+        def sign_helper(a, threshold=0, sign_threshold=1):
+            ''' A helper method to perform the sign operation on each element of a given array a
+            :param a: An ndarray
+            :param threshold: The threshold of the sign function, default 0.
+                                sign(x) = -1 where x < threshold
+                                sign(x) = +1 where x > threshold
+                                sign(x) = sign_threshold where x = threshold
+            :param sign_threshold: default 1
+            :return: The result of the sign operation on the given array a
+            '''
+            if sign_threshold != 1 and sign_threshold != -1:
+                raise ValueError('sign_threshold must be -1 or +1')
+            # if not (-1 < threshold < 1):
+            #     raise ValueError('threshold must be between -1 and 1')
             sign_a = np.zeros(a.shape)
             sign_a += a > threshold
             sign_a -= a < threshold
             sign_a += sign_threshold * (a == threshold)
             return sign_a
 
-        return my_sign(self.predict_scores(X),threshold=threshold)
+        return sign_helper(self.predict_scores(X), threshold=threshold)
 
     @staticmethod
     def save(model, filename):
