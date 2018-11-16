@@ -36,7 +36,7 @@ class AdaBoostClassifier:
         self.base_clfs = []
 
         for i in range(self.n_weakers_limit):
-            base_clf = self.weak_clf(max_depth=2)
+            base_clf = self.weak_clf(max_depth=1)
             base_clf.fit(X, y.flatten(), w.flatten())
 
             y_pred = base_clf.predict(X).reshape((-1, 1))

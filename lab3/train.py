@@ -75,28 +75,29 @@ def face_classification_adaboost():
 
     def classified_result(y_train_true, y_train_pred, y_val_true, y_val_pred, report_title='', report_file=report_file):
         '''A helper method to write classified result into report_file
+        label shape: 1d ndarray
         '''
 
-        train_loss_exp = exp_loss(y_train.flatten(), y_train_pred)
-        train_loss_01 = zero_one_loss(y_train.flatten(), y_train_pred)
+        train_loss_exp = exp_loss(y_train_true, y_train_pred)
+        train_loss_01 = zero_one_loss(y_train_true, y_train_pred)
 
-        val_loss_exp = exp_loss(y_val.flatten(), y_val_pred)
-        val_loss_01 = zero_one_loss(y_val.flatten(), y_val_pred)
+        val_loss_exp = exp_loss(y_val_true, y_val_pred)
+        val_loss_01 = zero_one_loss(y_val_true, y_val_pred)
 
-        with open(report_file, 'w+') as report_fp:
-            report_fp.write(str(datetime.now())+'\n')
-
+        with open(report_file, 'a+') as report_fp:
             report_fp.write(report_title+'\n')
+            report_fp.write('timestamp: ' + str(datetime.now()) + '\n\n')
+
             report_fp.write('train_loss_exp = {:.6f}\n'.format(train_loss_exp))
             report_fp.write('train_loss_01  = {:.6f}\n'.format(train_loss_01))
             report_fp.write('val_loss_exp   = {:.6f}\n'.format(val_loss_exp))
             report_fp.write('val_loss_01    = {:.6f}\n\n'.format(val_loss_01))
 
             report_fp.write('classification_report of train data:\n')
-            report_fp.write(classification_report(y_true=y_train, y_pred=y_train_pred,
+            report_fp.write(classification_report(y_true=y_train_true, y_pred=y_train_pred,
                                                   target_names=class_name) + '\n\n')
-            report_fp.write('classification_report of train val:\n')
-            report_fp.write(classification_report(y_true=y_val, y_pred=y_val_pred,
+            report_fp.write('classification_report of val data:\n')
+            report_fp.write(classification_report(y_true=y_val_true, y_pred=y_val_pred,
                                                   target_names=class_name) + '\n\n')
 
     class_name = ['face', 'non-face']
@@ -105,18 +106,15 @@ def face_classification_adaboost():
         preprocess_imgs()
     X_train, y_train, X_val, y_val = load_divide_dataset(test_size=0.25)
 
-    X_train = X_train[0:1000, :]
-    y_train = y_train[0:1000, :]
-
     # ------- A single weak classifier ------------
 
-    weak_clf = DecisionTreeClassifier(max_depth=2)
+    weak_clf = DecisionTreeClassifier(max_depth=1)
     weak_clf.fit(X_train, y_train.flatten())
 
     y_train_pred = weak_clf.predict(X_train)
     y_val_pred = weak_clf.predict(X_val)
 
-    classified_result(y_train, y_train_pred, y_val, y_val_pred, 'loss estimate of a single weak classifier (a sklearn.tree.DecisionTreeClassifier with max_depth = 2):')
+    classified_result(y_train.flatten(), y_train_pred, y_val.flatten(), y_val_pred, '1.loss estimate of a single weak classifier (a sklearn.tree.DecisionTreeClassifier with max_depth = 1):')
 
     # ------- AdaBoost ------------
 
@@ -128,7 +126,7 @@ def face_classification_adaboost():
     y_train_pred = clf.predict(X_train)
     y_val_pred = clf.predict(X_val)
 
-    classified_result(y_train, y_train_pred, y_val, y_val_pred, 'loss estimate of AdaBoost (base classifier: sklearn.tree.DecisionTreeClassifier with max_depth = 2):')
+    classified_result(y_train.flatten(), y_train_pred.flatten(), y_val.flatten(), y_val_pred.flatten(), '2.loss estimate of AdaBoost (base classifier: sklearn.tree.DecisionTreeClassifier with max_depth = 1):')
 
 def test_sklearn_adaboostClf():
     pass
