@@ -32,16 +32,17 @@ class AdaBoostClassifier:
         '''
         n_samples, n_features = X.shape
         w = np.ones(y.shape)
+        w = w / w.sum() # regularization
 
         weight_a = []
         self.clfs = []
 
         for i in range(self.n_weakers_limit):
-            base_clf = self.weak_clf()
-            base_clf.fit(X, y, w)
+            base_clf = self.weak_clf(max_depth=2)
+            base_clf.fit(X, y.flatten(), w.flatten())
             self.clfs.append(base_clf)
 
-            y_pred = base_clf.predict(X)
+            y_pred = base_clf.predict(X).reshape((-1, 1))
 
             # can be optimized into more clean and simple code
             # temp = np.ones(y.shape)
@@ -51,12 +52,16 @@ class AdaBoostClassifier:
             #
             # err_rate = w.dot(temp)[0] / w.sum()
 
-            err_rate = w.dot(y_pred==y)[0] / w.sum()
+            err_rate = w.T.dot(y_pred != y)[0][0] / w.sum()
+
+            if err_rate > 1 / 2 or err_rate == 0:
+                break
 
             weight_param_a = math.log((1 - err_rate) / err_rate) / 2
             weight_a.append(weight_param_a)
 
             w = w * np.exp(-weight_param_a * y * y_pred)
+            w = w / w.sum() # regularization
 
             # prevent overfiting
             # if self.is_good_enough():
@@ -76,7 +81,7 @@ class AdaBoostClassifier:
         '''
         y_score_pred = np.shape((X.shape[0], 1))
         for i, clf in enumerate(self.clfs):
-            y_score_pred += self.a[i] * clf.predict(X)
+            y_score_pred += self.a[i] * clf.predict(X).reshape((-1, 1))
 
         return y_score_pred
 
@@ -91,7 +96,8 @@ class AdaBoostClassifier:
             An ndarray consists of predicted labels, which shape should be (n_samples,1).
         '''
         def my_sign(a, threshold=0, sign_threshold=1):
-            if sign_threshold != 1 or sign_threshold != -1:
+            if sign_threshold != 1 and sign_threshold != -1:
+
                 raise ValueError('sign_threshold must be -1 or 1')
             if not (-1 < threshold < 1):
                 raise ValueError('threshold must be between -1 and 1')
