@@ -31,7 +31,7 @@ def exp_loss(y_true, y_pred):
     '''
     if y_true.shape != y_pred.shape:
         raise Exception('The shape of y_true must be the same as y_pred')
-    return np.exp(y_true * y_pred).sum()
+    return np.exp(-y_true * y_pred).sum()
 
 def preprocess_imgs():
     '''load sample images, extract their NPD features and save the data into the local cache file 'dataset.pickle'
@@ -73,7 +73,9 @@ def load_divide_dataset(test_size):
 
 def face_classification_adaboost():
 
-    def classified_result(y_train_true, y_train_pred, y_val_true, y_val_pred, report_title=''):
+    def classified_result(y_train_true, y_train_pred, y_val_true, y_val_pred, report_title='', report_file=report_file):
+        '''A helper method to write classified result into report_file
+        '''
 
         train_loss_exp = exp_loss(y_train.flatten(), y_train_pred)
         train_loss_01 = zero_one_loss(y_train.flatten(), y_train_pred)
@@ -81,20 +83,19 @@ def face_classification_adaboost():
         val_loss_exp = exp_loss(y_val.flatten(), y_val_pred)
         val_loss_01 = zero_one_loss(y_val.flatten(), y_val_pred)
 
-        report_str = '''{}
-            train_loss_exp = {:.6f}
-            train_loss_01  = {:.6f}
+        with open(report_file, 'w+') as report_fp:
+            report_fp.write(str(datetime.now())+'\n')
 
-            val_loss_exp   = {:.6f}
-            val_loss_01    = {:.6f}
+            report_fp.write(report_title+'\n')
+            report_fp.write('train_loss_exp = {:.6f}\n'.format(train_loss_exp))
+            report_fp.write('train_loss_01  = {:.6f}\n'.format(train_loss_01))
+            report_fp.write('val_loss_exp   = {:.6f}\n'.format(val_loss_exp))
+            report_fp.write('val_loss_01    = {:.6f}\n\n'.format(val_loss_01))
 
-            '''.format(report_title, train_loss_exp, train_loss_01, val_loss_exp, val_loss_01)
-
-        with open(report_file, 'r+') as report_fp:
-            report_fp.write(str(datetime.now()))
-            report_fp.write(report_str)
+            report_fp.write('classification_report of train data:\n')
             report_fp.write(classification_report(y_true=y_train, y_pred=y_train_pred,
-                                                  target_names=class_name) + '\n')
+                                                  target_names=class_name) + '\n\n')
+            report_fp.write('classification_report of train val:\n')
             report_fp.write(classification_report(y_true=y_val, y_pred=y_val_pred,
                                                   target_names=class_name) + '\n\n')
 
