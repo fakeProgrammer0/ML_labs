@@ -132,6 +132,7 @@ The dataset used in this experiment are from the [example repository](https://gi
 
 ```python
 import math
+import copy
 import numpy as np
 
 class AdaBoostClassifier:
@@ -143,7 +144,7 @@ class AdaBoostClassifier:
         '''Initialize AdaBoostClassifier
 
         Args:
-            weak_classifier: The class of weak classifier, which is recommend to be sklearn.tree.DecisionTreeClassifier.
+            weak_classifier: A instance of weak classifier, which is recommend to be sklearn.tree.DecisionTreeClassifier.
             n_weakers_limit: The maximum number of weak classifier the model can use.
         '''
         self.weak_clf = weak_classifier
@@ -168,7 +169,7 @@ class AdaBoostClassifier:
         self.base_clfs = []
 
         for i in range(self.n_weakers_limit):
-            base_clf = self.weak_clf(max_depth=1)
+            base_clf = copy.copy(self.weak_clf)
             base_clf.fit(X, y.flatten(), w.flatten())
 
             y_pred = base_clf.predict(X).reshape((-1, 1))
@@ -189,7 +190,6 @@ class AdaBoostClassifier:
             # prevent overfiting
             # if self.is_good_enough():
             #     break;
-
 
     def predict_scores(self, X):
         pass
@@ -278,18 +278,16 @@ From the report we can see that the AdaBoost model gets lower loss estimate than
  
 #### 3.3.2. Result of Face Detection
 
-<img src='img/face_detect.png'/>
+<img src='img/face_detect_result.png'/>
 
 #### *3.3.3. Loss Estimate During AdaBoost Training
 This subsection is not required in the experiment specification. It is just a small loss etimate test performed by myself. [注：这个小节的内容并不是实验要求，只是我自己做的一个损失函数评估的小实验]
 
-The following graphs depict the 0/1 loss and exponential loss both decrease as more and more weaker classifiers are aggregated. At epoch 6, the training loss decreases while the val loss increases, which shows the model is likely to become overfitting.
+The following graphs depict the 0/1 loss and exponential loss both decrease as more and more weaker classifiers are aggregated. After epoch 6, the training loss decreases while the val loss increases, which shows the model is likely to become overfitting.
 
 <img src="img/AdaBoost_losses_01.png"/>
 
 <img src="img/AdaBoost_losses_exp.png"/>
-
-
 
 ## 4.Conclusion
 In this report, we learn about the methodology about AdaBoost.
@@ -302,8 +300,8 @@ This report further estimates loss of the dataset during AdaBoost training proce
 3. Prof. Mingkui Tan. "Boosting Method(AdaBoost, GBDT and XGBoost).pdf"
 4. 周志华《机器学习》
 5. 李航《统计学习方法》
-6. Wikipedia. AdaBoost[https://en.wikipedia.org/wiki/AdaBoost]
-7. Wikipedia. Boosting[https://en.wikipedia.org/wiki/Boosting_(machine_learning)]
+6. [Wikipedia. AdaBoost](https://en.wikipedia.org/wiki/AdaBoost)
+7. [Wikipedia. Boosting](https://en.wikipedia.org/wiki/Boosting_(machine_learning))
 
 
 

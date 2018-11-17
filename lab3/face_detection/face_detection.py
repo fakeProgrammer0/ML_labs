@@ -3,15 +3,12 @@ import cv2
 # if you get error when running the following code, maybe you should change the relative paths to absolute paths.
 if __name__ == '__main__':
 
-    # img_path = input('img file path: ')
-    img_path = r'D:\MyData\Temp Codes\Github\ML_labs\lab3\face_detection\test_img\kobes.jpg'
-    # img_path = r'./Lena.png'
+    img_path = r'./Lena.png'
 
     # load cascade classifier training file for haarcascade
     face_cascade = cv2.CascadeClassifier('./haarcascade_frontalface_default.xml')
     
     # load test image
-    # img = cv2.imread('./Lena.png')
     img = cv2.imread(img_path)
 
     # convert the test image to gray image as opencv face detector expects gray images
