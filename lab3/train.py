@@ -130,7 +130,8 @@ def adaboost_loss_estimate():
 
 if __name__ == "__main__":
     # write your code here
-    # face_classification_adaboost()
-    adaboost_loss_estimate()
+    face_classification_adaboost()
+    # adaboost_loss_estimate()
+    pass
 
 

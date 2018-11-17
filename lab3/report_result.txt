@@ -1,0 +1,60 @@
+1.loss estimate of a single weak classifier (a sklearn.tree.DecisionTreeClassifier with max_depth = 1):
+timestamp: 2018-11-17 10:51:47.031201
+
+train_loss_exp = 0.750212
+train_loss_01  = 0.162667
+val_loss_exp   = 0.884968
+val_loss_01    = 0.220000
+
+classification_report of train data:
+              precision    recall  f1-score   support
+
+        face       0.88      0.78      0.82       370
+    non-face       0.80      0.90      0.85       380
+
+   micro avg       0.84      0.84      0.84       750
+   macro avg       0.84      0.84      0.84       750
+weighted avg       0.84      0.84      0.84       750
+
+
+classification_report of val data:
+              precision    recall  f1-score   support
+
+        face       0.88      0.67      0.76       130
+    non-face       0.72      0.90      0.80       120
+
+   micro avg       0.78      0.78      0.78       250
+   macro avg       0.80      0.78      0.78       250
+weighted avg       0.80      0.78      0.78       250
+
+
+2.loss estimate of AdaBoost (base classifier: sklearn.tree.DecisionTreeClassifier with max_depth = 1):
+timestamp: 2018-11-17 10:55:24.688709
+
+train_loss_exp = 0.418021
+train_loss_01  = 0.021333
+val_loss_exp   = 0.508904
+val_loss_01    = 0.060000
+
+classification_report of train data:
+              precision    recall  f1-score   support
+
+        face       0.98      0.97      0.98       370
+    non-face       0.97      0.98      0.98       380
+
+   micro avg       0.98      0.98      0.98       750
+   macro avg       0.98      0.98      0.98       750
+weighted avg       0.98      0.98      0.98       750
+
+
+classification_report of val data:
+              precision    recall  f1-score   support
+
+        face       0.98      0.91      0.94       130
+    non-face       0.91      0.97      0.94       120
+
+   micro avg       0.94      0.94      0.94       250
+   macro avg       0.94      0.94      0.94       250
+weighted avg       0.94      0.94      0.94       250
+
+
