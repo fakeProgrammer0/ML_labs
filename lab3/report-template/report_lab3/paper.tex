@@ -1,4 +1,4 @@
-\documentclass[journal, a4paper]{IEEEtran}
+\documentclass[journal, a4paper, onecolumn]{IEEEtran}
 
 % some very useful LaTeX packages include:
 
@@ -132,6 +132,7 @@
 \usepackage{pythonhighlight}
 
 \usepackage{multicol}
+\usepackage{caption}
 
 \usepackage{framed}
 \usepackage[colorlinks,linkcolor=blue,citecolor=blue,anchorcolor=blue]{hyperref}
@@ -218,6 +219,8 @@ Undergraduate
 % Define document title and author
 	\title{Face Detection Based on AdaBoost Algorithm}
 	\maketitle
+
+\begin{multicols}{2}
 
 % Write abstract here
 \begin{abstract}
@@ -336,7 +339,7 @@ The dataset used in this experiment are from the \href{https://github.com/wujiaj
 \item Load data set data. The images are converted into grayscale images with size of 24 * 24. Face images are labelled +1 while non-face images are labelled -1.
 \item Processing image samples to extract NPD features.
 \item The data set is divided into training set and validation set. In this experiment samples of the validation set takes up 25\% of the original data set. 
-\item Predict and verify the accuracy on the validation set using the method in AdaBoostClassifier and use classification\_report() of the sklearn.metrics library function writes predicted result to classifier\_report.txt. \label{step:face_clf_4}
+\item Predict and verify the accuracy on the validation set using the method in AdaBoostClassifier and use classification\_report() of the sklearn.metrics library function writes predicted result to classifier\_report.txt (Appendix.A \ref{title:report.txt}). \label{step:face_clf_4}
       \end{enumerate}
 
       \subsection*{B3. Face Detection}
@@ -355,21 +358,23 @@ This subsection is not required in the experiment specification. It is just a sm
 
 The following graphs depict the 0/1 loss(fig \ref{fig:losses_01}) and exponential loss(fig \ref{fig:losses_exp}) both decrease as more and more weaker classifiers are aggregated. After epoch 6, the training loss decreases while the val loss increases, which shows the model is likely to become overfitting.
 
-\begin{figure}[!hbt]
+% \begin{figure}[!hbt]
         \begin{center}
-        \includegraphics[width=\columnwidth]{AdaBoost_losses_01}
+        \captionsetup{type=figure}
+        \includegraphics[width=8cm]{AdaBoost_losses_01}
         \caption{Zero/One Losses during AdaBoost Training.}
         \label{fig:losses_01}
         \end{center}
-\end{figure}
+% \end{figure}
 
-\begin{figure}[!hbt]
+% \begin{figure}[!hbt]
         \begin{center}
-        \includegraphics[width=\columnwidth]{AdaBoost_losses_exp}
+        \captionsetup{type=figure}
+        \includegraphics[width=8cm]{AdaBoost_losses_exp}
         \caption{Exponential Losses during AdaBoost Training.}
         \label{fig:losses_exp}
         \end{center}
-\end{figure}
+% \end{figure}
 
 \section{Conclusion}
 In this report, we learn about the methodology about AdaBoost. Then we perform a face classification problem using AdaBoost. This report further estimates loss of the dataset during AdaBoost training process.
@@ -385,79 +390,13 @@ In this report, we learn about the methodology about AdaBoost. Then we perform a
 \item \href{https://en.wikipedia.org/wiki/Boosting_(machine_learning)}{Wikipedia. Boosting} \label{href:Boosting}
 \end{enumerate}
 
-\newpage
-
-\begin{mulitcols}{2}
-\subsection{report.txt}
-\begin{lstlisting}
-1.loss estimate of a single weak classifier 
-(a sklearn.tree.DecisionTreeClassifier with max_depth = 1):
-timestamp: 2018-11-17 10:51:47.031201
-
-  train_loss_exp = 0.750212
-  train_loss_01  = 0.162667
-  val_loss_exp   = 0.884968
-  val_loss_01    = 0.220000
-
-  classification_report of train data:
-                precision    recall  f1-score   support
-
-          face       0.88      0.78      0.82       370
-      non-face       0.80      0.90      0.85       380
-
-     micro avg       0.84      0.84      0.84       750
-     macro avg       0.84      0.84      0.84       750
-  weighted avg       0.84      0.84      0.84       750
-
-
-  classification_report of val data:
-                precision    recall  f1-score   support
-
-          face       0.88      0.67      0.76       130
-      non-face       0.72      0.90      0.80       120
-
-     micro avg       0.78      0.78      0.78       250
-     macro avg       0.80      0.78      0.78       250
-  weighted avg       0.80      0.78      0.78       250
-    
-2.loss estimate of AdaBoost 
-(base classifier: sklearn.tree.DecisionTreeClassifier with max_depth = 1):
-timestamp: 2018-11-17 10:55:24.688709
-    
-  train_loss_exp = 0.418021
-  train_loss_01  = 0.021333
-  val_loss_exp   = 0.508904
-  val_loss_01    = 0.060000
-
-  classification_report of train data:
-                precision    recall  f1-score   support
-
-          face       0.98      0.97      0.98       370
-      non-face       0.97      0.98      0.98       380
-
-     micro avg       0.98      0.98      0.98       750
-     macro avg       0.98      0.98      0.98       750
-  weighted avg       0.98      0.98      0.98       750
-
-
-  classification_report of val data:
-                precision    recall  f1-score   support
-
-          face       0.98      0.91      0.94       130
-      non-face       0.91      0.97      0.94       120
-
-     micro avg       0.94      0.94      0.94       250
-     macro avg       0.94      0.94      0.94       250
-  weighted avg       0.94      0.94      0.94       250
-
-\end{lstlisting}
-\end{mulitcols}
+\end{multicols}
 
 \newpage
 
 \section{Appendix}
 
-\subsection{report.txt}
+\subsection{report.txt}\label{title:report.txt}
 \begin{lstlisting}
 1.loss estimate of a single weak classifier 
 (a sklearn.tree.DecisionTreeClassifier with max_depth = 1):
@@ -470,7 +409,6 @@ timestamp: 2018-11-17 10:51:47.031201
 
   classification_report of train data:
                 precision    recall  f1-score   support
-
           face       0.88      0.78      0.82       370
       non-face       0.80      0.90      0.85       380
 
@@ -478,10 +416,8 @@ timestamp: 2018-11-17 10:51:47.031201
      macro avg       0.84      0.84      0.84       750
   weighted avg       0.84      0.84      0.84       750
 
-
   classification_report of val data:
                 precision    recall  f1-score   support
-
           face       0.88      0.67      0.76       130
       non-face       0.72      0.90      0.80       120
 
@@ -500,7 +436,6 @@ timestamp: 2018-11-17 10:55:24.688709
 
   classification_report of train data:
                 precision    recall  f1-score   support
-
           face       0.98      0.97      0.98       370
       non-face       0.97      0.98      0.98       380
 
@@ -508,17 +443,14 @@ timestamp: 2018-11-17 10:55:24.688709
      macro avg       0.98      0.98      0.98       750
   weighted avg       0.98      0.98      0.98       750
 
-
   classification_report of val data:
                 precision    recall  f1-score   support
-
           face       0.98      0.91      0.94       130
       non-face       0.91      0.97      0.94       120
 
      micro avg       0.94      0.94      0.94       250
      macro avg       0.94      0.94      0.94       250
   weighted avg       0.94      0.94      0.94       250
-
 \end{lstlisting}
 
 \subsection{Core Code of AdaBoost Training (written in python)}
@@ -530,8 +462,7 @@ import numpy as np
 
 class AdaBoostClassifier:
     '''A simple AdaBoost Classifier.
-    Only support binary classification in which 
-    the label y is from {-1, +1} currently.
+    Only support binary classification in which the label y is from {-1, +1} currently.
     '''
 
     def __init__(self, weak_classifier, n_weakers_limit):
@@ -539,10 +470,8 @@ class AdaBoostClassifier:
 
         Args:
             weak_classifier: A instance of weak classifier, 
-            which is recommend to be 
-            sklearn.tree.DecisionTreeClassifier.
-            n_weakers_limit: The maximum number of weak classifier 
-            the model can use.
+            which is recommend to be sklearn.tree.DecisionTreeClassifier.
+            n_weakers_limit: The maximum number of weak classifier the model can use.
         '''
         self.weak_clf = weak_classifier
         self.n_weakers_limit = n_weakers_limit
@@ -557,7 +486,7 @@ class AdaBoostClassifier:
             X: An ndarray indicating the samples to be trained, 
             which shape should be (n_samples,n_features).
             y: An ndarray indicating the ground-truth labels 
-            correspond to X, which shape should be (n_samples,1),
+               correspond to X, which shape should be (n_samples,1),
                where the class label y[i, 0] is from {-1, +1}.
         '''
         w = np.ones(y.shape)
@@ -578,12 +507,11 @@ class AdaBoostClassifier:
                 break
 
             weight_param_a = math.log((1 - err_rate) / err_rate) / 2
+            w = w * np.exp(-weight_param_a * y * y_pred)
+            w = w / w.sum() # regularization
 
             self.base_clfs.append(base_clf)
             self.a.append(weight_param_a)
-
-            w = w * np.exp(-weight_param_a * y * y_pred)
-            w = w / w.sum() # regularization
 
             # prevent overfiting
             # if self.is_good_enough():

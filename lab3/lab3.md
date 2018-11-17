@@ -8,7 +8,7 @@ A few theory and methodology of **AdaBoost** will be exhibited, followed by seve
 ## 1.Introduction
 **Boosting** is a machine learning ensemble meta-algorithm for primarily reducing bias, and also variance in supervised learning, and a family of machine learning algorithms that convert weak learners to strong ones.[7]
 
-**AdaBoost**, short for **Adaptive Boosting**, is a Boosting method using exponential loss function which emphasize samples classified incorrectly in the previous training epoches. 
+**AdaBoost**, short for **Adaptive Boosting**, is a Boosting method using exponential loss function which emphasizes samples classified incorrectly in the previous training epoches. 
 
 In this report, we will first explain the methodology of AdaBoost.
 Equipped with the powerful tool of AdaBoost, we will solve a face classification problem and then perform face detection with cv2 APIs supporting.  
