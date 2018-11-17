@@ -1,5 +1,4 @@
-'''
-
+'''Solving a face classification problem using AdaBoost method from ensemble.py
 '''
 
 from lab3.ensemble import AdaBoostClassifier
@@ -8,7 +7,6 @@ from lab3.feature import NPDFeature
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import zero_one_loss
-from sklearn.metrics import f1_score
 from sklearn.metrics import classification_report
 
 import numpy as np
@@ -19,19 +17,10 @@ import glob
 import pickle
 from datetime import datetime
 
+from lab3.ML_toolkit import exp_loss
+
 dataset_dump_file = os.getcwd() + r'\dataset.pickle'
 report_file = os.getcwd() + r'\report.txt'
-
-def exp_loss(y_true, y_pred):
-    '''calculate the exponential loss of groundtruth labels y_true and predictive labels y_pred
-
-    :param y_true: an ndarray
-    :param y_pred: an ndarray
-    :return: the exponential loss
-    '''
-    if y_true.shape != y_pred.shape:
-        raise Exception('The shape of y_true must be the same as y_pred')
-    return np.exp(-y_true * y_pred).sum()
 
 def preprocess_imgs():
     '''load sample images, extract their NPD features and save the data into the local cache file 'dataset.pickle'

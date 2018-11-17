@@ -1,6 +1,10 @@
+import math
 import pickle
 import numpy as np
-import math
+
+from lab3.ML_toolkit import sign_helper
+from lab3.ML_toolkit import exp_loss
+from sklearn.metrics import zero_one_loss
 
 class AdaBoostClassifier:
     '''A simple AdaBoost Classifier.
@@ -84,27 +88,6 @@ class AdaBoostClassifier:
         Returns:
             An ndarray consists of predicted labels, which shape should be (n_samples,1).
         '''
-
-        def sign_helper(a, threshold=0, sign_threshold=1):
-            ''' A helper method to perform the sign operation on each element of a given array a
-            :param a: An ndarray
-            :param threshold: The threshold of the sign function, default 0.
-                                sign(x) = -1 where x < threshold
-                                sign(x) = +1 where x > threshold
-                                sign(x) = sign_threshold where x = threshold
-            :param sign_threshold: default 1
-            :return: The result of the sign operation on the given array a
-            '''
-            if sign_threshold != 1 and sign_threshold != -1:
-                raise ValueError('sign_threshold must be -1 or +1')
-            # if not (-1 < threshold < 1):
-            #     raise ValueError('threshold must be between -1 and 1')
-            sign_a = np.zeros(a.shape)
-            sign_a += a > threshold
-            sign_a -= a < threshold
-            sign_a += sign_threshold * (a == threshold)
-            return sign_a
-
         return sign_helper(self.predict_scores(X), threshold=threshold)
 
     @staticmethod

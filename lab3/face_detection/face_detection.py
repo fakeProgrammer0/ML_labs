@@ -4,8 +4,8 @@ import cv2
 if __name__ == '__main__':
 
     # img_path = input('img file path: ')
-    # img_path = r'./test_img/kobes.jpg'
-    img_path = r'./Lena.png'
+    img_path = r'D:\MyData\Temp Codes\Github\ML_labs\lab3\face_detection\test_img\kobes.jpg'
+    # img_path = r'./Lena.png'
 
     # load cascade classifier training file for haarcascade
     face_cascade = cv2.CascadeClassifier('./haarcascade_frontalface_default.xml')

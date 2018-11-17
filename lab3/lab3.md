@@ -2,16 +2,16 @@
 
 ## Abstract
 **AdaBoost** is one of the most classic **Boosting** methods. 
-In this report, we will try to solve a face detection problem based on a small dataset using AdaBoost. 
+In this report, we will try to solve a face classification problem based on a small dataset using AdaBoost. 
 A few theory and methodology of **AdaBoost** will be exhibited, followed by several experiments.  
 
 ## 1.Introduction
 **Boosting** is a machine learning ensemble meta-algorithm for primarily reducing bias, and also variance in supervised learning, and a family of machine learning algorithms that convert weak learners to strong ones.[7]
 
-**AdaBoost**, short for **Adaptive Boosting**, is a Boosting method using exponential loss function which emphasize samples classified incorectly in the previous training epoches. 
+**AdaBoost**, short for **Adaptive Boosting**, is a Boosting method using exponential loss function which emphasize samples classified incorrectly in the previous training epoches. 
 
 In this report, we will first explain the methodology of AdaBoost.
-Equipped with the powerful tool of AdaBoost, we will solve a face detection problem.  
+Equipped with the powerful tool of AdaBoost, we will solve a face classification problem and then perform face detection with cv2 APIs supporting.  
 
 Motivations of Experiment are listed below:
 1. Understand AdaBoost further
@@ -98,7 +98,11 @@ The pseudocode of AdaBoost can be summarize as:
     
  <img src="http://latex.codecogs.com/gif.latex?\alpha_m=\frac{1}{2}\ln\left(\frac{1-\varepsilon_m}{\varepsilon_m}\right)"/>
 
+<br/>
+
  <img src="http://latex.codecogs.com/gif.latex?Z_{m}=\sum_{i=1}^{N}{\omega\left(m,i\right)e^{-\alpha_my_ih_m\left(X_i\right)}}"/>
+ 
+ <br/>
 
  <img src="http://latex.codecogs.com/gif.latex?\omega\left(m+1,i\right)=\frac{\omega\left(m,i\right)e^{-\alpha_my_ih_m\left(X_i\right)}}{Z_{m}}"/>
 
@@ -130,44 +134,68 @@ The dataset used in this experiment are from the [example repository](https://gi
 import math
 import numpy as np
 
-def fit(self,X,y):
-    '''Build a boosted classifier from the training set (X, y).
-
-    Args:
-        X: An ndarray indicating the samples to be trained, 
-           which shape should be (n_samples,n_features).
-        y: An ndarray indicating the ground-truth labels correspond to X, 
-           which shape should be (n_samples,1), 
-           where the class label y[i, 0] is from {-1, +1}.
+class AdaBoostClassifier:
+    '''A simple AdaBoost Classifier.
+    Only support binary classification in which the label y is from {-1, +1} currently.
     '''
-    w = np.ones(y.shape)
-    w = w / w.sum() # regularization
 
-    self.a = []
-    self.base_clfs = []
+    def __init__(self, weak_classifier, n_weakers_limit):
+        '''Initialize AdaBoostClassifier
 
-    for i in range(self.n_weakers_limit):
-        base_clf = self.weak_clf(max_depth=2)
-        base_clf.fit(X, y.flatten(), w.flatten())
+        Args:
+            weak_classifier: The class of weak classifier, which is recommend to be sklearn.tree.DecisionTreeClassifier.
+            n_weakers_limit: The maximum number of weak classifier the model can use.
+        '''
+        self.weak_clf = weak_classifier
+        self.n_weakers_limit = n_weakers_limit
 
-        y_pred = base_clf.predict(X).reshape((-1, 1))
+    def is_good_enough(self):
+        '''Optional'''
+        pass
 
-        err_rate = w.T.dot(y_pred != y)[0][0] / w.sum()
+    def fit(self,X,y):
+        '''Build a boosted classifier from the training set (X, y).
 
-        if err_rate > 1 / 2 or err_rate == 0.0:
-            break
-
-        weight_param_a = math.log((1 - err_rate) / err_rate) / 2
-
-        self.base_clfs.append(base_clf)
-        self.a.append(weight_param_a)
-
-        w = w * np.exp(-weight_param_a * y * y_pred)
+        Args:
+            X: An ndarray indicating the samples to be trained, which shape should be (n_samples,n_features).
+            y: An ndarray indicating the ground-truth labels correspond to X, which shape should be (n_samples,1),
+               where the class label y[i, 0] is from {-1, +1}.
+        '''
+        w = np.ones(y.shape)
         w = w / w.sum() # regularization
 
-        # prevent overfiting
-        # if self.is_good_enough():
-        #     break;
+        self.a = []
+        self.base_clfs = []
+
+        for i in range(self.n_weakers_limit):
+            base_clf = self.weak_clf(max_depth=1)
+            base_clf.fit(X, y.flatten(), w.flatten())
+
+            y_pred = base_clf.predict(X).reshape((-1, 1))
+
+            err_rate = w.T.dot(y_pred != y)[0][0] / w.sum()
+
+            if err_rate > 1 / 2 or err_rate == 0.0:
+                break
+
+            weight_param_a = math.log((1 - err_rate) / err_rate) / 2
+
+            self.base_clfs.append(base_clf)
+            self.a.append(weight_param_a)
+
+            w = w * np.exp(-weight_param_a * y * y_pred)
+            w = w / w.sum() # regularization
+
+            # prevent overfiting
+            # if self.is_good_enough():
+            #     break;
+
+
+    def predict_scores(self, X):
+        pass
+
+    def predict(self, X, threshold=0):
+        pass
 
 ```
 
@@ -184,8 +212,7 @@ def fit(self,X,y):
 
 #### 3.3.1. Result of Face Classification
 The result of face classification are written into the file report.txt according to **3.2.2 step 4**.
-
-The report generated by training a small dataset with 750 samples.
+The following report is generated by training a small dataset with 750 samples.
 
     1.loss estimate of a single weak classifier (a sklearn.tree.DecisionTreeClassifier with max_depth = 1):
     timestamp: 2018-11-16 21:12:25.321301
