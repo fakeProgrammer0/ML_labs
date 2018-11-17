@@ -86,36 +86,9 @@ where <img src="http://latex.codecogs.com/gif.latex?Z_{m}"/> is the regularizati
     />
 </div>
  
-The pseudocode of AdaBoost can be summarized as:  
+#### The pseudocode of AdaBoost can be summarized as:  
  
-<div style="background=#000; color:#FFF">
-
-<span>For m = 1, 2, ..., T: </span><br/>
-<p style="text-indent: 24px;">
-    train <img src="http://latex.codecogs.com/gif.latex?h_m\left(X\right)"/> based on the sample weight <img src="http://latex.codecogs.com/gif.latex?\omega_m"/>
-    
-calculate the error rate <img src="http://latex.codecogs.com/gif.latex?\varepsilon_m"/> of the base learner <img src="http://latex.codecogs.com/gif.latex?h_m\left(X\right)"/> <br/>
-    
-   **if <img src="http://latex.codecogs.com/gif.latex?\varepsilon_m\ge0.5"/> then break**
-    
- <img src="http://latex.codecogs.com/gif.latex?\alpha_m=\frac{1}{2}\ln\left(\frac{1-\varepsilon_m}{\varepsilon_m}\right)"/>
-
-<br/>
-
-<img src="http://latex.codecogs.com/gif.latex?Z_{m}=\sum_{i=1}^{N}{\omega\left(m,i\right)e^{-\alpha_my_ih_m\left(X_i\right)}}"/>
- 
-<br/>
-
-<img src="http://latex.codecogs.com/gif.latex?\omega\left(m+1,i\right)=\frac{\omega\left(m,i\right)e^{-\alpha_my_ih_m\left(X_i\right)}}{Z_{m}}"/>
-
-</p>
-
-EndFor
-
-return <img src="http://latex.codecogs.com/gif.latex?H\left(X_i\right)=\sum_{m=1}^{T}{\alpha_mh_m\left(X_i\right)}"/>
-
-
-</div>
+<img src="img/pseudocode.png"/>
  
 ## 3.Experiment
 
