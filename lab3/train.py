@@ -1,4 +1,6 @@
 '''Solving a face classification problem using AdaBoost method from ensemble.py
+Attention: To exhibit the performance gained by using AdaBoost to aggregate weak learners, decision tree classifiers with max_depth = 1 are chosen as weak classifiers.
+[为了展示“AdaBoost能够集成弱分类器，获得更好的性能”，使效果更加明显，这次实验故意采用了max_depth设置为1的决策树作为弱分类器]
 '''
 
 from lab3.ensemble import AdaBoostClassifier
@@ -109,7 +111,7 @@ def face_classification_adaboost():
 
     n_weak_classifier = 10
 
-    clf = AdaBoostClassifier(DecisionTreeClassifier, n_weak_classifier)
+    clf = AdaBoostClassifier(DecisionTreeClassifier(max_depth=1), n_weak_classifier)
     clf.fit(X_train, y_train)
 
     y_train_pred = clf.predict(X_train)
@@ -117,12 +119,18 @@ def face_classification_adaboost():
 
     classified_result(y_train.flatten(), y_train_pred.flatten(), y_val.flatten(), y_val_pred.flatten(), '2.loss estimate of AdaBoost (base classifier: sklearn.tree.DecisionTreeClassifier with max_depth = 1):')
 
-def test_sklearn_adaboostClf():
-    pass
+def adaboost_loss_estimate():
+    if dataset_dump_file not in glob.glob(os.getcwd() + r'\*'):
+        preprocess_imgs()
+    X_train, y_train, X_val, y_val = load_divide_dataset(test_size=0.25)
+
+    n_weak_classifier = 10
+    clf = AdaBoostClassifier(DecisionTreeClassifier(max_depth=1), n_weak_classifier)
+    clf.loss_estimate(X_train, y_train, X_val, y_val)
 
 if __name__ == "__main__":
     # write your code here
-    face_classification_adaboost()
+    # face_classification_adaboost()
+    adaboost_loss_estimate()
 
-    pass
 
