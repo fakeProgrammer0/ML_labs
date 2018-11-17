@@ -9,4 +9,4 @@
 * report: [lab2 readme.md](lab2/readme.md)
 ## lab3
 * spec: [Face Detection Based on AdaBoost Algorithm](https://www.zybuluo.com/liushiya/note/1305548)
-* report: [lab3 readme.md](lab3/lab3.md)
+* report: [lab3 readme.md](lab3/readme.md)
