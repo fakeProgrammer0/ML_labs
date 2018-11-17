@@ -86,13 +86,15 @@ where <img src="http://latex.codecogs.com/gif.latex?Z_{m}"/> is the regularizati
     />
 </div>
  
-The pseudocode of AdaBoost can be summarize as:  
+The pseudocode of AdaBoost can be summarized as:  
  
 <div style="background=#000; color:#FFF">
 
 <span>For m = 1, 2, ..., T: </span><br/>
-<span>    train </span><img src="http://latex.codecogs.com/gif.latex?h_m\left(X\right)"/> based on the sample weight <img src="http://latex.codecogs.com/gif.latex?\omega_m"/>  
-    calculate the error rate <img src="http://latex.codecogs.com/gif.latex?\varepsilon_m"/> of the base learner <img src="http://latex.codecogs.com/gif.latex?h_m\left(X\right)"/>
+<p style="text-indent: 24px;">
+    train <img src="http://latex.codecogs.com/gif.latex?h_m\left(X\right)"/> based on the sample weight <img src="http://latex.codecogs.com/gif.latex?\omega_m"/>
+    
+calculate the error rate <img src="http://latex.codecogs.com/gif.latex?\varepsilon_m"/> of the base learner <img src="http://latex.codecogs.com/gif.latex?h_m\left(X\right)"/> <br/>
     
    **if <img src="http://latex.codecogs.com/gif.latex?\varepsilon_m\ge0.5"/> then break**
     
@@ -100,11 +102,13 @@ The pseudocode of AdaBoost can be summarize as:
 
 <br/>
 
- <img src="http://latex.codecogs.com/gif.latex?Z_{m}=\sum_{i=1}^{N}{\omega\left(m,i\right)e^{-\alpha_my_ih_m\left(X_i\right)}}"/>
+<img src="http://latex.codecogs.com/gif.latex?Z_{m}=\sum_{i=1}^{N}{\omega\left(m,i\right)e^{-\alpha_my_ih_m\left(X_i\right)}}"/>
  
- <br/>
+<br/>
 
- <img src="http://latex.codecogs.com/gif.latex?\omega\left(m+1,i\right)=\frac{\omega\left(m,i\right)e^{-\alpha_my_ih_m\left(X_i\right)}}{Z_{m}}"/>
+<img src="http://latex.codecogs.com/gif.latex?\omega\left(m+1,i\right)=\frac{\omega\left(m,i\right)e^{-\alpha_my_ih_m\left(X_i\right)}}{Z_{m}}"/>
+
+</p>
 
 EndFor
 
@@ -278,7 +282,7 @@ From the report we can see that the AdaBoost model gets lower loss estimate than
  
 #### 3.3.2. Result of Face Detection
 
-<img src='img/face_detect_result.png'/>
+<img src='img/face_detect_result.jpg'/>
 
 #### *3.3.3. Loss Estimate During AdaBoost Training
 This subsection is not required in the experiment specification. It is just a small loss etimate test performed by myself. [注：这个小节的内容并不是实验要求，只是我自己做的一个损失函数评估的小实验]
