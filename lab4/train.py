@@ -21,6 +21,7 @@ import matplotlib.pyplot  as plt
 # from . import matrix_factorization
 # from lab4 import matrix_factorization
 from lab4.matrix_factorization import MF_SGD
+from lab4.matrix_factorization import MF_ALS_Model
 
 dataset_path_temp = Template("./ml-100k/{dataset_filename}")
 
@@ -61,7 +62,7 @@ def load_dataset(dataset_path):
 #     return err_sum
 
 
-def train_model():
+def train_MF_SGD_Model():
     K = 40
     n_folds = 5
 
@@ -78,6 +79,26 @@ def train_model():
         plot_losses_graph(train_losses, val_losses, 'loss estimate of fold %d' % i)
 
 
+def train_MF_ALS_Model():
+    K = 40
+    n_folds = 5
+
+    base_dataset_temp = Template("./ml-100k/u${i}.base")
+    test_dataset_temp = Template("./ml-100k/u${i}.test")
+
+    for i in range(1, n_folds + 1):
+        R_train, A_01_train = load_dataset(base_dataset_temp.substitute(i=i))
+        R_test, A_01_test = load_dataset(test_dataset_temp.substitute(i=i))
+
+        ALS_Model = MF_ALS_Model()
+
+        # ALS_Model.fit(R_train, K, max_epoch=200, reg_lambda=0.5)
+        R_train_pred, train_losses, val_losses = ALS_Model.cost_estimate(R_train, R_test, K, max_epoch=10, reg_lambda=0.5)
+        plot_losses_graph(train_losses, val_losses, 'loss estimate of fold %d' % i)
+
+
+    pass
+
 def plot_losses_graph(train_losses, val_losses, title="loss graph"):
     plt.figure(figsize=(16, 9))
     plt.title(title)
@@ -90,7 +111,8 @@ def plot_losses_graph(train_losses, val_losses, title="loss graph"):
 
 
 if __name__ == "__main__":
-    train_model()
+    # train_MF_SGD_Model()
+    train_MF_ALS_Model()
     pass
 
 
