@@ -54,7 +54,7 @@
     <img src="http://latex.codecogs.com/gif.latex?e_{i,j}=\left(R_{i,j}-\hat{R_{i,j}}\right)^2=\left(R_{i,j}-\sum_{k=1}^{K}{U_{k,i}M_{k,j}}\right)^2">
 </div>
 
->其中 <img src="http://latex.codecogs.com/gif.latex?\mathbf{u}_i, \mathbf{m}_k"> 表示的都是列向量，而 <img src="http://latex.codecogs.com/gif.latex?\mathbf{u}_i^T">
+>其中 <img src="http://latex.codecogs.com/gif.latex?\mathbf{u}_i,\mathbf{m}_k"> 表示的都是列向量，而 <img src="http://latex.codecogs.com/gif.latex?\mathbf{u}_i^T">
 表示列向量的转置。
 
 对损失函数作正则化处理，有：
