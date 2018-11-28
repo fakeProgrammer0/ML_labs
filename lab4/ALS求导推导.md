@@ -1,5 +1,23 @@
 # ALS 求导过程推导
-内容主要是对发表ALS方法的论文[1]做一些整理、摘录。所以符号表示方式上（以及代码中的变量），尽量跟论文一致。
+内容主要是对发表ALS方法的论文[\[1\]](#1-large-scale-parallel-collaborative-filtering-for-the-netflix-prize)做一些整理、摘录。所以符号表示方式上（以及代码中的变量），尽量跟论文一致。
+
+- [ALS 求导过程推导](#als-求导过程推导)
+    - [0.符号表示](#0符号表示)
+    - [1.推荐系统矩阵分解](#1推荐系统矩阵分解)
+        - [模型的评估和优化](#模型的评估和优化)
+        - [1.1. 损失函数（loss function）](#11-损失函数loss-function)
+        - [1.2. 目标函数（objective function）](#12-目标函数objective-function)
+        - [1.3. 成本函数（cost function）](#13-成本函数cost-function)
+    - [2.ALS求导](#2als求导)
+        - [2.1. 列向量ui的更新](#21-列向量ui的更新)
+        - [2.2. 列向量mj的更新](#22-列向量mj的更新)
+    - [3.Python代码实现（慎点）](#3python代码实现慎点)
+    - [4.实验结果](#4实验结果)
+    - [5.Netflix Prize 简述](#5netflix-prize-简述)
+    - [6.Reference](#6reference)
+            - [1. Large-Scale Parallel Collaborative Filtering for the Netflix Prize](#1-large-scale-parallel-collaborative-filtering-for-the-netflix-prize)
+            - [2. Netflix Prize](#2-netflix-prize)
+            - [3. NetFlix百万美金数据建模大奖的故事](#3-netflix百万美金数据建模大奖的故事)
 
 ## 0.符号表示
 
@@ -83,7 +101,7 @@
 >* 该方法用于评估训练集时，误差被称为RMSD（root-mean-square deviation 均方根偏差）
 >* 该方法用于评估测试集时，误差被称为RMSE（root-mean-square error 均方根误差）
 
-即对原始评分矩阵中（除去空值）所有**出现过的评分**和预测评分的【均方误差的值】开根号。该值越接近0，模型的效果越好。发表ALS方法的论文[1]称，用1000个隐含特征作矩阵分解，并用ALS的方法训练，在netflix prize dataset上得到的RMSE为0.8985。
+即对原始评分矩阵中（除去空值）所有**出现过的评分**和预测评分的【均方误差的值】开根号。该值越接近0，模型的效果越好。发表ALS方法的论文[\[1\]](#1-large-scale-parallel-collaborative-filtering-for-the-netflix-prize)称，用1000个隐含特征作矩阵分解，并用ALS的方法训练，在netflix prize dataset上得到的RMSE为0.8985。
 
 >评分的范围为1分到5分，假如用模型预测出来的每个预测值和**真实值**都有2分的误差，那么该模型的RMSE为2
 >
@@ -266,8 +284,14 @@ def MF_RMSE(R, U, M):
 ```
 
 ## 4.实验结果
+在MovieLen数据集上的实验结果（测试集大小为原数据集的20%）
+* 隐含特征个数 <img src="http://latex.codecogs.com/gif.latex?K=40}">
+* 正则项 <img src="http://latex.codecogs.com/gif.latex?\lambda=0.08">
+<img src="img/ALS_loss.png">
+因为ALS是批量更新参数，所以在少数迭代次数就能在训练数据集上取得不错的效果。
+但是也留意到了测试集的RMSE始终保持在较大的水平（最低0.97左右），降不下来。
 
-
+理论上来说，隐含特征个数K越大，迭代次数越大，模型在训练集上的拟合效果越好，RMSE越小。对于参数 <img src="http://latex.codecogs.com/gif.latex?K}"> 和 <img src="http://latex.codecogs.com/gif.latex?\lambda}"> 的调节对模型的影响，后续会补充多一些实验和损失图像。
 
 ## 5.Netflix Prize 简述
 
@@ -281,11 +305,11 @@ to minimize the RMSE (root mean squared error) when predicting the ratings
 on the test dataset. Netflix's own recommendation system (CineMatch) scores
 0.9514 on the test dataset, and the grand challenge is to improve it by 10%.
 
-摘自论文[1]中的描述，大致状况就是：在2006年的时候，Netflix公司发布了个百万美元大赛，只要能够做到比它们原来的推荐系统的性能更优10%（用RMSE衡量是0.85626），即可拿奖。2008年，利用ALS的方法，在Linux服务器集群上利用GPU矩阵运算，该论文的作者们取得了5.91%的提升。最终这个提升10%的难题在2009年才被解决[2]。
+摘自论文[\[1\]](#1-large-scale-parallel-collaborative-filtering-for-the-netflix-prize)中的描述，大致状况就是：在2006年的时候，Netflix公司发布了个百万美元大赛，只要能够做到比它们原来的推荐系统的性能更优10%（用RMSE衡量是0.85626），即可拿奖。2008年，利用ALS的方法，在Linux服务器集群上利用GPU矩阵运算，该论文的作者们取得了5.91%的提升。最终这个提升10%的难题在2009年才被解决[\[2\]](#2-netflix-prize)。
 
 ## 6.Reference
-1. [Large-Scale Parallel Collaborative Filtering for the Netflix Prize](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=Large-Scale+Parallel+Collaborative+Filtering+for+the+Netflix+Prize&btnG=) 
-2. [Netflix Prize](https://www.netflixprize.com/)
-3. [NetFlix百万美金数据建模大奖的故事](https://mp.weixin.qq.com/s?src=3&timestamp=1543407206&ver=1&signature=ZFCFiBH6wqYd0X*s6hU3mhvmyiVrrVpOK5sbGgAku7JjMq0430qfHiDGUdacIO8bYlHLakerpzZMUPNMUIjyW2I06v6V359eUCIldOySPvOBELOwEygw9b1ZEmZDRVWJE8sqDTYYNmV1aWmwy0UZVw==)
+#### 1. [Large-Scale Parallel Collaborative Filtering for the Netflix Prize](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=Large-Scale+Parallel+Collaborative+Filtering+for+the+Netflix+Prize&btnG=) 
+#### 2. [Netflix Prize](https://www.netflixprize.com/)
+#### 3. [NetFlix百万美金数据建模大奖的故事](https://mp.weixin.qq.com/s?src=3&timestamp=1543407206&ver=1&signature=ZFCFiBH6wqYd0X*s6hU3mhvmyiVrrVpOK5sbGgAku7JjMq0430qfHiDGUdacIO8bYlHLakerpzZMUPNMUIjyW2I06v6V359eUCIldOySPvOBELOwEygw9b1ZEmZDRVWJE8sqDTYYNmV1aWmwy0UZVw==)
 
 
