@@ -15,9 +15,6 @@
     - [4.实验结果](#4实验结果)
     - [5.Netflix Prize 简述](#5netflix-prize-简述)
     - [6.Reference](#6reference)
-            - [1. Large-Scale Parallel Collaborative Filtering for the Netflix Prize](#1-large-scale-parallel-collaborative-filtering-for-the-netflix-prize)
-            - [2. Netflix Prize](#2-netflix-prize)
-            - [3. NetFlix百万美金数据建模大奖的故事](#3-netflix百万美金数据建模大奖的故事)
 
 ## 0.符号表示
 
