@@ -19,7 +19,7 @@
 </div>
 
 |          符号           |           含义 / 解释          |
-|-----    :-:     ------|-            :                   -|
+|     :-----------:      |                 -------------: |
 | <img src="http://latex.codecogs.com/gif.latex?R"> | 评分矩阵，<img src="http://latex.codecogs.com/gif.latex?R_{i,j}"> 表示用户i对电影j的评分 |
 | <img src="http://latex.codecogs.com/gif.latex?U"> | （用户，特征）矩阵， <img src="http://latex.codecogs.com/gif.latex?U_{i,k}"> 表示用户i对隐含特征k的喜好程度，<br/>行向量 <img src="http://latex.codecogs.com/gif.latex?u_{i}^T"> 中包含的所有隐含特征刻画了用户i在推荐系统中的表示形式 |
 | <img src="http://latex.codecogs.com/gif.latex?M"> | （特征，电影）矩阵， <img src="http://latex.codecogs.com/gif.latex?M_{k,j}"> 表示电影j符合隐含特征k的程度，<br/>列向量 <img src="http://latex.codecogs.com/gif.latex?m_{j}"> 中包含的所有隐含特征刻画了电影j在推荐系统中的表示形式 |
