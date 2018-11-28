@@ -1,6 +1,5 @@
 # ALS 求导过程推导
-内容主要是对发表ALS方法的论文[1]做一些整理、摘录。所以符号表示方式上，尽量跟论文一致。
-
+内容主要是对发表ALS方法的论文[1]做一些整理、摘录。所以符号表示方式上（以及代码中的变量），尽量跟论文一致。
 
 ## 0.符号表示
 
@@ -108,7 +107,7 @@ ALS (alternating-least-squares 交替最小平方)的训练步骤是：
 
 <img src="img/ui_derivation.png">
 
-以上式子出现的<img src="http://latex.codecogs.com/gif.latex?M_{I_i^U}, R^T\left(i,I_i^U\right), E"> 等变量的说明，见 [0.符号表示](#0符号表示)
+以上式子出现的<img src="http://latex.codecogs.com/gif.latex?M_{I_i^U},R^T\left(i,I_i^U\right),E"> 等变量的说明，见 [0.符号表示](#0符号表示)
 
 [变换1]的说明
 <img src="img/eq1.png">
@@ -158,7 +157,113 @@ ALS (alternating-least-squares 交替最小平方)的训练步骤是：
 
 ## 3.Python代码实现（慎点）
 
+```python
+import math
+import numpy as np
 
+def MF_ALS(self, R_train, R_val, K, reg_lambda, max_epoch, min_cost_threshold=0.0001):
+    '''Fit a rating matrix and optimize the matrix factorization form using ALS method.  
+    :param R_train: The training rating matrix, an ndarray in shape (n_users, n_items) 
+    :param R_val: The validation rating matrix, an ndarray in shape (n_users2, n_items) 
+    :param K: The number of latent features
+    :param reg_lambda: The regularization parameter lambda of model cost term
+    :param max_epoch: The number of training epoches 
+    :param min_cost_threshold: When the training cost reaches or is lower than the thresold, 
+            training will stop.  
+    :return:The predicted rating matrix, training costs and validation costs
+    '''
+    assert isinstance(R_train, np.ndarray)
+    n_users, n_items = R_train.shape
+
+    # 留意矩阵的维度
+    U, M = np.random.random((K, n_users)), np.random.random((K, n_items))
+
+    N_U = np.sum(R_train != 0, axis=1)  # 用户评分的次数 shape: (1)
+
+    N_M = np.sum(R_train != 0, axis=0)  # 电影被评分的次数 shape: (1)
+    # 用一部电影的平均评分作为该电影的第0个隐含特征的分数
+    M[0, :] = np.sum(R_train, axis=0) / N_M  # shape: (2) <= shape: (2)
+    # 有些电影在该数据集中没有被打分，相除后平均分数为无穷大
+    for i in range(n_items):
+        # if M[0, i] == np.nan:
+        if not (0 <= M[0, i] <= 5):
+            M[0, i] = 0
+
+    losses_train, losses_val = [], []
+
+    for epoch in range(max_epoch):
+
+        # 必须把M_Ui, U_Mj这些小型矩阵抽解出来，而不是在庞大的原始矩阵上进行补0操作
+        # 不然后面矩阵求逆会很麻烦，效率会很低，甚至因为0项太多，矩阵是不可逆的
+
+        for i in range(n_users):
+            M_Ui = None  # 把U[i]评价过的电影的特征列都挑选出来，组成一个(K * N_U[i])的小型矩阵
+            R_Ui = None  # 把M_Ui对应的评分都挑选出来，组成一个(1 * N_U[i])的行向量
+            for j in range(n_items):
+                if R_train[i, j]:
+                    if M_Ui is not None:
+                        M_Ui = np.hstack((M_Ui, M[:, j:j + 1]))
+                        R_Ui = np.hstack((R_Ui, R_train[i:i + 1, j:j + 1]))
+                    else:
+                        M_Ui = M[:, j:j + 1]
+                        R_Ui = R_train[i:i + 1, j:j + 1]
+
+            # 有些用户在该数据集中没有评价任何电影
+            if M_Ui is None:
+                continue
+
+            Ai = M_Ui.dot(M_Ui.T) + reg_lambda * N_U[i] * np.eye(K)
+            Vi = M_Ui.dot(R_Ui.T)
+
+            U[:, i:i+1] = np.dot(np.matrix(Ai).I.getA(), Vi)
+
+        for j in range(n_items):
+            U_Mj = None  # 把评价过电影M[j]的用户的喜好特征行挑选出来，组成一个(K * N_M[i])的小型矩阵
+            R_Mj = None  # 把U_Mj对应的评分挑选出来 -- 一个(N_M[i] * 1)的列向量
+            for i in range(n_users):
+                if R_train[i, j]:
+                    if U_Mj is not None:
+                        U_Mj = np.hstack((U_Mj, U[:, i:i + 1]))
+                        R_Mj = np.vstack((R_Mj, R_train[i:i + 1, j:j + 1]))
+                    else:
+                        U_Mj = U[:, i:i + 1]
+                        R_Mj = R_train[i:i + 1, j:j + 1]
+
+            # 有些电影在该数据集中没有被任何用户评价
+            if U_Mj is None:
+                continue
+
+            Aj = np.dot(U_Mj, U_Mj.T) + reg_lambda * N_M[j] * np.eye(K)
+            Vj = U_Mj.dot(R_Mj)
+
+            M[:, j:j + 1] = np.dot(np.matrix(Aj).I.getA(), Vj)
+
+        curr_cost_train = MF_RMSE(R_train, U, M)
+        curr_cost_val = MF_RMSE(R_val, U, M)
+
+        losses_train.append(curr_cost_train)
+        losses_val.append(curr_cost_val)
+
+        if curr_cost_train <= min_cost_threshold:
+            break
+
+    self.U, self.M = U, M
+    return np.dot(U.T, M), losses_train, losses_val
+
+
+def MF_RMSE(R, U, M):
+    '''Evaluate the RMSE of the matrix factorization model
+
+    :param R: The Rating Matrix, an ndarray of shape(M, N), where R[i, j] denotes the rating user i marks movie j
+    :param U: The User-Feature Matrix, an ndarray of shape(K, M), where U[k, i] denotes user i's preferred score for latent feature k
+    :param M: The Feature-Movie Matrix, an ndarray of shape(K, N), where M[k, j] denotes movie j's score for latent feature k
+    :return: the cost between R and UM
+    '''
+    A_01 = R != 0
+    temp_diff = A_01 * (R - np.dot(U.T, M))
+    # return LA.norm(temp_diff, 2)
+    return math.sqrt(np.sum((temp_diff * temp_diff).flatten()) / np.sum(A_01)) # 除以非0项的数量
+```
 
 ## 4.实验结果
 
