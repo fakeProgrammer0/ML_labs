@@ -1,4 +1,4 @@
-# MF ALS （矩阵分解 交替
+# MF ALS （矩阵分解 交替最小二乘法）
 内容主要是对发表ALS方法的论文 [Large-Scale Parallel Collaborative Filtering for the Netflix Prize](#1-large-scale-parallel-collaborative-filtering-for-the-netflix-prize) 做一些整理、摘录。所以符号表示方式上（以及代码中的变量），尽量跟论文一致。
 
 ## 内容
