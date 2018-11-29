@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Training a movie recommender system based on the ml-100k dataset
-
+Using SGD or ALS method for matrix factorization
 '''
 
 # ------ Hyperparameters to be tuned -------
@@ -15,11 +15,6 @@ import numpy as np
 from string import Template
 import matplotlib.pyplot  as plt
 
-# import sys
-# sys.path.append(".")
-
-# from . import matrix_factorization
-# from lab4 import matrix_factorization
 from lab4.matrix_factorization import MF_SGD
 from lab4.matrix_factorization import MF_ALS_Model
 
@@ -46,20 +41,6 @@ def load_dataset(dataset_path):
                 A_01[user_id, item_id] = 1
 
     return R, A_01
-
-
-# def sample_err(R_row, P_row, Q, reg_lambda):
-#     assert R_row is np.array and R_row.shape[0] == 1 \
-#         and P_row is np.array \
-#         and Q is np.array
-#
-#     err_sum = 0
-#     for j in range(R_row.shape):
-#         if R_row[j] != 0:
-#             temp_diff = R_row[j] - np.dot(P_row, Q[j])[0]
-#             err_sum += temp_diff * temp_diff + reg_lambda * (P_row.dot(P_row)[0] + np.dot(Q[j], Q[j])[0])
-#
-#     return err_sum
 
 
 def train_MF_SGD_Model():
@@ -92,20 +73,31 @@ def train_MF_ALS_Model():
 
         ALS_Model = MF_ALS_Model()
 
-        # ALS_Model.fit(R_train, K, max_epoch=200, reg_lambda=0.5)
-        R_train_pred, train_losses, val_losses = ALS_Model.cost_estimate(R_train, R_test, K, max_epoch=10, reg_lambda=0.5)
-        plot_losses_graph(train_losses, val_losses, 'loss estimate of fold %d' % i)
+        # reg_lambda = 0.08
+        reg_lambda = 0.1
+
+        # ALS_Model.fit(R_train, K, max_epoch=5, reg_lambda=0.5)
+
+        R_train_pred, losses_dict = ALS_Model.cost_estimate(R_train, R_test, K, max_epoch=20, reg_lambda=reg_lambda)
+        plot_losses_graph(losses_dict, 'Losses of ALS Model during training\nreg_lamda = %.6f' % reg_lambda)
 
 
     pass
 
-def plot_losses_graph(train_losses, val_losses, title="loss graph"):
+def plot_losses_graph(losses_dict, title="loss graph"):
+    colors = ['r', 'b', 'k', 'g', 'c', 'm', 'y']
+
     plt.figure(figsize=(16, 9))
-    plt.title(title)
-    plt.xlabel('epoch')
-    plt.ylabel('loss')
-    plt.plot(train_losses, '-', color='r', label='train_losses')
-    plt.plot(val_losses, '--', color='b', label='val_losses')
+    plt.title(title, fontsize=20)
+    plt.xlabel('epoch', fontsize=20)
+    plt.ylabel('RMSE', fontsize=20)
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
+
+    for i, losses_label in enumerate(losses_dict):
+        losses_data = losses_dict.get(losses_label)
+        plt.plot(losses_data, '-', color=colors[i % len(colors)], label=losses_label)
+
     plt.legend()
     plt.show()
 
