@@ -24,8 +24,8 @@
 | <img src="http://latex.codecogs.com/gif.latex?n_{m}"> | 电影数量 <img src="http://latex.codecogs.com/gif.latex?n_{items}"> |
 | <img src="http://latex.codecogs.com/gif.latex?K"> | 隐含特征个数 |
 | <img src="http://latex.codecogs.com/gif.latex?R"> | 评分矩阵, <img src="http://latex.codecogs.com/gif.latex?R\in\mathbb{R}^{n_{u}\times%20n_m}"> <br/> <img src="http://latex.codecogs.com/gif.latex?R_{i,j}"> 表示用户 <img src="http://latex.codecogs.com/gif.latex?i"> 对电影 <img src="http://latex.codecogs.com/gif.latex?j"> 的评分 |
-| <img src="http://latex.codecogs.com/gif.latex?U"> | （用户，特征）矩阵， <img src="http://latex.codecogs.com/gif.latex?U\in\mathbb{R}^{K\times%20n_{u}}"> <br/> <img src="http://latex.codecogs.com/gif.latex?U_{i,k}"> 表示用户 <img src="http://latex.codecogs.com/gif.latex?i">  对隐含特征 <img src="http://latex.codecogs.com/gif.latex?k"> 的喜好程度，<br/>**列向量** <img src="http://latex.codecogs.com/gif.latex?u_{i}"> 中包含的所有隐含特征刻画了用户i在推荐系统中的表示形式 |
-| <img src="http://latex.codecogs.com/gif.latex?M"> | （特征，电影）矩阵， <img src="http://latex.codecogs.com/gif.latex?M\in\mathbb{R}^{K\times%20n_m}"> <br/> <img src="http://latex.codecogs.com/gif.latex?M_{k,j}"> 表示电影 <img src="http://latex.codecogs.com/gif.latex?j"> 符合隐含特征 <img src="http://latex.codecogs.com/gif.latex?k"> 的程度，<br/>**列向量** <img src="http://latex.codecogs.com/gif.latex?m_{j}"> 中包含的所有隐含特征刻画了电影j在推荐系统中的表示形式 |
+| <img src="http://latex.codecogs.com/gif.latex?U"> | （特征，用户）矩阵， <img src="http://latex.codecogs.com/gif.latex?U\in\mathbb{R}^{K\times%20n_{u}}"> <br/> <img src="http://latex.codecogs.com/gif.latex?U_{k,i}"> 表示用户 <img src="http://latex.codecogs.com/gif.latex?i">  对隐含特征 <img src="http://latex.codecogs.com/gif.latex?k"> 的喜好程度，<br/>**列向量** <img src="http://latex.codecogs.com/gif.latex?u_{i}"> 中包含的所有隐含特征刻画了用户 <img src="http://latex.codecogs.com/gif.latex?i"> 在推荐系统中的表示形式 |
+| <img src="http://latex.codecogs.com/gif.latex?M"> | （特征，电影）矩阵， <img src="http://latex.codecogs.com/gif.latex?M\in\mathbb{R}^{K\times%20n_m}"> <br/> <img src="http://latex.codecogs.com/gif.latex?M_{k,j}"> 表示电影 <img src="http://latex.codecogs.com/gif.latex?j"> 符合隐含特征 <img src="http://latex.codecogs.com/gif.latex?k"> 的程度，<br/>**列向量** <img src="http://latex.codecogs.com/gif.latex?m_{j}"> 中包含的所有隐含特征刻画了电影 <img src="http://latex.codecogs.com/gif.latex?j"> 在推荐系统中的表示形式 |
 | <img src="http://latex.codecogs.com/gif.latex?I"> | 原始评分矩阵中有评分存在的 <img src="http://latex.codecogs.com/gif.latex?\left(i,j\right)"> 对，即（用户， 电影）元组的集合 |
 | <img src="http://latex.codecogs.com/gif.latex?I_i^U"> | 用户 <img src="http://latex.codecogs.com/gif.latex?i"> 评价过的**所有电影**的下标组成的集合 |
 | <img src="http://latex.codecogs.com/gif.latex?I_j^M"> | 评价过电影 <img src="http://latex.codecogs.com/gif.latex?j"> 的**所有用户**下标组成的集合 |
@@ -68,28 +68,30 @@
     <img src="http://latex.codecogs.com/gif.latex?e_{i,j}=\left(R_{i,j}-\hat{R_{i,j}}\right)^2=\left(R_{i,j}-\sum_{k=1}^{K}{U_{k,i}M_{k,j}}\right)^2">
 </div>
 
->其中 <img src="http://latex.codecogs.com/gif.latex?\mathbf{u}_i,\mathbf{m}_k"> 表示的都是列向量，而 <img src="http://latex.codecogs.com/gif.latex?\mathbf{u}_i^T">
-表示列向量的转置。
-
 对损失函数作正则化处理，有：
 
 <div class="eq" align="center">
     <img src="http://latex.codecogs.com/gif.latex?\begin{align*}e_{i,j}&=\left(R_{i,j}-\sum_{k=1}^{K}{U_{k,i}M_{k,j}}\right)^2+\lambda\sum_{k=1}^{K}{\left(U_{k,i}^2+M_{k,j}^2\right)}\\&=\left(R_{i,j}-\mathbf{u}_i^T\mathbf{m}_j\right)^2+\lambda\left(\left|\mathbf{u}_i\right|^2+\left|\mathbf{m}_{k}\right|^2\right)\end{align*}">
 </div>
 
-### 1.2. 目标函数（objective function）
+>其中 <img src="http://latex.codecogs.com/gif.latex?\mathbf{u}_i,\mathbf{m}_k"> 表示的都是列向量，而 <img src="http://latex.codecogs.com/gif.latex?\mathbf{u}_i^T">
+表示列向量 $\mathbf{u}_i$ 的转置。
 
+$$e_{i,j}=\left(R_{i,j}-\sum_{k=1}^{K}{U_{k,i}M_{k,j}}\right)^2+\lambda\sum_{k=1}^{K}{\left(U_{k,i}^2+M_{k,j}^2\right)}=\left(R_{i,j}-\mathbf{u}_i^T\mathbf{m}_j\right)^2+\lambda\left(\left|\mathbf{u}_i\right|^2+\left|\mathbf{m}_{k}\right|^2\right)
+$$
+
+### 1.2. 目标函数（objective function）
 累加所有原始评分矩阵中**出现过的分数**的误差，得到目标函数：
 
 <div class="eq" align="center">
     <img src="http://latex.codecogs.com/gif.latex?\begin{align*}f\left(U,M\right)&=\sum_{\left(i,j\right)\in%20I}e_{i,j}\\&=\sum_{\left(i,j\right)\in%20I}\left(R_{i,j}-\mathbf{u}_i^T\mathbf{m}_j\right)^2+\lambda\left(\sum_{i}n_{u_i}\left|\mathbf{u}_i\right|^2+\sum_{j}n_{m_j}\left|\mathbf{m}_{k}\right|^2\right)\end{align*}">
 </div>
 
->注解：由于在 <img src="http://latex.codecogs.com/gif.latex?e_{i,j}"> 中，<img src="http://latex.codecogs.com/gif.latex?\left|\mathbf{u}_i\right|^2"> 贡献了一次，那么在行向量 <img src="http://latex.codecogs.com/gif.latex?\mathbf{r}_{i}"> 的损失 <img src="http://latex.codecogs.com/gif.latex?e_{i}^T"> 中，<img src="http://latex.codecogs.com/gif.latex?\left|\mathbf{u}_i\right|^2"> 会贡献 <img src="http://latex.codecogs.com/gif.latex?n_{u_i}"> 次。同理，在列向量 <img src="http://latex.codecogs.com/gif.latex?\mathbf{r}_{j}"> 的损失 <img src="http://latex.codecogs.com/gif.latex?e_{j}"> 中，<img src="http://latex.codecogs.com/gif.latex?\left|\mathbf{m}_j\right|^2"> 会贡献 <img src="http://latex.codecogs.com/gif.latex?n_{m_j}"> 次。
+>注解：由于在 <img src="http://latex.codecogs.com/gif.latex?e_{i,j}"> 中，<img src="http://latex.codecogs.com/gif.latex?\left|\mathbf{u}_i\right|^2"> 贡献了一次，那么在行向量 <img src="http://latex.codecogs.com/gif.latex?\mathbf{R}_{i}"> 的损失 <img src="http://latex.codecogs.com/gif.latex?e_{i}^T"> 中，<img src="http://latex.codecogs.com/gif.latex?\left|\mathbf{u}_i\right|^2"> 会贡献 <img src="http://latex.codecogs.com/gif.latex?n_{u_i}"> 次。同理，在列向量 <img src="http://latex.codecogs.com/gif.latex?\mathbf{r}_{j}"> 的损失 <img src="http://latex.codecogs.com/gif.latex?e_{j}"> 中，<img src="http://latex.codecogs.com/gif.latex?\left|\mathbf{m}_j\right|^2"> 会贡献 <img src="http://latex.codecogs.com/gif.latex?n_{m_j}"> 次。
 
 ### 1.3. 成本函数（cost function）
 
-模型的成本函数（经验风险）可以用RMSE（root-mean-square error 均方根差）表示为：
+模型的成本函数（经验风险）可以用**RMSE（root-mean-square error 均方根差）** 表示为：
 
 <div class="eq" align="center">
     <img src="http://latex.codecogs.com/gif.latex?\begin{align*}RMSE\left(U,M\right)&=\sqrt{\frac{\sum_{\left(i,j\right)\in%20I}e_{i,j}}{\left|I\right|}}=\sqrt{\frac{\sum_{\left(i,j\right)\in%20I}\left(R_{i,j}-\mathbf{u}_i^T\mathbf{m}_j\right)^2}{\left|I\right|}}\end{align*}">
@@ -134,6 +136,8 @@ ALS (alternating-least-squares 交替最小平方)的训练步骤是：
 -->
 
 ### 2.1. 列向量ui的更新
+
+$$\mathbf{u}_i=A_i^{-1}V_i$$
 
 <div class="eq" align="center">
     <img src="http://latex.codecogs.com/gif.latex?\mathbf{u}_i=A_i^{-1}V_i">

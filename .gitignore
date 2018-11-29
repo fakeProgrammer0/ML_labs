@@ -104,6 +104,24 @@ venv.bak/
 .mypy_cache/
 
 # ------------------
+
+# project dir
 .idea
+
+dataset
+
+# lab3
+lab3/latex_lab3
+lab3/report-template
+
+# lab4
+lab4/ml-100k
+
+
+
+lab5
+lab6
+
+
 *.rar
 *.pickle
