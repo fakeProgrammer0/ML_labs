@@ -1,20 +1,20 @@
-# ALS 求导过程推导
-内容主要是对发表ALS方法的论文[\[1\]](#1-large-scale-parallel-collaborative-filtering-for-the-netflix-prize)做一些整理、摘录。所以符号表示方式上（以及代码中的变量），尽量跟论文一致。
+# MF ALS （矩阵分解 交替
+内容主要是对发表ALS方法的论文 [Large-Scale Parallel Collaborative Filtering for the Netflix Prize](#1-large-scale-parallel-collaborative-filtering-for-the-netflix-prize) 做一些整理、摘录。所以符号表示方式上（以及代码中的变量），尽量跟论文一致。
 
-- [ALS 求导过程推导](#als-求导过程推导)
-    - [0.符号表示](#0符号表示)
-    - [1.推荐系统矩阵分解](#1推荐系统矩阵分解)
-        - [模型的评估和优化](#模型的评估和优化)
-        - [1.1. 损失函数（loss function）](#11-损失函数loss-function)
-        - [1.2. 目标函数（objective function）](#12-目标函数objective-function)
-        - [1.3. 成本函数（cost function）](#13-成本函数cost-function)
-    - [2.ALS求导](#2als求导)
-        - [2.1. 列向量ui的更新](#21-列向量ui的更新)
-        - [2.2. 列向量mj的更新](#22-列向量mj的更新)
-    - [3.Python代码实现（慎点）](#3python代码实现慎点)
-    - [4.实验结果](#4实验结果)
-    - [5.Netflix Prize 简述](#5netflix-prize-简述)
-    - [6.Reference](#6reference)
+## 内容
+- [0.符号表示](#0符号表示)
+- [1.推荐系统矩阵分解](#1推荐系统矩阵分解)
+    - [模型的评估和优化](#模型的评估和优化)
+    - [1.1. 损失函数（loss function）](#11-损失函数loss-function)
+    - [1.2. 目标函数（objective function）](#12-目标函数objective-function)
+    - [1.3. 成本函数（cost function）](#13-成本函数cost-function)
+- [2.ALS求导](#2als求导)
+    - [2.1. 列向量ui的更新](#21-列向量ui的更新)
+    - [2.2. 列向量mj的更新](#22-列向量mj的更新)
+- [3.Python代码实现（慎点）](#3python代码实现慎点)
+- [4.实验结果](#4实验结果)
+- [5.Netflix Prize 简述](#5netflix-prize-简述)
+- [6.Reference](#6reference)
 
 ## 0.符号表示
 
@@ -75,10 +75,9 @@
 </div>
 
 >其中 <img src="http://latex.codecogs.com/gif.latex?\mathbf{u}_i,\mathbf{m}_k"> 表示的都是列向量，而 <img src="http://latex.codecogs.com/gif.latex?\mathbf{u}_i^T">
-表示列向量 $\mathbf{u}_i$ 的转置。
+表示列向量 <img src="http://latex.codecogs.com/gif.latex?\mathbf{u}_i"> 的转置。
 
-$$e_{i,j}=\left(R_{i,j}-\sum_{k=1}^{K}{U_{k,i}M_{k,j}}\right)^2+\lambda\sum_{k=1}^{K}{\left(U_{k,i}^2+M_{k,j}^2\right)}=\left(R_{i,j}-\mathbf{u}_i^T\mathbf{m}_j\right)^2+\lambda\left(\left|\mathbf{u}_i\right|^2+\left|\mathbf{m}_{k}\right|^2\right)
-$$
+
 
 ### 1.2. 目标函数（objective function）
 累加所有原始评分矩阵中**出现过的分数**的误差，得到目标函数：
@@ -136,8 +135,6 @@ ALS (alternating-least-squares 交替最小平方)的训练步骤是：
 -->
 
 ### 2.1. 列向量ui的更新
-
-$$\mathbf{u}_i=A_i^{-1}V_i$$
 
 <div class="eq" align="center">
     <img src="http://latex.codecogs.com/gif.latex?\mathbf{u}_i=A_i^{-1}V_i">
