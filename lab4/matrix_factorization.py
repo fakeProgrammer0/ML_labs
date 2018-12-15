@@ -13,24 +13,33 @@ class MF_SGD:
 
         P, Q = np.zeros((n_users, K)), np.zeros((n_items, K))
 
-        # for epoch in range(max_epoch):
-        #     i = random.randint(0, n_users - 1)  # rnd index
-        #     for j in range(n_items):
-        #         if R[i, j]:
-        #             temp_diff = R[i, j] - P[i].dot(Q[j])[0]
-        # 
-        #             for k in range(K):
-        #                 D_P_ik = 2 * temp_diff * Q[j, k] - reg_lambda * P[i, k]
-        #                 P[i, k] += learning_rate * D_P_ik
-        # 
-        #                 D_Q_jk = 2 * temp_diff * P[i, k] - reg_lambda * Q[j, k]
-        #                 Q[j, k] += learning_rate * D_Q_jk
-
         for epoch in range(max_epoch):
             i = random.randint(0, n_users - 1)  # rnd index
-            Ai = R[i] != 0
-            D_Pi = 2 * (Ai * (R[i] - np.dot(P[i], Q)).dot(Q.T)) - reg_lambda * np.sum(Ai) * P[i]
-            D_Q = 2 * (Ai * (R[i] - P[i].dot(Q))).dot(P[i]) - reg_lambda * np.repeat(Ai, n_items).reshape(-1, n_items) * Q
+            for j in range(n_items):
+                if R[i, j]:
+                    temp_diff = R[i, j] - P[i].dot(Q[j])[0]
+
+                    D_Pi = temp_diff * Q[:, j] - reg_lambda * P[i, :]
+                    P[i, :] += learning_rate * D_Pi
+
+                    # 直接向量运算就好啦
+                    D_Qj = temp_diff * P[i, :] - reg_lambda * Q[:, j]
+                    Q[:, j] += learning_rate * D_Qj
+        
+                    # 循环效率低了点，代码可读性不高
+                    # for k in range(K):
+                    #     D_P_ik = temp_diff * Q[j, k] - reg_lambda * P[i, k]
+                    #     P[i, k] += learning_rate * D_P_ik
+        
+                    #     D_Q_jk = temp_diff * P[i, k] - reg_lambda * Q[j, k]
+                    #     Q[j, k] += learning_rate * D_Q_jk
+
+        # for epoch in range(max_epoch):
+        #     i = random.randint(0, n_users - 1)  # rnd index
+        #     Ai = R[i] != 0
+        #     D_Pi = 2 * (Ai * (R[i] - np.dot(P[i], Q)).dot(Q.T)) - reg_lambda * np.sum(Ai) * P[i]
+        #     D_Q = 2 * (Ai * (R[i] - P[i].dot(Q))).dot(P[i]) - reg_lambda * np.repeat(Ai, n_items).reshape(-1, n_items) * Q
+
 
         self.R_pred = P.dot(Q.T)
         return self.R_pred

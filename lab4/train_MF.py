@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-'''Training a movie recommender system based on the ml-100k dataset
-Using SGD or ALS method for matrix factorization
+'''
+Training a movie recommender model based on the ml-100k dataset.
+Using SGD or ALS method for matrix factorization.
 '''
 
 # ------ Hyperparameters to be tuned -------
@@ -15,8 +16,13 @@ import numpy as np
 from string import Template
 import matplotlib.pyplot  as plt
 
-from lab4.matrix_factorization import MF_SGD
-from lab4.matrix_factorization import MF_ALS_Model
+# VS Code
+from matrix_factorization import MF_SGD
+from matrix_factorization import MF_ALS_Model
+
+# Pycharm
+# from lab4.matrix_factorization import MF_SGD
+# from lab4.matrix_factorization import MF_ALS_Model
 
 dataset_path_temp = Template("./ml-100k/{dataset_filename}")
 
@@ -57,29 +63,29 @@ def train_MF_SGD_Model():
         SGD_model = MF_SGD()
 
         R_train_pred, train_losses, val_losses = SGD_model.losses_estimate(R_train, R_test, K, learning_rate=0.001, max_epoch=2000, reg_lambda=0.5)
-        plot_losses_graph(train_losses, val_losses, 'loss estimate of fold %d' % i)
+        # plot_losses_graph(train_losses, val_losses, 'loss estimate of fold %d' % i)
 
 
 def train_MF_ALS_Model():
     K = 40
     n_folds = 5
 
-    base_dataset_temp = Template("./ml-100k/u${i}.base")
-    test_dataset_temp = Template("./ml-100k/u${i}.test")
+    base_dataset_temp = Template(__file__ + "\\..\\ml-100k\\u${i}.base")
+    test_dataset_temp = Template(__file__ +"\\..\\ml-100k\\u${i}.test")
 
-    for i in range(1, n_folds + 1):
-        R_train, A_01_train = load_dataset(base_dataset_temp.substitute(i=i))
-        R_test, A_01_test = load_dataset(test_dataset_temp.substitute(i=i))
+    # for i in range(1, n_folds + 1):
+    R_train, A_01_train = load_dataset(base_dataset_temp.substitute(i=1))
+    R_test, A_01_test = load_dataset(test_dataset_temp.substitute(i=1))
 
-        ALS_Model = MF_ALS_Model()
+    ALS_Model = MF_ALS_Model()
 
-        # reg_lambda = 0.08
-        reg_lambda = 0.1
+    # reg_lambda = 0.08
+    reg_lambda = 0.1
 
-        # ALS_Model.fit(R_train, K, max_epoch=5, reg_lambda=0.5)
+    # ALS_Model.fit(R_train, K, max_epoch=5, reg_lambda=0.5)
 
-        R_train_pred, losses_dict = ALS_Model.cost_estimate(R_train, R_test, K, max_epoch=20, reg_lambda=reg_lambda)
-        plot_losses_graph(losses_dict, 'Losses of ALS Model during training\nreg_lamda = %.6f' % reg_lambda)
+    R_train_pred, losses_dict = ALS_Model.cost_estimate(R_train, R_test, K, max_epoch=20, reg_lambda=reg_lambda)
+    plot_losses_graph(losses_dict, 'Losses of ALS Model during training\nreg_lamda = %.6f' % reg_lambda)
 
 
     pass

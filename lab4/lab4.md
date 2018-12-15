@@ -35,7 +35,7 @@ $r_{u,i}$ denotes the **actual rating** of user $u$ for item $i$ and $\hat{r}_{u
 
 Then the **root mean square error (RMSE)** is selected as the empirical risk function. In the following equation, $E$ is the indice set containing $(u, i)$ pairs which indicate user $u$ has rated item $i$ in the rating matrix.
 
-$$RMSE\left(R,P,Q\right)=\sqrt{\frac{1}{\left|E\right|}\sum_{\left(u,i\right)\in E}e_{u,i}}=\sqrt{\frac{\sum_{\left(u,i\right)\in E}\left(r_{u,i}-\mathbf{p}_u^T\mathbf{q}_i\right)^2}{\left|E\right|}}$$
+$$RMSE\left(R,P,Q\right)=\sqrt{\frac{1}{\left|E\right|}\sum_{\left(u,i\right)\in E}e_{u,i}^2}=\sqrt{\frac{\sum_{\left(u,i\right)\in E}\left(r_{u,i}-\mathbf{p}_u^T\mathbf{q}_i\right)^2}{\left|E\right|}}$$
 
 Our goal is to minimize the following objective function:
 $$L=\sum_{u,i}{\left(r_{u,i}-\mathbb{p}^T_u\mathbb{q}_i\right)^2}+\lambda\left(\sum_u{n_{\mathbb{p}_u}\left|\mathbb{p}_u\right|^2}+\sum_i{n_{\mathbb{q}_i}\left|\mathbb{q}_i\right|^2}\right) \quad \left(1\right)$$
@@ -92,14 +92,14 @@ The dataset used in this experiment is from [MovieLens-100k](http://files.groupl
 5. Repeat step 4 several times, get a satisfactory user factor matrix $P$ and an item factor matrix $Q$. Draw the loss curve with respect to both training and testing procedures during varying iterations.
 6. The final score prediction matrix $\hat{R}$ is obtained by multiplying the user factor matrix $P$ and the item factor matrix $Q$.
 
-#### 3.2.2. Core Code of SGD optimization method** (written in python)
+#### 3.2.2. Core Code of SGD optimization method (written in python)
 
 **TODO:**
 
 ```python
 ```
 
-#### 3.2.3. Core Code of ALS optimization method** (written in python)
+#### 3.2.3. Core Code of ALS optimization method (written in python)
 
 **TODO:**
 
@@ -119,4 +119,4 @@ The dataset used in this experiment is from [MovieLens-100k](http://files.groupl
 
 # References
 1. [Wikipedia. Matrix_factorization.](https://en.wikipedia.org/wiki/Matrix_factorization_(recommender_systems))
-2. Yunhong Zhou et al. Large-Scale Parallel Collaborative Filtering forthe Netflix Prize. 
+2. Yunhong Zhou et al. Large-Scale Parallel Collaborative Filtering for the Netflix Prize. 
