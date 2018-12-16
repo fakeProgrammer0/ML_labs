@@ -58,7 +58,7 @@ def MF_RMSE(R, P, Q):
     R_hat[R == 0] = 0
     A_01 = R != 0
     # divide the number of observed ratings
-    return math.sqrt(np.sum((R - R_hat)**2) / np.sum(A_01))  
+    return math.sqrt(np.sum((R - R_hat)**2) / np.sum(A_01))
 
 
 def MF_MAE(R, P, Q):
@@ -233,8 +233,8 @@ def MF_ALS_fit(R_train,
 
     N_M = np.sum(R_train != 0, axis=0)  # 电影被评分的次数 shape: (n_items)
     # 用一部电影的平均评分作为该电影的第0个隐含特征的分数
-    Q[0, :] = np.sum(R_train, axis=0) / N_M  # shape: (2) <= shape: (2)
-    # 有些电影在该数据集中没有被打分，相除后平均分数为无穷大
+    Q[0, :] = np.sum(R_train, axis=0) / N_M
+    # 有些电影在该数据集中没有被打分，相除后平均分数为无穷大，需要处理这些值
     for i in range(n_items):
         # if M[0, i] == np.nan:
         if not (0 <= Q[0, i] <= 5):
@@ -244,7 +244,7 @@ def MF_ALS_fit(R_train,
 
     for epoch in range(max_epoch):
 
-        # 必须把M_Ui, U_Mj这些小型矩阵抽解出来，而不是在庞大的原始矩阵上进行补0操作
+        # 把M_Ui, U_Mj这些小型矩阵抽解出来，而不是在庞大的原始矩阵上进行补0操作
         # 不然后面矩阵求逆会很麻烦，效率会很低，甚至因为0项太多，矩阵是不可逆的
 
         for i in range(n_users):
@@ -346,7 +346,9 @@ def plot_losses_graph(losses_dict,
 
 
 def train_SGD():
-
+    '''
+    Train a matrix factorization recommender model based on SGD method.
+    '''
     param_dict = {
         'K': 30,
         'reg_lambda_p': 0.1,
@@ -357,7 +359,8 @@ def train_SGD():
         'epoch_cnt_per_loss_estimate': 1000
     }
 
-    R_pred, losses_dict = MF_SGD_fit(R_train.copy(), R_test.copy(), **param_dict)
+    R_pred, losses_dict = MF_SGD_fit(R_train.copy(), R_test.copy(),
+                                     **param_dict)
     plot_losses_graph(
         losses_dict,
         title='loss during SGD',
@@ -366,6 +369,9 @@ def train_SGD():
 
 
 def train_ALS():
+    '''
+    Train a matrix factorization recommender model based on ALS method.
+    '''
     param_dict = {
         'K': 30,
         'reg_lambda': 0.1,
@@ -373,7 +379,8 @@ def train_ALS():
         'loss_estimate': MF_RMSE
     }
 
-    R_pred, losses_dict = MF_ALS_fit(R_train.copy(), R_test.copy(), **param_dict)
+    R_pred, losses_dict = MF_ALS_fit(R_train.copy(), R_test.copy(),
+                                     **param_dict)
     plot_losses_graph(
         losses_dict,
         title='loss during ALS\nK=%d, reg_lambda=%.6f' %
@@ -383,41 +390,57 @@ def train_ALS():
 
 def estimate_K():
     '''
+    Estimate the influences of different K and plot the correspondent loss graph.
+    Theoretically speaking, as the number of latent features increases (with higher K), 
+    the recommender model will be more accuracy.
     '''
 
-    max_epoch = 30
+    max_epoch = 5
     tuned_params = [
         {
-            'K' : 5,
-            'reg_lambda' : 0.01
+            'K': 5,
+            'reg_lambda': 0.1
         },
         {
-            'K' : 20,
-            'reg_lambda' : 0.1
+            'K': 20,
+            'reg_lambda': 0.1
         },
         {
-            'K' : 50,
-            'reg_lambda' : 0.01
+            'K': 50,
+            'reg_lambda': 0.01
         },
         {
-            'K' : 100,
-            'reg_lambda' : 0.01
+            'K': 100,
+            'reg_lambda': 0.01
         },
     ]
 
     losses_train_dict, losses_test_dict = {}, {}
-    
-    for param_dict in tuned_params:
-        R_pred, losses_dict = MF_ALS_fit(R_train.copy(), R_test.copy(), max_epoch=max_epoch, **param_dict)
-        losses_train_dict['K=%d,reg_lambda=%d' % (param_dict['K'], param_dict['reg_lambda'])] = losses_dict['losses_train']
-        losses_test_dict['K=%d,reg_lambda=%d' % (param_dict['K'], param_dict['reg_lambda'])] = losses_dict['losses_test']
 
-    plot_losses_graph(losses_train_dict, title='ALS losses train vary with different K')
-    plot_losses_graph(losses_test_dict, title='ALS losses test vary with different K')
+    for param_dict in tuned_params:
+        R_pred, losses_dict = MF_ALS_fit(
+            R_train.copy(), R_test.copy(), max_epoch=max_epoch, **param_dict)
+        losses_train_dict['K=%d,reg_lambda=%.4f' % (
+            param_dict['K'],
+            param_dict['reg_lambda'])] = losses_dict['losses_train']
+        losses_test_dict['K=%d,reg_lambda=%.4f' % (
+            param_dict['K'],
+            param_dict['reg_lambda'])] = losses_dict['losses_test']
+        break
+
+    plot_losses_graph(
+        losses_train_dict,
+        title='ALS losses_train vary with different K',
+        ylabel='RMSE')
+    plot_losses_graph(
+        losses_test_dict,
+        title='ALS losses_test vary with different K',
+        ylabel='RMSE')
 
 
 def estimate_reg_lambda():
     '''
+    Fix K and estimate influences of different penalty factor. Then plot the correspondent loss graph.
     '''
     K = 30
     max_epoch = 15
@@ -426,15 +449,39 @@ def estimate_reg_lambda():
     losses_train_dict, losses_test_dict = {}, {}
 
     for reg_lambda in turn_params:
-        R_pred, losses_dict = MF_ALS_fit(R_train.copy(), R_test.copy(), K, reg_lambda, max_epoch)
-        losses_train_dict['reg_lambda=%d' % reg_lambda] = losses_dict['losses_train']
-        losses_test_dict['reg_lambda=%d' % reg_lambda] = losses_dict['losses_test']
+        R_pred, losses_dict = MF_ALS_fit(R_train.copy(), R_test.copy(), K,
+                                         reg_lambda, max_epoch)
+        losses_train_dict['reg_lambda=%.4f' %
+                          reg_lambda] = losses_dict['losses_train']
+        losses_test_dict['reg_lambda=%.4f' %
+                         reg_lambda] = losses_dict['losses_test']
 
-    plot_losses_graph(losses_train_dict, title=f'ALS fixing K={K}\nlosses train vary with different reg_lambda')
-    plot_losses_graph(losses_test_dict, title=f'ALS fixing K={K}\nlosses test vary with different reg_lambda')
+        if reg_lambda == 0.02:
+            break
+
+    plot_losses_graph(
+        losses_train_dict,
+        title=f'ALS fixing K={K}\nlosses_train vary with different reg_lambda',
+        ylabel='RMSE')
+    plot_losses_graph(
+        losses_test_dict,
+        title=f'ALS fixing K={K}\nlosses_test vary with different reg_lambda',
+        ylabel='RMSE')
+
+
+def execute_procedure(f):
+    print('Running in the background... Please wait')
+    f()
+    print('Done!')
+
+
+# execute_procedure(train_SGD)
+# execute_procedure(train_ALS)
+execute_procedure(estimate_reg_lambda)
+# execute_procedure(estimate_K)
 
 if __name__ == '__main__':
     # train_ALS()
     # train_SGD()
-    estimate_K()
+    # estimate_K()
     pass
