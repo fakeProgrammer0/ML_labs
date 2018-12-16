@@ -3,13 +3,13 @@ import math
 import random
 import matplotlib.pyplot as plt
 
-
 dataset_dir = __file__ + '/../ml-100k/'
 train_set_path = dataset_dir + 'u1.base'
 test_set_path = dataset_dir + 'u1.test'
 
 n_users = 943
 n_items = 1682
+
 
 def load_dataset(dataset_path):
     '''
@@ -34,7 +34,8 @@ R_test = load_dataset(test_set_path)
 
 def MF_RMSE(R, P, Q):
     '''
-    Evaluate the RMSE (Root Mean Square Error) of groundtruth rating matrix and the matrix factorization model.
+    Evaluate the RMSE (Root Mean Square Error) of groundtruth rating matrix 
+    and the matrix factorization model.
 
     Parameters
     ----------
@@ -56,12 +57,14 @@ def MF_RMSE(R, P, Q):
     R_hat = np.dot(P.T, Q)
     R_hat[R == 0] = 0
     A_01 = R != 0
-    return math.sqrt(np.sum((R - R_hat) ** 2) / np.sum(A_01)) # divide the number of observed ratings
+    # divide the number of observed ratings
+    return math.sqrt(np.sum((R - R_hat)**2) / np.sum(A_01))  
 
 
 def MF_MAE(R, P, Q):
     '''
-    Evaluate the MAE (Mean Absolute Error) of groundtruth rating matrix and the matrix factorization model.
+    Evaluate the MAE (Mean Absolute Error) of groundtruth rating matrix 
+    and the matrix factorization model.
 
     Parameters
     ----------
@@ -86,8 +89,16 @@ def MF_MAE(R, P, Q):
     return np.sum(np.abs(R - R_hat)) / np.sum(A_01)
 
 
-def MF_SGD_fit(R_train, R_test, K, learning_rate, max_epoch, reg_lambda_p, reg_lambda_q,
-                        min_loss_threshold=0.1, loss_estimate=MF_RMSE, epoch_cnt_per_loss_estimate=1000):
+def MF_SGD_fit(R_train,
+               R_test,
+               K,
+               learning_rate,
+               max_epoch,
+               reg_lambda_p,
+               reg_lambda_q,
+               min_loss_threshold=0.1,
+               loss_estimate=MF_RMSE,
+               epoch_cnt_per_loss_estimate=1000):
     """
     Fit a rating matrix and optimize the matrix factorization model using SGD method.
 
@@ -100,7 +111,8 @@ def MF_SGD_fit(R_train, R_test, K, learning_rate, max_epoch, reg_lambda_p, reg_l
     K : int
         The number of latent features.
     learning_rate : float
-        The hyper-parameter to control the velocity of gradient descent process, also called step_size
+        The hyper-parameter to control the velocity of gradient descent process, 
+        also called step_size.
     max_epoch : int
         The number of training epoches.
     reg_lambda_p, reg_lambda_q : float
@@ -109,7 +121,8 @@ def MF_SGD_fit(R_train, R_test, K, learning_rate, max_epoch, reg_lambda_p, reg_l
         When the training cost reaches or is lower than the thresold, training will stop.
     loss_estimate :  callable
         A custom loss evaluation function with following signature (R, P, Q) 
-        returns the loss of the matrix factorization model. The default setting is using RMSE.
+        returns the loss of the matrix factorization model. 
+        The default setting is using RMSE.
     epoch_cnt_per_loss_estimate : int
         Loss will be estimated at every epoch count.
 
@@ -171,7 +184,13 @@ def MF_SGD_fit(R_train, R_test, K, learning_rate, max_epoch, reg_lambda_p, reg_l
     return R_pred, losses_dict
 
 
-def MF_ALS_fit(R_train, R_test, K, reg_lambda, max_epoch, min_RMSE_threshold=0.1, loss_estimate=MF_RMSE):
+def MF_ALS_fit(R_train,
+               R_test,
+               K,
+               reg_lambda,
+               max_epoch,
+               min_RMSE_threshold=0.1,
+               loss_estimate=MF_RMSE):
     """
     Fit a rating matrix and optimize the matrix factorization model using ALS method.
 
@@ -191,7 +210,8 @@ def MF_ALS_fit(R_train, R_test, K, reg_lambda, max_epoch, min_RMSE_threshold=0.1
         When the training cost reaches or is lower than the thresold, training will stop.
     loss_estimate :  callable
         A custom loss evaluation function with following signature (R, P, Q) 
-        returns the loss of the matrix factorization model. The default setting is using RMSE.
+        returns the loss of the matrix factorization model. 
+        The default setting is using RMSE.
 
     Returns
     -------
@@ -246,7 +266,7 @@ def MF_ALS_fit(R_train, R_test, K, reg_lambda, max_epoch, min_RMSE_threshold=0.1
             Ai = M_Ui.dot(M_Ui.T) + reg_lambda * N_U[i] * np.eye(K)
             Vi = M_Ui.dot(R_Ui.T)
 
-            P[:, i:i+1] = np.dot(np.matrix(Ai).I.getA(), Vi)
+            P[:, i:i + 1] = np.dot(np.matrix(Ai).I.getA(), Vi)
 
         for j in range(n_items):
             U_Mj = None  # 把评价过电影M[j]的用户的喜好特征行挑选出来，组成一个(K * N_M[i])的小型矩阵
@@ -287,7 +307,10 @@ def MF_ALS_fit(R_train, R_test, K, reg_lambda, max_epoch, min_RMSE_threshold=0.1
     return R_pred, losses_dict
 
 
-def plot_losses_graph(losses_dict, title="loss graph", xlabel="epoch", ylabel='loss'):
+def plot_losses_graph(losses_dict,
+                      title="loss graph",
+                      xlabel="epoch",
+                      ylabel='loss'):
     '''
     A helper function used to draw the losses graph.
 
@@ -312,7 +335,11 @@ def plot_losses_graph(losses_dict, title="loss graph", xlabel="epoch", ylabel='l
 
     for i, losses_label in enumerate(losses_dict):
         losses_data = losses_dict.get(losses_label)
-        plt.plot(losses_data, '-', color=colors[i % len(colors)], label=losses_label)
+        plt.plot(
+            losses_data,
+            '-',
+            color=colors[i % len(colors)],
+            label=losses_label)
 
     plt.legend()
     plt.show()
@@ -321,34 +348,93 @@ def plot_losses_graph(losses_dict, title="loss graph", xlabel="epoch", ylabel='l
 def train_SGD():
 
     param_dict = {
-        'K' : 30,
-        'reg_lambda_p' : 0.1,
-        'reg_lambda_q' : 0.1,
-        'learning_rate' : 0.001,
-        'max_epoch' : 100000,
-        'loss_estimate' : MF_RMSE,
-        'epoch_cnt_per_loss_estimate' : 1000
+        'K': 30,
+        'reg_lambda_p': 0.1,
+        'reg_lambda_q': 0.1,
+        'learning_rate': 0.001,
+        'max_epoch': 100000,
+        'loss_estimate': MF_RMSE,
+        'epoch_cnt_per_loss_estimate': 1000
     }
 
-    R_pred, loss_dict = MF_SGD_fit(R_train.copy(), R_test.copy(), **param_dict)
-    plot_losses_graph(loss_dict, title='loss during SGD',
-        xlabel='%d epoches' % param_dict['epoch_cnt_per_loss_estimate'], ylabel='RMSE')
+    R_pred, losses_dict = MF_SGD_fit(R_train.copy(), R_test.copy(), **param_dict)
+    plot_losses_graph(
+        losses_dict,
+        title='loss during SGD',
+        xlabel='%d epoches' % param_dict['epoch_cnt_per_loss_estimate'],
+        ylabel='RMSE')
 
 
 def train_ALS():
     param_dict = {
-        'K' : 30,
-        'reg_lambda' : 0.1,
-        'max_epoch' : 20,
-        'loss_estimate' : MF_RMSE
+        'K': 30,
+        'reg_lambda': 0.1,
+        'max_epoch': 20,
+        'loss_estimate': MF_RMSE
     }
 
-    R_pred, loss_dict = MF_ALS_fit(R_train.copy(), R_test.copy(), **param_dict)
-    plot_losses_graph(loss_dict, 
-        title='loss during ALS\nK=%d, reg_lambda=%.6f'%(param_dict['K'], param_dict['reg_lambda']), 
+    R_pred, losses_dict = MF_ALS_fit(R_train.copy(), R_test.copy(), **param_dict)
+    plot_losses_graph(
+        losses_dict,
+        title='loss during ALS\nK=%d, reg_lambda=%.6f' %
+        (param_dict['K'], param_dict['reg_lambda']),
         ylabel='RMSE')
+
+
+def estimate_K():
+    '''
+    '''
+
+    max_epoch = 30
+    tuned_params = [
+        {
+            'K' : 5,
+            'reg_lambda' : 0.01
+        },
+        {
+            'K' : 20,
+            'reg_lambda' : 0.1
+        },
+        {
+            'K' : 50,
+            'reg_lambda' : 0.01
+        },
+        {
+            'K' : 100,
+            'reg_lambda' : 0.01
+        },
+    ]
+
+    losses_train_dict, losses_test_dict = {}, {}
+    
+    for param_dict in tuned_params:
+        R_pred, losses_dict = MF_ALS_fit(R_train.copy(), R_test.copy(), max_epoch=max_epoch, **param_dict)
+        losses_train_dict['K=%d,reg_lambda=%d' % (param_dict['K'], param_dict['reg_lambda'])] = losses_dict['losses_train']
+        losses_test_dict['K=%d,reg_lambda=%d' % (param_dict['K'], param_dict['reg_lambda'])] = losses_dict['losses_test']
+
+    plot_losses_graph(losses_train_dict, title='ALS losses train vary with different K')
+    plot_losses_graph(losses_test_dict, title='ALS losses test vary with different K')
+
+
+def estimate_reg_lambda():
+    '''
+    '''
+    K = 30
+    max_epoch = 15
+    turn_params = [0.005, 0.02, 0.08, 0.1, 1.0, 5.0]
+
+    losses_train_dict, losses_test_dict = {}, {}
+
+    for reg_lambda in turn_params:
+        R_pred, losses_dict = MF_ALS_fit(R_train.copy(), R_test.copy(), K, reg_lambda, max_epoch)
+        losses_train_dict['reg_lambda=%d' % reg_lambda] = losses_dict['losses_train']
+        losses_test_dict['reg_lambda=%d' % reg_lambda] = losses_dict['losses_test']
+
+    plot_losses_graph(losses_train_dict, title=f'ALS fixing K={K}\nlosses train vary with different reg_lambda')
+    plot_losses_graph(losses_test_dict, title=f'ALS fixing K={K}\nlosses test vary with different reg_lambda')
 
 if __name__ == '__main__':
     # train_ALS()
-    train_SGD()
+    # train_SGD()
+    estimate_K()
     pass
