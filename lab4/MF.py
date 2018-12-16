@@ -1,8 +1,10 @@
 import numpy as np
 import math
 import random
+import matplotlib.pyplot as plt
 
-dataset_dir = './ml-100k/'
+
+dataset_dir = __file__ + '/../ml-100k/'
 train_set_path = dataset_dir + 'u1.base'
 test_set_path = dataset_dir + 'u1.test'
 
@@ -85,47 +87,93 @@ def MF_MAE(R, P, Q):
 
 
 def MF_SGD_fit(R_train, R_test, K, learning_rate, max_epoch, reg_lambda_p, reg_lambda_q,
-                        min_loss_threshold=0.1, loss_estimate=MF_RMSE):
-    '''
-    '''
-    
+                        min_loss_threshold=0.1, loss_estimate=MF_RMSE, epoch_cnt_per_loss_estimate=1000):
+    """
+    Fit a rating matrix and optimize the matrix factorization model using SGD method.
+
+    Parameters
+    ----------
+    R_train : ndarray 
+        The groundtruth rating matrix used for training, in shape (n_users, n_items).
+    R_test : ndarray 
+        The groundtruth rating matrix for testing, in shape (n_users, n_items).
+    K : int
+        The number of latent features.
+    learning_rate : float
+        The hyper-parameter to control the velocity of gradient descent process, also called step_size
+    max_epoch : int
+        The number of training epoches.
+    reg_lambda_p, reg_lambda_q : float
+        The regularization parameters of the model cost term.
+    min_cost_threshold : float
+        When the training cost reaches or is lower than the thresold, training will stop.
+    loss_estimate :  callable
+        A custom loss evaluation function with following signature (R, P, Q) 
+        returns the loss of the matrix factorization model. The default setting is using RMSE.
+    epoch_cnt_per_loss_estimate : int
+        Loss will be estimated at every epoch count.
+
+    Returns
+    -------
+    R_pred : ndarray
+        The predicted rating matrix.
+
+    losses_dict : dict
+        A dict containing the model's losses on training and testing dataset 
+        during the training procedure.
+
+    """
+
     n_users, n_items = R_train.shape
 
-    P, Q = np.random.rand(n_users, K), np.random.rand(n_items, K)
+    P, Q = np.random.rand(K, n_users), np.random.rand(K, n_items)
 
     losses_train = []
     losses_test = []
 
-    for epoch in range(max_epoch):
-        
-        # rnd index
-        u = random.randint(0, n_users - 1) 
-        i = random.randint(0, n_items - 1)
+    # acquire observed rating (u, i) pairs to support random selecting efficently
+    observed_rating_ui_pairs = []
+    for u in range(n_users):
+        for i in range(n_items):
+            if R_train[u, i]:
+                observed_rating_ui_pairs.append((u, i))
 
-        while R_train[u, i] == 0:
-            u = random.randint(0, n_users - 1) 
-            i = random.randint(0, n_items - 1)
+    random.shuffle(observed_rating_ui_pairs)
+
+    for epoch in range(max_epoch):
+
+        u, i = random.choice(observed_rating_ui_pairs)
 
         e_ui = R_train[u, i] - P[:, u] @ Q[:, i]
-        P[:, u] += learning_rate * (2*e_ui*Q[:, i] - reg_lambda_p*P[:, u])
-        Q[:, i] += learning_rate * (2*e_ui*P[:, u] - reg_lambda_q*Q[:, i])
+        # P[:, u] += learning_rate * (2*e_ui*Q[:, i] - reg_lambda_p*P[:, u])
+        # Q[:, i] += learning_rate * (2*e_ui*P[:, u] - reg_lambda_q*Q[:, i])
 
-        curr_train_loss = loss_estimate(R_train, P.T, Q.T)
-        losses_train.append(curr_train_loss)
+        P[:, u], Q[:, i] = P[:, u] + learning_rate * (2*e_ui*Q[:, i] - reg_lambda_p*P[:, u]), \
+                            Q[:, i] + learning_rate * (2*e_ui*P[:, u] - reg_lambda_q*Q[:, i])
 
-        curr_val_loss = loss_estimate(R_test, P.T, Q.T)
-        losses_test.append(curr_val_loss)
+        if epoch % epoch_cnt_per_loss_estimate == 0:
+            curr_train_loss = loss_estimate(R_train, P, Q)
+            losses_train.append(curr_train_loss)
+
+            curr_val_loss = loss_estimate(R_test, P, Q)
+            losses_test.append(curr_val_loss)
 
         if curr_train_loss < min_loss_threshold:
             break
 
     R_pred = P.T @ Q
-    return R_pred, losses_train, losses_test
+
+    losses_dict = {
+        'losses_train': losses_train,
+        'losses_test': losses_test,
+    }
+
+    return R_pred, losses_dict
 
 
 def MF_ALS_fit(R_train, R_test, K, reg_lambda, max_epoch, min_RMSE_threshold=0.1, loss_estimate=MF_RMSE):
     """
-    Fit a rating matrix and optimize the matrix factorization form using ALS method.
+    Fit a rating matrix and optimize the matrix factorization model using ALS method.
 
     Parameters
     ----------
@@ -141,14 +189,17 @@ def MF_ALS_fit(R_train, R_test, K, reg_lambda, max_epoch, min_RMSE_threshold=0.1
         The number of training epoches.
     min_cost_threshold : float
         When the training cost reaches or is lower than the thresold, training will stop.
-    
+    loss_estimate :  callable
+        A custom loss evaluation function with following signature (R, P, Q) 
+        returns the loss of the matrix factorization model. The default setting is using RMSE.
+
     Returns
     -------
     R_pred : ndarray
         The predicted rating matrix.
 
     losses_dict : dict
-        A dict containing the model's RMSE and MAE on training and testing dataset 
+        A dict containing the model's losses on training and testing dataset 
         during the training procedure.
 
     """
@@ -158,9 +209,9 @@ def MF_ALS_fit(R_train, R_test, K, reg_lambda, max_epoch, min_RMSE_threshold=0.1
     # 留意矩阵的维度
     P, Q = np.random.random((K, n_users)), np.random.random((K, n_items))
 
-    N_U = np.sum(R_train != 0, axis=1)  # 用户评分的次数 shape: (1)
+    N_U = np.sum(R_train != 0, axis=1)  # 用户评分的次数 shape: (n_users)
 
-    N_M = np.sum(R_train != 0, axis=0)  # 电影被评分的次数 shape: (1)
+    N_M = np.sum(R_train != 0, axis=0)  # 电影被评分的次数 shape: (n_items)
     # 用一部电影的平均评分作为该电影的第0个隐含特征的分数
     Q[0, :] = np.sum(R_train, axis=0) / N_M  # shape: (2) <= shape: (2)
     # 有些电影在该数据集中没有被打分，相除后平均分数为无穷大
@@ -236,13 +287,68 @@ def MF_ALS_fit(R_train, R_test, K, reg_lambda, max_epoch, min_RMSE_threshold=0.1
     return R_pred, losses_dict
 
 
+def plot_losses_graph(losses_dict, title="loss graph", xlabel="epoch", ylabel='loss'):
+    '''
+    A helper function used to draw the losses graph.
+
+    Parameters
+    ----------
+    losses_dict : dict
+        A dict contains losses information which are in the form (losses_label, losses_data)
+            losses_label : string
+                A label indicates the information about the loss.
+            losses_data : list
+                A list consists of loss data.
+
+    '''
+    colors = ['r', 'b', 'k', 'g', 'c', 'm', 'y']
+
+    plt.figure(figsize=(16, 9))
+    plt.title(title, fontsize=20)
+    plt.xlabel(xlabel, fontsize=20)
+    plt.ylabel(ylabel, fontsize=20)
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
+
+    for i, losses_label in enumerate(losses_dict):
+        losses_data = losses_dict.get(losses_label)
+        plt.plot(losses_data, '-', color=colors[i % len(colors)], label=losses_label)
+
+    plt.legend()
+    plt.show()
 
 
+def train_SGD():
+
+    param_dict = {
+        'K' : 30,
+        'reg_lambda_p' : 0.1,
+        'reg_lambda_q' : 0.1,
+        'learning_rate' : 0.001,
+        'max_epoch' : 100000,
+        'loss_estimate' : MF_RMSE,
+        'epoch_cnt_per_loss_estimate' : 1000
+    }
+
+    R_pred, loss_dict = MF_SGD_fit(R_train.copy(), R_test.copy(), **param_dict)
+    plot_losses_graph(loss_dict, title='loss during SGD',
+        xlabel='%d epoches' % param_dict['epoch_cnt_per_loss_estimate'], ylabel='RMSE')
 
 
+def train_ALS():
+    param_dict = {
+        'K' : 30,
+        'reg_lambda' : 0.1,
+        'max_epoch' : 20,
+        'loss_estimate' : MF_RMSE
+    }
 
+    R_pred, loss_dict = MF_ALS_fit(R_train.copy(), R_test.copy(), **param_dict)
+    plot_losses_graph(loss_dict, 
+        title='loss during ALS\nK=%d, reg_lambda=%.6f'%(param_dict['K'], param_dict['reg_lambda']), 
+        ylabel='RMSE')
 
-
-
-
-
+if __name__ == '__main__':
+    # train_ALS()
+    train_SGD()
+    pass
