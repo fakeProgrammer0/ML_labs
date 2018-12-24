@@ -1,0 +1,6 @@
+.idea/
+results/
+*.pyc
+.vscode/
+
+data
