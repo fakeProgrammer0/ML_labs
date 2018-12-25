@@ -1,15 +1,22 @@
 import os
 
+# MODEL_STORE_DIR = "./models"
+# ANNO_STORE_DIR = "./annotations"
+# TRAIN_DATA_DIR = "./data"
 
-MODEL_STORE_DIR = "./models"
+# MODEL_STORE_DIR = __file__ + "/../models"
+# ANNO_STORE_DIR = __file__ + "/../annotations"
+# TRAIN_DATA_DIR = __file__ + "/../data"
 
-ANNO_STORE_DIR = "./annotations"
+MODEL_STORE_DIR = __file__ + "/../models"
+ANNO_STORE_DIR = __file__ + "/../annotations"
+TRAIN_DATA_DIR = __file__ + "/../data"
 
-TRAIN_DATA_DIR = "./data"
 
 LOG_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))+"/log"
 
-USE_CUDA = True
+# USE_CUDA = True
+USE_CUDA = False
 
 TRAIN_BATCH_SIZE = 512
 

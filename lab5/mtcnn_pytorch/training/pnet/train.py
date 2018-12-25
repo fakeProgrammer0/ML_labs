@@ -1,18 +1,21 @@
 import sys
 sys.path.append('./')
+sys.path.append('../')
+sys.path.append('../../')
 
 import argparse
 import torch
 # from tools.imagedb import FaceDataset
-from mtcnn_pytorch.tools.imagedb import FaceDataset
+from tools.imagedb import FaceDataset
 from torchvision import transforms
-from mtcnn_pytorch.models.pnet import PNet
+from models.pnet import PNet
 from training.pnet.trainer import PNetTrainer
 from training.pnet.config import Config
 # from tools.logger import Logger
-from mtcnn_pytorch.checkpoint import CheckPoint
+from checkpoint import CheckPoint
 import os
-import config
+# import config
+import pnet.config as config
 
 # Get config
 config = Config()

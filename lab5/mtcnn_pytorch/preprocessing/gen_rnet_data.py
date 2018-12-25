@@ -1,5 +1,6 @@
 import sys
 sys.path.append('./')
+sys.path.append('../')
 
 import argparse
 import os
@@ -194,8 +195,10 @@ def parse_args():
                         default='./results/pnet/log_bs512_lr0.010_072402/check_point/model_050.pth', type=str)
     parser.add_argument('--gpu', dest='use_cuda', help='with gpu',
                         default=config.USE_CUDA, type=bool)
+    # parser.add_argument('--prefix_path', dest='prefix_path', help='annotation file image prefix root path',
+    #                     default='/home/dataset/WIDER/WIDER_train/images', type=str)
     parser.add_argument('--prefix_path', dest='prefix_path', help='annotation file image prefix root path',
-                        default='/home/dataset/WIDER/WIDER_train/images', type=str)
+                        default=os.path.join(config.TRAIN_DATA_DIR, 'dataset/WIDER/WIDER_train/images'), type=str)
 
     args = parser.parse_args()
     return args

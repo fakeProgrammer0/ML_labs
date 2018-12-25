@@ -1,3 +1,6 @@
+import sys
+sys.path.append('../')
+
 import os
 import config
 import preprocessing.assemble as assemble

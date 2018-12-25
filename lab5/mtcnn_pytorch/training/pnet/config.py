@@ -4,10 +4,11 @@ class Config(object):
         #  ------------ General options ----------------------------------------
         self.save_path = "./results/pnet/"
         # self.dataPath = "/home/dataset/WIDER/WIDER_train/images"  # path for loading data set
-        self.dataPath = "../../data/dataset/WIDER/WIDER_train/images"  # path for loading data set
-        self.annoPath = "./annotations/imglist_anno_12.txt"
+        self.dataPath = __file__ + "/../../../data/dataset/WIDER/WIDER_train/images"  # path for loading data set
+        self.annoPath = __file__ + "/../../../annotations/imglist_anno_12.txt"
         self.manualSeed = 1  # manually set RNG seed
-        self.use_cuda = True
+        # self.use_cuda = True
+        self.use_cuda = False
         self.GPU = "0"  # default gpu to use
 
         # ------------- Data options -------------------------------------------

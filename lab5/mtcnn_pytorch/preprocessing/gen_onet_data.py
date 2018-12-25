@@ -1,6 +1,8 @@
 import sys
 
 sys.path.append('./')
+sys.path.append('../')
+# sys.path.append('../../')
 
 import cv2
 import argparse
@@ -197,7 +199,7 @@ def parse_args():
     parser.add_argument('--gpu', dest='use_cuda', help='with gpu',
                         default=config.USE_CUDA, type=bool)
     parser.add_argument('--prefix_path', dest='prefix_path', help='annotation file image prefix root path',
-                        default='/home/dataset/WIDER/WIDER_train/images', type=str)
+                        default=os.path.join(config.TRAIN_DATA_DIR, 'dataset/WIDER/WIDER_train/images'), type=str)
 
     args = parser.parse_args()
     return args

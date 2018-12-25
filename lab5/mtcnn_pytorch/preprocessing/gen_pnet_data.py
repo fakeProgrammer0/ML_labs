@@ -1,17 +1,15 @@
 import sys
 sys.path.append('./')
 sys.path.append('../')
-sys.path.append('../../')
+# sys.path.append('../../')
 
 import os
 import argparse
 import numpy as np
 import cv2
 import numpy.random as npr
-from mtcnn_pytorch.tools.utils import IoU
+from tools.utils import IoU
 import config
-# import mt
-
 def gen_pnet_data(data_dir, anno_file, prefix):
     neg_save_dir = os.path.join(data_dir, "12/negative")
     pos_save_dir = os.path.join(data_dir, "12/positive")
@@ -169,15 +167,12 @@ def gen_pnet_data(data_dir, anno_file, prefix):
 def parse_args():
     parser = argparse.ArgumentParser(description='generate pnet training data',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-
     parser.add_argument('--face_traindata_store', dest='traindata_store', help='face train data temporary folder',
                         default=config.TRAIN_DATA_DIR, type=str)
     parser.add_argument('--anno_file', dest='annotation_file', help='wider face original annotation file',
                         default=os.path.join(config.ANNO_STORE_DIR, "wider_origin_anno.txt"), type=str)
-    # parser.add_argument('--prefix_path', dest='prefix_path', help='annotation file image prefix root path',
-    #                     default='/home/dataset/WIDER/WIDER_train/images', type=str)
     parser.add_argument('--prefix_path', dest='prefix_path', help='annotation file image prefix root path',
-                            default='../data/dataset/WIDER/WIDER_train/images', type=str)
+                            default=os.path.join(config.TRAIN_DATA_DIR, 'dataset/WIDER/WIDER_train/images'), type=str)
 
     args = parser.parse_args()
     return args
