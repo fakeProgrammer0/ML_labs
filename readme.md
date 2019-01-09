@@ -4,6 +4,7 @@
 
 ## 实验内容
 
+|实验名称|实验要求|实验报告|
 |:-|:-:|:-:|
 |lab1 Linear Regression and Stochastic Gradient Descent|[spec](https://www.zybuluo.com/liushiya/note/1301605?tdsourcetag=s_pctim_aiomsg) | [report](lab1/readme.md) |
 |lab2 Logistic Regression and Support Vector Machine |[spec](https://www.zybuluo.com/liushiya/note/1303225) | [report](lab2/readme.md)|
