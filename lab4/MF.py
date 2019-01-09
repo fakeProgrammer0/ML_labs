@@ -349,7 +349,7 @@ def train_SGD():
     '''
     Train a matrix factorization recommender model based on SGD method.
     '''
-    param_dict = {
+    params_dict = {
         'K': 30,
         'reg_lambda_p': 0.1,
         'reg_lambda_q': 0.1,
@@ -360,11 +360,11 @@ def train_SGD():
     }
 
     R_pred, losses_dict = MF_SGD_fit(R_train.copy(), R_test.copy(),
-                                     **param_dict)
+                                     **params_dict)
     plot_losses_graph(
         losses_dict,
         title='loss during SGD',
-        xlabel='%d epoches' % param_dict['epoch_cnt_per_loss_estimate'],
+        xlabel='%d epoches' % params_dict['epoch_cnt_per_loss_estimate'],
         ylabel='RMSE')
 
 
@@ -372,7 +372,7 @@ def train_ALS():
     '''
     Train a matrix factorization recommender model based on ALS method.
     '''
-    param_dict = {
+    params_dict = {
         'K': 30,
         'reg_lambda': 0.1,
         'max_epoch': 20,
@@ -380,11 +380,11 @@ def train_ALS():
     }
 
     R_pred, losses_dict = MF_ALS_fit(R_train.copy(), R_test.copy(),
-                                     **param_dict)
+                                     **params_dict)
     plot_losses_graph(
         losses_dict,
         title='loss during ALS\nK=%d, reg_lambda=%.6f' %
-        (param_dict['K'], param_dict['reg_lambda']),
+        (params_dict['K'], params_dict['reg_lambda']),
         ylabel='RMSE')
 
 
@@ -417,15 +417,15 @@ def estimate_K():
 
     losses_train_dict, losses_test_dict = {}, {}
 
-    for param_dict in tuned_params:
+    for params_dict in tuned_params:
         R_pred, losses_dict = MF_ALS_fit(
-            R_train.copy(), R_test.copy(), max_epoch=max_epoch, **param_dict)
+            R_train.copy(), R_test.copy(), max_epoch=max_epoch, **params_dict)
         losses_train_dict['K=%d,reg_lambda=%.4f' % (
-            param_dict['K'],
-            param_dict['reg_lambda'])] = losses_dict['losses_train']
+            params_dict['K'],
+            params_dict['reg_lambda'])] = losses_dict['losses_train']
         losses_test_dict['K=%d,reg_lambda=%.4f' % (
-            param_dict['K'],
-            param_dict['reg_lambda'])] = losses_dict['losses_test']
+            params_dict['K'],
+            params_dict['reg_lambda'])] = losses_dict['losses_test']
         break
 
     plot_losses_graph(
@@ -469,8 +469,8 @@ def estimate_reg_lambda():
         ylabel='RMSE')
 
 
-def execute_procedure(f):
-    print('Running in the background... Please wait')
+def execute_procedure(f, desc=''):
+    print(f'Running {desc} in the background... Please wait')
     f()
     print('Done!')
 

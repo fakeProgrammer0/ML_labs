@@ -3,5 +3,8 @@ materials/*
 *.html
 
 ml-100k
+lab4_report
+*.zip
+*.pdf
 
 lab4.pdf
