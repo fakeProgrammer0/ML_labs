@@ -180,4 +180,5 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
+    # print(args)
     gen_pnet_data(args.traindata_store, args.annotation_file, args.prefix_path)

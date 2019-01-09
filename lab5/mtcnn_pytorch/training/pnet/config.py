@@ -1,11 +1,15 @@
+import os
+PNET_CONFIG_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
+
 class Config(object):
     def __init__(self):
         super(Config, self).__init__()
         #  ------------ General options ----------------------------------------
-        self.save_path = "./results/pnet/"
+        # self.save_path = "./results/pnet/"
         # self.dataPath = "/home/dataset/WIDER/WIDER_train/images"  # path for loading data set
-        self.dataPath = __file__ + "/../../../data/dataset/WIDER/WIDER_train/images"  # path for loading data set
-        self.annoPath = __file__ + "/../../../annotations/imglist_anno_12.txt"
+        self.save_path = PNET_CONFIG_FILE_PATH + "/../../../results/pnet/"
+        self.dataPath = PNET_CONFIG_FILE_PATH + "/../../../data/dataset/WIDER/WIDER_train/images"  # path for loading data set
+        self.annoPath = PNET_CONFIG_FILE_PATH + "/../../../annotations/imglist_anno_12.txt"
         self.manualSeed = 1  # manually set RNG seed
         # self.use_cuda = True
         self.use_cuda = False

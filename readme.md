@@ -76,7 +76,8 @@ def linear_reg_GD(X_train,
 
     losses_dict: dict
         A dict containing losses evaluated before and after training
-    
+    '''
+
     pass
 ```
 

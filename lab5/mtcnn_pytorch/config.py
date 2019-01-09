@@ -8,9 +8,11 @@ import os
 # ANNO_STORE_DIR = __file__ + "/../annotations"
 # TRAIN_DATA_DIR = __file__ + "/../data"
 
-MODEL_STORE_DIR = __file__ + "/../models"
-ANNO_STORE_DIR = __file__ + "/../annotations"
-TRAIN_DATA_DIR = __file__ + "/../data"
+GLOBAL_COFIG_FILE_PATH = os.path.dirname(os.path.abspath(__file__))
+
+MODEL_STORE_DIR = GLOBAL_COFIG_FILE_PATH + "/../models"
+ANNO_STORE_DIR = GLOBAL_COFIG_FILE_PATH + "/../annotations"
+TRAIN_DATA_DIR = GLOBAL_COFIG_FILE_PATH + "/../data"
 
 
 LOG_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))+"/log"
